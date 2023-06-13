@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Swift Type ~ HauseMaster</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    #quote {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    #inputBox {
+      width: 100%;
+      height: 40px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+
+    #timerDisplay {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      flex: 1;
+      text-align: center;
+    }
+
+    .error {
+      color: red;
+    }
+
+    #capslockWarning {
+      display: none;
+      color: red;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button:not(:last-child) {
+      margin-right: 10px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 20% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+
+    .modal input {
+      width: 100%;
+      height: 40px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+
+    .modal .button {
+      display: block;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Swift Type ~ HauseMaster</h1>
+    <p style="font-weight: bold; color: blue;">Type the following text:</p>
+    <div id="quote"></div>
+    <input type="text" id="inputBox" autofocus>
+
+    <div id="timerDisplay"></div>
+
+    <div class="stats">
+      <div class="stat">
+        <div id="wpmDisplay">Current WPM: 0</div>
+      </div>
+      <div class="stat">
+        <div id="accuracyDisplay">Accuracy: 100%</div>
+      </div>
+      <div class="stat">
+        <div id="errorsDisplay">Errors: 0</div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div id="grossWPMDisplay">Gross WPM: 0</div>
+      </div>
+      <div class="stat">
+        <div id="netWPMDisplay">Net WPM: 0</div>
+      </div>
+    </div>
+
+    <div id="capslockWarning">Caps Lock is ON</div>
+
+    <div>
+      <button class="button" onclick="fetchRandomQuote()">Refresh</button>
+      <button class="button" onclick="openCustomTextModal()">Custom Text</button>
+    </div>
+
+    <div id="customTextModal" class="modal">
+      <div class="modal-content">
+        <h2>Enter Custom Text</h2>
+        <input type="text" id="customTextInput">
+        <button class="button" onclick="applyCustomText()">Apply</button>
+        <button class="button" onclick="closeCustomTextModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentQuote = "";
+    let totalTyped = 0;
+    let totalErrors = 0;
+    let startTime = 0;
+    let endTime = 0;
+    let timerInterval = null;
+
+    const quoteDisplay = document.getElementById("quote");
+    const inputBox = document.getElementById("inputBox");
+    const timerDisplay = document.getElementById("timerDisplay");
+    const wpmDisplay = document.getElementById("wpmDisplay");
+    const grossWPMDisplay = document.getElementById("grossWPMDisplay");
+    const netWPMDisplay = document.getElementById("netWPMDisplay");
+    const accuracyDisplay = document.getElementById("accuracyDisplay");
+    const errorsDisplay = document.getElementById("errorsDisplay");
+    const capslockWarning = document.getElementById("capslockWarning");
+
+    function initialize() {
+      fetchRandomQuote();
+      inputBox.addEventListener("input", checkInput);
+      inputBox.addEventListener("keydown", checkCapslock);
+    }
+
+    function fetchRandomQuote() {
+      fetch("https://api.quotable.io/random")
+        .then(response => response.json())
+        .then(data => {
+          currentQuote = data.content;
+          quoteDisplay.textContent = currentQuote;
+          inputBox.value = "";
+          inputBox.disabled = false;
+          inputBox.focus();
+          totalTyped = 0;
+          totalErrors = 0;
+
+          endTime = 0;
+          timerInterval = null; // Reset the timer interval
+          wpmDisplay.textContent = "Current WPM: 0";
+          grossWPMDisplay.textContent = "Gross WPM: 0";
+          netWPMDisplay.textContent = "Net WPM: 0";
+          accuracyDisplay.textContent = "Accuracy: 100%";
+          errorsDisplay.textContent = "Errors: 0";
+        })
+        .catch(error => {
+          console.log("Error fetching quote:", error);
+        });
+
+      startTime = 0; // Reset the start time
+
+    }
+
+    function checkInput() {
+      const typedValue = inputBox.value;
+
+      if (typedValue === currentQuote) {
+        inputBox.disabled = true;
+        endTest();
+        return;
+      }
+
+      if (startTime == 0) {
+        startTimer();
+      }
+
+      let matchingString = currentQuote.substring(0, typedValue.length);
+      let error = false;
+
+      if (typedValue === matchingString) {
+        quoteDisplay.classList.remove("error");
+      } else {
+        quoteDisplay.classList.add("error");
+        error = true;
+      }
+
+      totalTyped = typedValue.length;
+      totalErrors = error ? totalErrors + 1 : totalErrors;
+      const wpm = calculateWPM(totalTyped, endTime);
+      const netWPM = calculateNetWPM(totalTyped, totalErrors, endTime);
+      const accuracy = calculateAccuracy(totalTyped, totalErrors);
+      wpmDisplay.textContent = `Current WPM: ${wpm}`;
+      grossWPMDisplay.textContent = `Gross WPM: ${wpm}`;
+      netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
+      accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
+      errorsDisplay.textContent = `Errors: ${totalErrors}`;
+    }
+
+    function startTimer() {
+      startTime = new Date().getTime();
+
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      const currentTime = new Date().getTime();
+      const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+      timerDisplay.textContent = `Time: ${elapsedTime}s`;
+    }
+
+    function endTest() {
+      clearInterval(timerInterval);
+      endTime = new Date().getTime();
+      const totalTime = (endTime - startTime) / 60000; // in minutes
+      const wpm = calculateWPM(totalTyped, endTime);
+      const netWPM = calculateNetWPM(totalTyped, totalErrors, endTime);
+      const accuracy = calculateAccuracy(totalTyped, totalErrors);
+      wpmDisplay.textContent = `Current WPM: ${wpm}`;
+      grossWPMDisplay.textContent = `Gross WPM: ${wpm}`;
+      netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
+      accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
+      errorsDisplay.textContent = `Errors: ${totalErrors}`;
+    }
+
+    function calculateWPM(totalTyped, endTime) {
+      const minutes = (endTime - startTime) / 60000; // in minutes
+      const wpm = Math.round(totalTyped / 5 / minutes);
+      return wpm;
+    }
+
+    function calculateNetWPM(totalTyped, totalErrors, endTime) {
+      const errorWords = Math.floor(totalErrors / 5);
+      const netTyped = totalTyped / 5 - errorWords;
+      const minutes = (endTime - startTime) / 60000; // in minutes
+      const netWPM = Math.round(netTyped / minutes);
+      return netWPM;
+    }
+
+    function calculateAccuracy(totalTyped, totalErrors) {
+      const accuracy = Math.round((totalTyped - totalErrors) / totalTyped * 100);
+      return accuracy;
+    }
+
+    function checkCapslock(event) {
+
+      const capslockOn = event.getModifierState && event.getModifierState("CapsLock");
+      capslockWarning.style.display = capslockOn ? "block" : "none";
+    }
+
+    function openCustomTextModal() {
+      const customTextModal = document.getElementById("customTextModal");
+      customTextModal.style.display = "block";
+    }
+
+    function closeCustomTextModal() {
+      const customTextModal = document.getElementById("customTextModal");
+      customTextModal.style.display = "none";
+    }
+
+    function applyCustomText() {
+      const customTextInput = document.getElementById("customTextInput");
+      const customText = customTextInput.value;
+      if (customText) {
+        currentQuote = customText;
+        quoteDisplay.textContent = currentQuote;
+      }
+      closeCustomTextModal();
+    }
+
+    initialize();
+  </script>
+</body>
+
+</html>
