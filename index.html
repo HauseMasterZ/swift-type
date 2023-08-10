@@ -140,10 +140,16 @@
       </div>
     </div>
 
+    <div class="stats">
+      <div class="stat">
+        <div id="categoryDisplay"></div>
+      </div>
+    </div>
+
     <div id="capslockWarning">Caps Lock is ON</div>
 
     <div>
-      <button class="button" onclick="fetchRandomQuote()">Refresh</button>
+      <button class="button" id="refreshButton" onclick="refreshQuote()">Refresh</button>
       <button class="button" onclick="openCustomTextModal()">Custom Text</button>
     </div>
 
@@ -164,7 +170,9 @@
     let startTime = 0;
     let endTime = 0;
     let timerInterval = null;
-
+    let words = currentQuote.split(' ');
+    let errorQuote = "";
+    let currentWordIndex = 0;
     const quoteDisplay = document.getElementById("quote");
     const inputBox = document.getElementById("inputBox");
     const timerDisplay = document.getElementById("timerDisplay");
@@ -174,11 +182,19 @@
     const accuracyDisplay = document.getElementById("accuracyDisplay");
     const errorsDisplay = document.getElementById("errorsDisplay");
     const capslockWarning = document.getElementById("capslockWarning");
-
+    const categoryDisplay = document.getElementById("categoryDisplay");
+    const refreshButton = document.getElementById("refreshButton");
     function initialize() {
       fetchRandomQuote();
       inputBox.addEventListener("input", checkInput);
       inputBox.addEventListener("keydown", checkCapslock);
+    }
+
+    function refreshQuote() {
+      timerDisplay.textContent = "Time: 0s";
+      endTest();
+      categoryDisplay.textContent = "";
+      fetchRandomQuote();
     }
 
     function fetchRandomQuote() {
@@ -187,14 +203,16 @@
         .then(data => {
           currentQuote = data.content;
           quoteDisplay.textContent = currentQuote;
+          words = currentQuote.split(' ');
           inputBox.value = "";
           inputBox.disabled = false;
           inputBox.focus();
           totalTyped = 0;
           totalErrors = 0;
-
+          errorQuote = words.slice();
           endTime = 0;
           timerInterval = null; // Reset the timer interval
+          currentWordIndex = 0;
           wpmDisplay.textContent = "Current WPM: 0";
           grossWPMDisplay.textContent = "Gross WPM: 0";
           netWPMDisplay.textContent = "Net WPM: 0";
@@ -204,49 +222,52 @@
         .catch(error => {
           console.log("Error fetching quote:", error);
         });
-
       startTime = 0; // Reset the start time
-
     }
 
     function checkInput() {
       const typedValue = inputBox.value;
-
-      if (typedValue === currentQuote) {
+      const typedWords = typedValue.split(' ');
+      const latestWord = typedWords[typedWords.length - 1];
+      if (typedValue === currentQuote || (typedWords.length >= words.length && typedValue.length >= currentQuote.length)) {
         inputBox.disabled = true;
         endTest();
+        refreshButton.focus();
         return;
       }
-
       if (startTime == 0) {
         startTimer();
       }
-
-      let matchingString = currentQuote.substring(0, typedValue.length);
+      currentWordIndex = typedValue.trim().split(' ').length - 1;
+      let currentWord = words[currentWordIndex];
       let error = false;
-
-      if (typedValue === matchingString) {
-        quoteDisplay.classList.remove("error");
+      if (latestWord === currentWord.slice(0, latestWord.length)) {
+        if (typedValue.endsWith(' ')) {
+          if (typedWords[typedWords.length-2].length < currentWord.length) {
+            errorQuote[currentWordIndex] = `<span class="error">${currentWord}</span>`;
+            quoteDisplay.innerHTML = errorQuote.join(' ');
+            error = true;
+          }
+        }
+        else {
+          errorQuote[currentWordIndex] = `<span class="correct">${currentWord}</span>`;
+          quoteDisplay.innerHTML = errorQuote.join(' ');
+          error = false;
+        }
       } else {
-        quoteDisplay.classList.add("error");
+        errorQuote[currentWordIndex] = `<span class="error">${currentWord}</span>`;
+        quoteDisplay.innerHTML = errorQuote.join(' ');
         error = true;
       }
-
       totalTyped = typedValue.length;
       totalErrors = error ? totalErrors + 1 : totalErrors;
-      const wpm = calculateWPM(totalTyped, endTime);
-      const netWPM = calculateNetWPM(totalTyped, totalErrors, endTime);
       const accuracy = calculateAccuracy(totalTyped, totalErrors);
-      wpmDisplay.textContent = `Current WPM: ${wpm}`;
-      grossWPMDisplay.textContent = `Gross WPM: ${wpm}`;
-      netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
       accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
       errorsDisplay.textContent = `Errors: ${totalErrors}`;
     }
 
     function startTimer() {
       startTime = new Date().getTime();
-
       timerInterval = setInterval(updateTimer, 1000);
     }
 
@@ -254,6 +275,8 @@
       const currentTime = new Date().getTime();
       const elapsedTime = Math.floor((currentTime - startTime) / 1000);
       timerDisplay.textContent = `Time: ${elapsedTime}s`;
+      const wpm = calculateWPM(totalTyped, currentTime);
+      wpmDisplay.textContent = `Current WPM: ${wpm}`;
     }
 
     function endTest() {
@@ -263,22 +286,43 @@
       const wpm = calculateWPM(totalTyped, endTime);
       const netWPM = calculateNetWPM(totalTyped, totalErrors, endTime);
       const accuracy = calculateAccuracy(totalTyped, totalErrors);
-      wpmDisplay.textContent = `Current WPM: ${wpm}`;
       grossWPMDisplay.textContent = `Gross WPM: ${wpm}`;
       netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
       accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
       errorsDisplay.textContent = `Errors: ${totalErrors}`;
+      if (netWPM === 0) {
+        // pass
+      }
+      else if (netWPM < 30) {
+        categoryDisplay.textContent = 'Sloth-paced Typist 🦥';
+      } else if (netWPM >= 30 && netWPM < 40) {
+        categoryDisplay.textContent = 'Turtle-paced Typist 🐢';
+      } else if (netWPM >= 40 && netWPM < 80) {
+        categoryDisplay.textContent = 'Rabbit-speed Typist 🐇';
+      } else if (netWPM >= 80 && netWPM < 100) {
+        categoryDisplay.textContent = 'Cheetah-fingered Typist 🐆';
+      } else if (netWPM >= 100 && netWPM < 110) {
+        categoryDisplay.textContent = 'Dolphin-swift Typist 🐬';
+      } else if (netWPM >= 110 && netWPM < 120) {
+        categoryDisplay.textContent = 'Jaguar-typed Typist 🐆';
+      } else if (netWPM >= 120 && netWPM < 130) {
+        categoryDisplay.textContent = 'Falcon-keyed Typist 🦅';
+      } else if (netWPM >= 140 && netWPM < 150) {
+        categoryDisplay.textContent = 'Supersonic Typist 🚀';
+      } else {
+        categoryDisplay.textContent = 'Lightning-Fast Typist ⚡️';
+      }
     }
 
     function calculateWPM(totalTyped, endTime) {
       const minutes = (endTime - startTime) / 60000; // in minutes
-      const wpm = Math.round(totalTyped / 5 / minutes);
+      const wpm = Math.round(currentWordIndex / minutes);
       return wpm;
     }
 
     function calculateNetWPM(totalTyped, totalErrors, endTime) {
       const errorWords = Math.floor(totalErrors / 5);
-      const netTyped = totalTyped / 5 - errorWords;
+      const netTyped = currentWordIndex - errorWords;
       const minutes = (endTime - startTime) / 60000; // in minutes
       const netWPM = Math.round(netTyped / minutes);
       return netWPM;
@@ -290,7 +334,6 @@
     }
 
     function checkCapslock(event) {
-
       const capslockOn = event.getModifierState && event.getModifierState("CapsLock");
       capslockWarning.style.display = capslockOn ? "block" : "none";
     }
