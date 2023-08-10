@@ -192,9 +192,31 @@
 
     function refreshQuote() {
       timerDisplay.textContent = "Time: 0s";
-      endTest();
-      categoryDisplay.textContent = "";
-      fetchRandomQuote();
+      if (document.getElementById("customTextInput").value !== "") {
+        currentQuote = document.getElementById("customTextInput").value;
+        quoteDisplay.textContent = currentQuote;
+        words = currentQuote.split(' ');
+        inputBox.value = "";
+        inputBox.disabled = false;
+        inputBox.focus();
+        totalTyped = 0;
+        totalErrors = 0;
+        errorQuote = words.slice();
+        endTime = 0;
+        timerInterval = null; // Reset the timer interval
+        currentWordIndex = 0;
+        wpmDisplay.textContent = "Current WPM: 0";
+        grossWPMDisplay.textContent = "Gross WPM: 0";
+        netWPMDisplay.textContent = "Net WPM: 0";
+        accuracyDisplay.textContent = "Accuracy: 100%";
+        errorsDisplay.textContent = "Errors: 0";
+        categoryDisplay.textContent = "";
+        closeCustomTextModal();
+      } else {
+        endTest();
+        categoryDisplay.textContent = "";
+        fetchRandomQuote();
+      }
     }
 
     function fetchRandomQuote() {
@@ -226,10 +248,11 @@
     }
 
     function checkInput() {
-      const typedValue = inputBox.value;
-      const typedWords = typedValue.split(' ');
+      let typedValue = inputBox.value;
+      let typedWords = typedValue.split(' ');
+      // typedWords = typedWords.filter(word => word !== ''); // Remove whitespace elements
       const latestWord = typedWords[typedWords.length - 1];
-      if (typedValue === currentQuote || (typedWords.length >= words.length && typedValue.length >= currentQuote.length)) {
+      if (typedValue === currentQuote || (typedWords.length >= words.length && typedValue.endsWith('.'))) {
         inputBox.disabled = true;
         endTest();
         refreshButton.focus();
@@ -239,11 +262,12 @@
         startTimer();
       }
       currentWordIndex = typedValue.trim().split(' ').length - 1;
+      // currentWordIndex = currentWordIndex.filter(word => word !== '').length - 1;
       let currentWord = words[currentWordIndex];
       let error = false;
       if (latestWord === currentWord.slice(0, latestWord.length)) {
         if (typedValue.endsWith(' ')) {
-          if (typedWords[typedWords.length-2].length < currentWord.length) {
+          if (typedWords[typedWords.length - 2].length < currentWord.length) {
             errorQuote[currentWordIndex] = `<span class="error">${currentWord}</span>`;
             quoteDisplay.innerHTML = errorQuote.join(' ');
             error = true;
@@ -308,7 +332,7 @@
       } else if (netWPM >= 120 && netWPM < 130) {
         categoryDisplay.textContent = 'Falcon-keyed Typist 🦅';
       } else if (netWPM >= 140 && netWPM < 150) {
-        categoryDisplay.textContent = 'Supersonic Typist 🚀';
+        categoryDisplay.textContent = 'Supersonic Typist 🚀 AKA HauseMaster ⬜';
       } else {
         categoryDisplay.textContent = 'Lightning-Fast Typist ⚡️';
       }
@@ -354,6 +378,8 @@
       if (customText) {
         currentQuote = customText;
         quoteDisplay.textContent = currentQuote;
+        words = currentQuote.split(' ');
+        errorQuote = currentQuote.split(' ');
       }
       closeCustomTextModal();
     }
