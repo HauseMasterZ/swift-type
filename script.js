@@ -234,7 +234,7 @@ function endTest() {
         document.body.style.backgroundColor = 'lightblue';
     } else if (netWPM >= 140 && netWPM < 150) {
         displaySpeed('Supersonic Typist 🚀 AKA HauseMaster 🟥🟧🟩', Math.random() * (1000 - 300) + 300, '⭐⭐⭐⭐⭐');
-        resultImg.setAttribute('src', 'hausemaster.png');
+        resultImg.setAttribute('src', 'hausemaster.svg');
         document.body.style.backgroundColor = 'Red';
     } else {
         displaySpeed('Lightning-Fast Typist ⚡️', 300000, '⭐⭐⭐⭐⭐');
