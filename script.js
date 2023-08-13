@@ -192,7 +192,7 @@ function endTest() {
     } else if (netWPM >= 50 && netWPM < 60) {
         resultImg.setAttribute('src', 'svg/sea_turtle.svg');
         displaySpeed('Turtle-paced Typist 🐢', Math.random() * (50 - 10) + 10, '⭐');
-        document.body.style.backgroundColor = 'blue';
+        document.body.style.backgroundColor = 'rgb(151, 54, 193)';
     } else if (netWPM >= 60 && netWPM < 70) {
         resultImg.setAttribute('src', 'svg/horse.svg');
         displaySpeed('Horse-speed Typist 🐎', Math.random() * (90 - 50) + 50, '⭐⭐');
