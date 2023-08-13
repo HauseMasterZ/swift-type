@@ -206,35 +206,35 @@ function endTest() {
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
     if (netWPM < 50) {
         displaySpeed('Sloth-paced Typist 🦥', (netWPM / 10) * 2, '⭐');
-        resultImg.setAttribute('src', 'sloth.svg');
+        resultImg.setAttribute('src', 'svg/sloth.svg');
         document.body.style.backgroundColor = '#C69061';
     } else if (netWPM >= 50 && netWPM < 60) {
         displaySpeed('Turtle-paced Typist 🐢', Math.random() * (50 - 10) + 10, '⭐');
-        resultImg.setAttribute('src', 'sea_turtle.svg');
+        resultImg.setAttribute('src', 'svg/sea_turtle.svg');
         document.body.style.backgroundColor = 'blue';
     } else if (netWPM >= 60 && netWPM < 70) {
         displaySpeed('Horse-speed Typist 🐎', Math.random() * (90 - 50) + 50, '⭐⭐');
-        resultImg.setAttribute('src', 'horse.svg');
+        resultImg.setAttribute('src', 'svg/horse.svg');
         document.body.style.backgroundColor = '#BFAA87';
     } else if (netWPM >= 70 && netWPM < 80) {
         displaySpeed('Lion-fingered Typist 🦁', Math.random() * (120 - 90) + 90, '⭐⭐');
-        resultImg.setAttribute('src', 'lion.svg');
+        resultImg.setAttribute('src', 'svg/lion.svg');
         document.body.style.backgroundColor = '#DD8547';
     } else if (netWPM >= 80 && netWPM < 90) {
         displaySpeed('Cheetah-swift Typist 🐆', Math.random() * (180 - 120) + 120, '⭐⭐⭐');
-        resultImg.setAttribute('src', 'cheetah.svg');
+        resultImg.setAttribute('src', 'svg/cheetah.svg');
         document.body.style.backgroundColor = '#DC864B';
     } else if (netWPM >= 90 && netWPM < 100) {
         displaySpeed('Eagle-eyed Typist 🦅', Math.random() * (300 - 180) + 180, '⭐⭐⭐⭐');
-        resultImg.setAttribute('src', 'eagle.svg');
+        resultImg.setAttribute('src', 'svg/eagle.svg');
         document.body.style.backgroundColor = '#AB7D5A';
     } else if (netWPM >= 100 && netWPM < 140) {
         displaySpeed('Falcon-keyed Typist 🦅', Math.random() * (400 - 300) + 300, '⭐⭐⭐⭐⭐');
-        resultImg.setAttribute('src', 'falcon.svg');
+        resultImg.setAttribute('src', 'svg/falcon.svg');
         document.body.style.backgroundColor = 'lightblue';
     } else if (netWPM >= 140 && netWPM < 150) {
         displaySpeed('Supersonic Typist 🚀 AKA HauseMaster 🟥🟧🟩', Math.random() * (1000 - 300) + 300, '⭐⭐⭐⭐⭐');
-        resultImg.setAttribute('src', 'hausemaster.svg');
+        resultImg.setAttribute('src', 'svg/hausemaster.svg');
         document.body.style.backgroundColor = 'Red';
     } else {
         displaySpeed('Lightning-Fast Typist ⚡️', 300000, '⭐⭐⭐⭐⭐');
