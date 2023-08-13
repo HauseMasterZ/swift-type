@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Swift Type ~ HauseMaster</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="svg/type_writer.svg">
+  <link rel="icon" type="image/png" href="https://data.typeracer.com/public/images/redesign/typeracer-hot-rod.svg">
 </head>
 
 <body>
@@ -15,7 +15,11 @@
     <p style="font-weight: bold; color: blue;">Type the following text:</p>
     <div id="quote"></div>
     <input type="text" id="inputBox" autofocus>
-
+    <div>
+      <button class="button" id="refreshButton" tabindex="0" onclick="refreshQuote()">Refresh</button>
+      <button class="button" onclick="openCustomTextModal()">Custom Text</button>
+    </div>
+    <br>
     <div id="timerDisplay"></div>
 
     <div class="stats">
@@ -41,6 +45,30 @@
 
     <div class="stats">
       <div class="stat">
+        Min Quote Length:
+      </div>
+      <div class="radio-container">
+        <label>
+          <input type="radio" name="quoteLength" value="random" checked>
+          Random
+        </label>
+        <label>
+          <input type="radio" name="quoteLength" value="small">
+          Small
+        </label>
+        <label>
+          <input type="radio" name="quoteLength" value="medium">
+          Medium
+        </label>
+        <label>
+          <input type="radio" name="quoteLength" value="large">
+          Large
+        </label>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
         <div id="categoryDisplay">
         </div>
       </div>
@@ -52,10 +80,7 @@
 
     <div id="capslockWarning">Caps Lock is ON</div>
 
-    <div>
-      <button class="button" id="refreshButton" onclick="refreshQuote()">Refresh</button>
-      <button class="button" onclick="openCustomTextModal()">Custom Text</button>
-    </div>
+
 
     <div id="customTextModal" class="modal">
       <div class="modal-content">
