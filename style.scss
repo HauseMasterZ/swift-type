@@ -1,7 +1,8 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #fff; /* set initial background color */
-    transition: background-color 1s ease; 
+    background-color: #fff;
+    /* set initial background color */
+    transition: background-color 1s ease;
 }
 
 .container {
@@ -38,7 +39,7 @@ h1 {
 
 #refreshButton:focus {
     background-color: #8BC34A;
-  }
+}
 
 #resultImg {
     position: absolute;
@@ -60,22 +61,6 @@ h1 {
     }
 }
 
-@media (max-width: 768px) {
-    /* For mobile devices with a maximum width of 768px */
-    #resultImg {
-        left: 50%;
-    }
-    @keyframes slide-in {
-        from {
-            top: -200px;
-        }
-    
-        to {
-            top: 70%;
-            transform: translate(-50%, -50%);
-        }
-    }
-}
 
 .radio-container {
     display: flex;
@@ -83,17 +68,17 @@ h1 {
     justify-content: center;
     align-items: center;
     margin-top: 0px;
-  }
-  
-  .radio-container label {
+}
+
+.radio-container label {
     display: flex;
     align-items: center;
     margin-right: 10px;
     font-size: 16px;
     cursor: pointer;
-  }
-  
-  .radio-container input[type="radio"] {
+}
+
+.radio-container input[type="radio"] {
     margin-right: 5px;
     appearance: none;
     -webkit-appearance: none;
@@ -104,9 +89,9 @@ h1 {
     border: 2px solid #ccc;
     outline: none;
     transition: border-color 0.2s ease-in-out;
-  }
-  
-  .radio-container input[type="radio"]::before {
+}
+
+.radio-container input[type="radio"]::before {
     content: "";
     display: block;
     width: 10px;
@@ -115,21 +100,45 @@ h1 {
     border-radius: 50%;
     transform: translate(-23%, -23%);
     transition: background-color 0.2s ease-in-out;
-  }
-  
-  .radio-container input[type="radio"]:checked::before {
-    background-color: #8BC34A;
-  }
-  
-  .radio-container input[type="radio"]:hover:not(:checked)::before {
-    background-color: rgb(160, 210, 160);
-  }
-  
+}
 
+.radio-container input[type="radio"]:checked::before {
+    background-color: #8BC34A;
+}
+
+.radio-container input[type="radio"]:hover:not(:checked)::before {
+    background-color: rgb(160, 210, 160);
+}
+
+@media (max-width: 768px) {
+
+    /* For mobile devices with a maximum width of 768px */
+    #resultImg {
+        left: 50%;
+    }
+    .radio-container label {
+        align-items: center;
+        margin-right: 10px;
+        font-size: 10px;
+        cursor: pointer;
+    }
+    
+
+    @keyframes slide-in {
+        from {
+            top: -200px;
+        }
+
+        to {
+            top: 90%;
+            transform: translate(-50%, -50%);
+        }
+    }
+}
 
 .hidden {
     display: none;
-  }
+}
 
 .stats {
     display: flex;

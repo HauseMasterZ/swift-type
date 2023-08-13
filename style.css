@@ -1,6 +1,7 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #fff; /* set initial background color */
+  background-color: #fff;
+  /* set initial background color */
   transition: background-color 1s ease;
 }
 
@@ -57,21 +58,6 @@ h1 {
     transform: translate(0%, -50%);
   }
 }
-@media (max-width: 768px) {
-  /* For mobile devices with a maximum width of 768px */
-  #resultImg {
-    left: 50%;
-  }
-  @keyframes slide-in {
-    from {
-      top: -200px;
-    }
-    to {
-      top: 70%;
-      transform: translate(-50%, -50%);
-    }
-  }
-}
 .radio-container {
   display: flex;
   flex-direction: row;
@@ -120,6 +106,27 @@ h1 {
   background-color: rgb(160, 210, 160);
 }
 
+@media (max-width: 768px) {
+  /* For mobile devices with a maximum width of 768px */
+  #resultImg {
+    left: 50%;
+  }
+  .radio-container label {
+    align-items: center;
+    margin-right: 10px;
+    font-size: 10px;
+    cursor: pointer;
+  }
+  @keyframes slide-in {
+    from {
+      top: -200px;
+    }
+    to {
+      top: 90%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
 .hidden {
   display: none;
 }
