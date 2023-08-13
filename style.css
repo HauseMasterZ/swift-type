@@ -35,8 +35,10 @@ h1 {
   margin-bottom: 20px;
 }
 
-img {
+#resultImg {
   position: absolute;
+  height: 30vh;
+  width: 30vw;
   right: 2%;
   animation: slide-in 1s forwards;
 }
@@ -46,7 +48,7 @@ img {
     top: -200px;
   }
   to {
-    top: 50%;
+    top: 47%;
     transform: translate(0%, -50%);
   }
 }

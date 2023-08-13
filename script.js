@@ -23,7 +23,7 @@ const resultImg = document.getElementById('resultImg');
 const refreshButton = document.getElementById("refreshButton");
 function initialize() {
     fetchRandomQuote();
-    inputBox.addEventListener("input", checkInput);
+    inputBox.addEventListener("keyup", checkInput);
     inputBox.addEventListener("keydown", checkCapslock);
 }
 
@@ -131,21 +131,23 @@ function fetchRandomQuote() {
 //     errorsDisplay.textContent = `Errors: ${totalErrors}`;
 // }
 
-function checkInput() {
+function checkInput(event) {
     typedValue = inputBox.value;
     endOfWord = typedValue.endsWith(' ');
     typedValue = typedValue.trim();
     totalTyped = typedValue.length;
     const typedWords = typedValue.split(' ');
+    if (event['key'] === 'Backspace') {
+        const nextWordExists = words[typedWords.length];
+        if (nextWordExists) {
+            errorQuote[typedWords.length] = `<span class="correct">${nextWordExists}</span>`;
+        }
+        return;
+    }
     const latestWord = typedWords[typedWords.length - 1];
     const currentWord = words[typedWords.length - 1];
     const isEndOfQuote = typedWords.length >= words.length && typedValue.endsWith('.');
     const isCorrect = latestWord === currentWord.slice(0, latestWord.length);
-    const nextWordExists = words[typedWords.length];
-    if (nextWordExists) {
-        errorQuote[typedWords.length] = `<span class="correct">${nextWordExists}</span>`;
-    }
-
     if (typedValue === currentQuote || isEndOfQuote) {
         inputBox.disabled = true;
         endTest();
@@ -186,13 +188,13 @@ function updateTimer() {
 function displaySpeed(prefix, number, stars) {
     let count = 0;
     const interval = setInterval(() => {
-      categoryDisplay.textContent = `${prefix} ${count}km/h ${stars}`;
-      count++;
-      if (count > number) {
-        clearInterval(interval);
-      }
+        categoryDisplay.textContent = `${prefix} ${count}km/h ${stars}`;
+        count++;
+        if (count > number) {
+            clearInterval(interval);
+        }
     }, 1000 / number);
-  }
+}
 
 function endTest() {
     clearInterval(timerInterval);
