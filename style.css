@@ -1,0 +1,124 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fff; /* set initial background color */
+  transition: background-color 1s ease;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+#quote {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+#inputBox {
+  width: 100%;
+  height: 40px;
+  font-size: 16px;
+  margin-bottom: 20px;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+#timerDisplay {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+img {
+  position: absolute;
+  right: 2%;
+  animation: slide-in 1s forwards;
+}
+
+@keyframes slide-in {
+  from {
+    top: -200px;
+  }
+  to {
+    top: 50%;
+    transform: translate(0%, -50%);
+  }
+}
+.hidden {
+  display: none;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.stat {
+  flex: 1;
+  text-align: center;
+}
+
+.error {
+  color: red;
+}
+
+#capslockWarning {
+  display: none;
+  color: red;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:not(:last-child) {
+  margin-right: 10px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 20% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.modal input {
+  width: 100%;
+  height: 40px;
+  font-size: 16px;
+  margin-bottom: 20px;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.modal .button {
+  display: block;
+  margin-top: 10px;
+}/*# sourceMappingURL=style.css.map */
