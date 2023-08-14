@@ -58,7 +58,6 @@ function refreshQuote() {
         categoryDisplay.textContent = "";
         fetchRandomQuote();
     }
-
 }
 
 
@@ -141,11 +140,12 @@ function checkInput(event) {
         }
         totalErrors = isCorrect ? totalErrors : totalErrors + 1;
     } catch (e) {
+        endTest();
+        refreshButton.focus();
         return;
     }
 
     quoteDisplay.innerHTML = errorQuote.join(' ');
-
     currentWordIndex = typedValue.trim().split(' ').length - 1;
     accuracyDisplay.textContent = `Accuracy: ${calculateAccuracy(totalTyped, totalErrors)}%`;
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
