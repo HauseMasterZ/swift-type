@@ -10,6 +10,7 @@ let typedValue = "";
 let interval;
 let endOfWord = false;
 let currentWordIndex = 0;
+const quoteLengthRadios = document.getElementsByName("quoteLength");
 const quoteDisplay = document.getElementById("quote");
 const inputBox = document.getElementById("inputBox");
 const timerDisplay = document.getElementById("timerDisplay");
@@ -61,9 +62,6 @@ function refreshQuote() {
 }
 
 
-const quoteLengthRadios = document.getElementsByName("quoteLength");
-
-
 function fetchRandomQuote() {
     let minLength = 0;
     let maxLength = 0;
@@ -77,7 +75,6 @@ function fetchRandomQuote() {
       minLength = 250;
         maxLength = 430;
     }
-
     const url = minLength > 0 ? `https://api.quotable.io/quotes/random/?minLength=${minLength}&maxLength=${maxLength}` : "https://api.quotable.io/quotes/random";
     fetch(url)
         .then(response => response.json())
@@ -222,7 +219,6 @@ function endTest() {
         document.body.style.backgroundColor = 'yellow';
         return;
     }
-
     resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
 }
