@@ -1,17 +1,19 @@
+"use strict";
 let currentQuote = "";
 let totalTyped = 0;
 let totalErrors = 0;
 let startTime = 0;
 let endTime = 0;
 let timerInterval = null;
-let words = currentQuote.split(' ');
+let words = [];
 let errorQuote = "";
 let typedValue = "";
 let interval;
-let endOfWord = false;
 let currentWordIndex = 0;
 const quoteLengthRadios = document.getElementsByName("quoteLength");
 const quoteDisplay = document.getElementById("quote");
+const body = document.querySelector("body");
+const modeToggle = document.querySelector(".dark-light");
 const inputBox = document.getElementById("inputBox");
 const timerDisplay = document.getElementById("timerDisplay");
 const wpmDisplay = document.getElementById("wpmDisplay");
@@ -23,42 +25,54 @@ const capslockWarning = document.getElementById("capslockWarning");
 const categoryDisplay = document.getElementById("categoryDisplay");
 const resultImg = document.getElementById('resultImg');
 const refreshButton = document.getElementById("refreshButton");
-function initialize() {
+
+window.onload = () => {
     fetchRandomQuote();
     inputBox.addEventListener("keyup", checkInput);
     inputBox.addEventListener("keydown", checkCapslock);
+    modeToggle.classList.toggle("active");
+    body.classList.toggle("dark");
+    body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
 }
+
+// js code to toggle dark and light mode
+modeToggle.addEventListener("click", () => {
+    modeToggle.classList.toggle("active");
+    body.classList.toggle("dark");
+    body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
+});
+
 
 function refreshQuote() {
     timerDisplay.textContent = "Time: 0s";
     if (document.getElementById("customTextInput").value !== "") {
+        inputBox.value = "";
         currentQuote = document.getElementById("customTextInput").value;
         quoteDisplay.textContent = currentQuote;
         words = currentQuote.split(' ');
-        inputBox.value = "";
+        errorQuote = currentQuote.split(' ');
         inputBox.disabled = false;
         inputBox.focus();
         totalTyped = 0;
         totalErrors = 0;
-        errorQuote = words.slice();
         endTime = 0;
-        timerInterval = null; // Reset the timer interval
         currentWordIndex = 0;
         wpmDisplay.textContent = "Current WPM: 0";
         grossWPMDisplay.textContent = "Gross WPM: 0";
         netWPMDisplay.textContent = "Net WPM: 0";
         accuracyDisplay.textContent = "Accuracy: 100%";
         errorsDisplay.textContent = "Errors: 0";
-        categoryDisplay.textContent = "";
+        startTime = 0; // Reset the start time
     } else {
-        clearInterval(interval);
-        resultImg.setAttribute('src', '');
-        resultImg.classList.add('hidden');
-        document.body.style.backgroundColor = '#fff';
-        clearInterval(timerInterval);
-        categoryDisplay.textContent = "";
         fetchRandomQuote();
     }
+    resultImg.setAttribute('src', '');
+    resultImg.classList.add('hidden');
+    body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
+    categoryDisplay.textContent = "";
+    clearInterval(interval);
+    clearInterval(timerInterval);
+
 }
 
 
@@ -66,13 +80,13 @@ function fetchRandomQuote() {
     let minLength = 0;
     let maxLength = 0;
     if (quoteLengthRadios[1].checked) {
-      minLength = 1;
-      maxLength = 100;
+        minLength = 1;
+        maxLength = 100;
     } else if (quoteLengthRadios[2].checked) {
-      minLength = 100;
-      maxLength = 250;
+        minLength = 100;
+        maxLength = 250;
     } else if (quoteLengthRadios[3].checked) {
-      minLength = 250;
+        minLength = 250;
         maxLength = 430;
     }
     const url = minLength > 0 ? `https://api.quotable.io/quotes/random/?minLength=${minLength}&maxLength=${maxLength}` : "https://api.quotable.io/quotes/random";
@@ -96,6 +110,7 @@ function fetchRandomQuote() {
             netWPMDisplay.textContent = "Net WPM: 0";
             accuracyDisplay.textContent = "Accuracy: 100%";
             errorsDisplay.textContent = "Errors: 0";
+
         })
         .catch(error => {
             console.log("Error fetching quote:", error);
@@ -105,22 +120,36 @@ function fetchRandomQuote() {
 
 
 function checkInput(event) {
-    typedValue = inputBox.value;
-    endOfWord = typedValue.endsWith(' ');
-    typedValue = typedValue.trim();
+    if (event['key'] === 'CapsLock') {
+        return;
+    }
+    typedValue = inputBox.value.trim();
     totalTyped = typedValue.length;
     const typedWords = typedValue.split(' ');
+    const latestWord = typedWords[typedWords.length - 1];
+    const currentWord = words[typedWords.length - 1];
+    
     if (event['key'] === 'Backspace') {
         const nextWordExists = words[typedWords.length];
         if (nextWordExists) {
             errorQuote[typedWords.length] = `<span class="correct">${nextWordExists}</span>`;
         }
-        return;
     }
-    const latestWord = typedWords[typedWords.length - 1];
-    const currentWord = words[typedWords.length - 1];
-    const isEndOfQuote = typedWords.length >= words.length && typedValue.endsWith('.');
-    if (typedValue === currentQuote || isEndOfQuote) {
+    try {
+        let isCorrect = true;
+        let markedWord = '';
+        for (let index = 0; index < latestWord.length; index++) {
+            if (latestWord[index] === currentWord[index]) {
+                markedWord += `<span class="success">${latestWord[index]}</span>`
+            }
+            else {
+                markedWord += `<span class="error">${currentWord[index] ? currentWord[index] : latestWord[index]}</span>`
+                isCorrect = event['key'] == 'Backspace' ? true : false
+            }
+        }
+        errorQuote[typedWords.length - 1] = markedWord + currentWord.slice(latestWord.length);
+        totalErrors = isCorrect ? totalErrors : totalErrors + 1;
+    } catch (e) {
         endTest();
         refreshButton.focus();
         return;
@@ -128,24 +157,16 @@ function checkInput(event) {
     if (startTime === 0) {
         startTimer();
     }
-    try {
-        const isCorrect = latestWord === currentWord.slice(0, latestWord.length);
-        if (isCorrect && !(endOfWord && latestWord.length < currentWord.length)) {
-            errorQuote[typedWords.length - 1] = `<span class="correct">${currentWord}</span>`;
-        } else {
-            errorQuote[typedWords.length - 1] = `<span class="error">${currentWord}</span>`;
-        }
-        totalErrors = isCorrect ? totalErrors : totalErrors + 1;
-    } catch (e) {
+    quoteDisplay.innerHTML = errorQuote.join(' ');
+    currentWordIndex = typedWords.length - 1;
+    accuracyDisplay.textContent = `Accuracy: ${calculateAccuracy(totalTyped, totalErrors)}%`;
+    errorsDisplay.textContent = `Errors: ${totalErrors}`;
+    const isEndOfQuote = typedWords.length >= words.length && typedValue.endsWith('.');
+    if (typedValue === currentQuote || isEndOfQuote) {
         endTest();
         refreshButton.focus();
         return;
     }
-
-    quoteDisplay.innerHTML = errorQuote.join(' ');
-    currentWordIndex = typedValue.trim().split(' ').length - 1;
-    accuracyDisplay.textContent = `Accuracy: ${calculateAccuracy(totalTyped, totalErrors)}%`;
-    errorsDisplay.textContent = `Errors: ${totalErrors}`;
 }
 
 function startTimer() {
@@ -172,7 +193,6 @@ function displaySpeed(prefix, number, stars) {
 }
 
 function endTest() {
-    clearInterval(timerInterval);
     inputBox.disabled = true;
     endTime = new Date().getTime();
     const netWPM = calculateNetWPM(totalErrors, endTime);
@@ -182,6 +202,7 @@ function endTest() {
     netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
     accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
+    clearInterval(timerInterval);
     if (netWPM < 50) {
         resultImg.setAttribute('src', 'svg/sloth.svg');
         displaySpeed('Sloth-paced Typist 🦥', (netWPM / 10) * 2, '⭐');
@@ -202,15 +223,15 @@ function endTest() {
         resultImg.setAttribute('src', 'svg/cheetah.svg');
         displaySpeed('Cheetah-swift Typist 🐆', Math.random() * (180 - 120) + 120, '⭐⭐⭐');
         document.body.style.backgroundColor = '#DC864B';
-    } else if (netWPM >= 90 && netWPM < 100) {
+    } else if (netWPM >= 90 && netWPM < 120) {
         resultImg.setAttribute('src', 'svg/eagle.svg');
         displaySpeed('Eagle-eyed Typist 🦅', Math.random() * (300 - 180) + 180, '⭐⭐⭐⭐');
         document.body.style.backgroundColor = '#AB7D5A';
-    } else if (netWPM >= 100 && netWPM < 140) {
+    } else if (netWPM >= 120 && netWPM < 140) {
         resultImg.setAttribute('src', 'svg/falcon.svg');
         displaySpeed('Falcon-keyed Typist 🦅', Math.random() * (400 - 300) + 300, '⭐⭐⭐⭐⭐');
         document.body.style.backgroundColor = 'lightblue';
-    } else if (netWPM >= 140 && netWPM < 150) {
+    } else if (netWPM >= 140 && netWPM < 160) {
         resultImg.setAttribute('src', 'svg/hausemaster.svg');
         displaySpeed('Supersonic Typist 🚀 AKA HauseMaster', Math.random() * (1000 - 300) + 300, '⭐⭐⭐⭐⭐');
         document.body.style.backgroundColor = 'Red';
@@ -225,13 +246,13 @@ function endTest() {
 
 function calculateWPM(endTime) {
     const minutes = (endTime - startTime) / 60000; // in minutes
-    const wpm = Math.round(currentWordIndex / minutes);
+    const wpm = Math.round((currentWordIndex + 1) / minutes);
     return wpm;
 }
 
 function calculateNetWPM(totalErrors, endTime) {
     const errorWords = Math.floor(totalErrors / 5);
-    const netTyped = currentWordIndex - errorWords;
+    const netTyped = currentWordIndex - errorWords + 1;
     const minutes = (endTime - startTime) / 60000; // in minutes
     const netWPM = Math.round(netTyped / minutes);
     return netWPM;
@@ -239,7 +260,7 @@ function calculateNetWPM(totalErrors, endTime) {
 
 function calculateAccuracy(totalTyped, totalErrors) {
     const accuracy = Math.round((totalTyped - totalErrors) / totalTyped * 100);
-    return accuracy;
+    return Math.max(accuracy, 0);
 }
 
 function checkCapslock(event) {
@@ -250,6 +271,7 @@ function checkCapslock(event) {
 function openCustomTextModal() {
     const customTextModal = document.getElementById("customTextModal");
     customTextModal.style.display = "block";
+    document.getElementById("customTextInput").focus();
 }
 
 function closeCustomTextModal() {
@@ -259,15 +281,9 @@ function closeCustomTextModal() {
 }
 
 function applyCustomText() {
-    const customTextInput = document.getElementById("customTextInput");
-    const customText = customTextInput.value;
-    if (customText) {
-        currentQuote = customText;
-        quoteDisplay.textContent = currentQuote;
-        words = currentQuote.split(' ');
-        errorQuote = currentQuote.split(' ');
-    }
+    currentQuote = document.getElementById("customTextInput").value;
+    quoteDisplay.textContent = currentQuote;
+    words = currentQuote.split(' ');
+    errorQuote = currentQuote.split(' ');
     closeCustomTextModal();
 }
-
-initialize();

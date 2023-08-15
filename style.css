@@ -1,15 +1,60 @@
+:root {
+  --body-color: #E4E9F7;
+  --text-color: #000;
+  --input-background-color: #fff;
+}
+
 body {
   font-family: Arial, sans-serif;
-  background-color: #fff;
-  /* set initial background color */
+  background-color: var(--body-color);
+  color: var(--text-color);
   transition: background-color 1s ease;
+}
+
+.success {
+  color: #07c944;
+}
+
+body.dark {
+  --body-color: #18191A;
+  --text-color: white;
+  --input-background-color: #333333;
+  color: var(--text-color);
+}
+
+.dark-light {
+  left: 0px;
+  transform: translate(-40%, 0%);
+}
+
+.dark-light i {
+  position: absolute;
+  color: var(--text-color);
+  font-size: 22px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dark-light i.sun {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dark-light.active i.sun {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dark-light.active i.moon {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .container {
   max-width: 600px;
   margin: 0 auto;
-  padding: 20px;
   text-align: center;
+  padding-top: 2rem;
 }
 
 h1 {
@@ -29,11 +74,20 @@ h1 {
   margin-bottom: 20px;
   padding: 5px;
   box-sizing: border-box;
+  background-color: var(--input-background-color);
+  border: 1px solid var(--text-color);
+  /* Set the border color to white */
+  color: var(--text-color);
+  transition: background-color 1s ease;
 }
 
 #timerDisplay {
   font-size: 20px;
   margin-bottom: 20px;
+}
+
+button {
+  border: 1px solid var(--text-color);
 }
 
 #refreshButton:focus {
@@ -70,7 +124,6 @@ h1 {
   display: flex;
   align-items: center;
   margin-right: 10px;
-  font-size: 16px;
   cursor: pointer;
 }
 
@@ -98,6 +151,11 @@ h1 {
   transition: background-color 0.2s ease-in-out;
 }
 
+#quote-label {
+  margin-top: 5px;
+  font-size: 16px;
+}
+
 .radio-container input[type=radio]:checked::before {
   background-color: #8BC34A;
 }
@@ -111,10 +169,16 @@ h1 {
   #resultImg {
     left: 50%;
   }
+  .stats {
+    font-size: 12px;
+  }
+  #quote-label {
+    font-size: 12px;
+  }
   .radio-container label {
     align-items: center;
     margin-right: 10px;
-    font-size: 10px;
+    font-size: 12px;
     cursor: pointer;
   }
   @keyframes slide-in {
