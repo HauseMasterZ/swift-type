@@ -14,6 +14,7 @@ const quoteLengthRadios = document.getElementsByName("quoteLength");
 const quoteDisplay = document.getElementById("quote");
 const body = document.querySelector("body");
 const modeToggle = document.querySelector(".dark-light");
+const radioContainer = document.querySelector(".radio-container");
 const inputBox = document.getElementById("inputBox");
 const timerDisplay = document.getElementById("timerDisplay");
 const wpmDisplay = document.getElementById("wpmDisplay");
@@ -21,9 +22,11 @@ const grossWPMDisplay = document.getElementById("grossWPMDisplay");
 const netWPMDisplay = document.getElementById("netWPMDisplay");
 const accuracyDisplay = document.getElementById("accuracyDisplay");
 const errorsDisplay = document.getElementById("errorsDisplay");
+const customTextModal = document.getElementById("customTextModal");
 const capslockWarning = document.getElementById("capslockWarning");
 const categoryDisplay = document.getElementById("categoryDisplay");
 const resultImg = document.getElementById('resultImg');
+
 const refreshButton = document.getElementById("refreshButton");
 
 window.onload = () => {
@@ -33,6 +36,7 @@ window.onload = () => {
     modeToggle.classList.toggle("active");
     body.classList.toggle("dark");
     body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
+
 }
 
 // js code to toggle dark and light mode
@@ -62,7 +66,6 @@ function refreshQuote() {
         netWPMDisplay.textContent = "Net WPM: 0";
         accuracyDisplay.textContent = "Accuracy: 100%";
         errorsDisplay.textContent = "Errors: 0";
-        startTime = 0; // Reset the start time
     } else {
         fetchRandomQuote();
     }
@@ -72,8 +75,8 @@ function refreshQuote() {
     categoryDisplay.textContent = "";
     clearInterval(interval);
     clearInterval(timerInterval);
-
 }
+
 
 
 function fetchRandomQuote() {
@@ -120,7 +123,7 @@ function fetchRandomQuote() {
 
 
 function checkInput(event) {
-    if (event['key'] === 'CapsLock') {
+    if (event['key'] === 'CapsLock' || event['key'] === 'Shift' || event['key'] == 'Enter') {
         return;
     }
     typedValue = inputBox.value.trim();
@@ -128,7 +131,7 @@ function checkInput(event) {
     const typedWords = typedValue.split(' ');
     const latestWord = typedWords[typedWords.length - 1];
     const currentWord = words[typedWords.length - 1];
-    
+
     if (event['key'] === 'Backspace') {
         const nextWordExists = words[typedWords.length];
         if (nextWordExists) {
@@ -195,7 +198,7 @@ function displaySpeed(prefix, number, stars) {
 function endTest() {
     inputBox.disabled = true;
     endTime = new Date().getTime();
-    const netWPM = calculateNetWPM(totalErrors, endTime);
+    const netWPM = calculateNetWPM(endTime);
     const wpm = calculateWPM(endTime);
     const accuracy = calculateAccuracy(totalTyped, totalErrors);
     grossWPMDisplay.textContent = `Gross WPM: ${wpm}`;
@@ -250,12 +253,20 @@ function calculateWPM(endTime) {
     return wpm;
 }
 
-function calculateNetWPM(totalErrors, endTime) {
-    const errorWords = Math.floor(totalErrors / 5);
-    const netTyped = currentWordIndex - errorWords + 1;
+function calculateNetWPM(endTime) {
+    let errorWordCnt = 0;
+    typedValue.split(' ').forEach((word, index) => {
+        if (word !== words[index]) {
+            console.log(word, words[index]);
+            errorWordCnt++;
+        }
+        errorWordCnt = Math.max(errorWordCnt - 1, 0)
+    });
+    const netTyped = currentWordIndex - errorWordCnt + 1;
     const minutes = (endTime - startTime) / 60000; // in minutes
+    console.log(currentWordIndex, errorWordCnt, minutes);
     const netWPM = Math.round(netTyped / minutes);
-    return netWPM;
+    return netWPM
 }
 
 function calculateAccuracy(totalTyped, totalErrors) {
@@ -269,19 +280,34 @@ function checkCapslock(event) {
 }
 
 function openCustomTextModal() {
-    const customTextModal = document.getElementById("customTextModal");
     customTextModal.style.display = "block";
     document.getElementById("customTextInput").focus();
 }
 
+radioContainer.addEventListener("change", (event) => {
+    if (event.target.matches("input[type='radio']")) {
+        refreshQuote();
+    }
+});
+
+window.addEventListener("click", (event) => {
+  if (event.target === customTextModal) {
+    closeCustomTextModal();
+  }
+});
+
 function closeCustomTextModal() {
-    const customTextModal = document.getElementById("customTextModal");
     customTextModal.style.display = "none";
-    refreshQuote();
+    if (document.getElementById("customTextInput").value) {
+        refreshQuote();
+    }
 }
 
 function applyCustomText() {
     currentQuote = document.getElementById("customTextInput").value;
+    if (!currentQuote) {
+        return;
+    }
     quoteDisplay.textContent = currentQuote;
     words = currentQuote.split(' ');
     errorQuote = currentQuote.split(' ');

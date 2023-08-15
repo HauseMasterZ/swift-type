@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
   <title>Swift Type ~ HauseMaster</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="https://data.typeracer.com/public/images/redesign/typeracer-hot-rod.svg">
@@ -31,7 +32,6 @@
     </div>
     <br>
     <div id="timerDisplay"></div>
-
     <div class="stats">
       <div class="stat">
         <div id="wpmDisplay">Current WPM: 0</div>
@@ -51,7 +51,6 @@
         <div id="netWPMDisplay">Net WPM: 0</div>
       </div>
     </div>
-
     <div class="stats">
       <div class="stat" id="quote-label">
         Quote Length:
@@ -75,22 +74,13 @@
         </label>
       </div>
     </div>
-
     <div class="stats">
       <div class="stat">
         <div id="categoryDisplay">
         </div>
       </div>
     </div>
-
-    <div id="resultImage">
-      <img id="resultImg" class="hidden" src="" alt="" srcset="">
-    </div>
-
     <div id="capslockWarning">Caps Lock is ON</div>
-
-
-
     <div id="customTextModal" class="modal">
       <div class="modal-content">
         <h2>Enter Custom Text</h2>
@@ -98,6 +88,9 @@
         <button class="button" onclick="applyCustomText()">Apply</button>
         <button class="button" onclick="closeCustomTextModal()">Cancel</button>
       </div>
+    </div>
+    <div id="resultImage" class="scrolling-image">
+      <img id="resultImg" class="hidden" src="" alt="" srcset="">
     </div>
   </div>
 </body>

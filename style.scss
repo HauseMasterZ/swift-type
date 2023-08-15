@@ -51,11 +51,11 @@ body.dark {
     pointer-events: none;
 }
 
-
 .container {
     max-width: 600px;
     margin: 0 auto;
     text-align: center;
+    padding: 0;
     padding-top: 2rem;
 }
 
@@ -75,10 +75,10 @@ h1 {
     font-size: 16px;
     margin-bottom: 20px;
     padding: 5px;
+    
     box-sizing: border-box;
     background-color: var(--input-background-color);
     border: 1px solid var(--text-color);
-    /* Set the border color to white */
     color: var(--text-color);
     transition: background-color 1s ease;
 }
@@ -98,11 +98,11 @@ button {
 
 #resultImg {
     position: absolute;
-    height: 30vh;
-    width: 30vw;
-    animation: slide-in 1s forwards;
-    transform: translate(-50%, 50%);
+    height: 50%;
+    width: 30%;
     left: 70%;
+    animation: slide-in 1s forwards;
+    transform: translate(-100%, 0%);
 }
 
 @keyframes slide-in {
@@ -113,6 +113,57 @@ button {
     to {
         top: 50%;
         transform: translate(0%, -50%);
+    }
+}
+
+.modal-content {
+    background-color: white;
+    margin: 20% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+}
+
+@media (max-width: 768px) {
+
+    /* For mobile devices with a maximum width of 768px */
+    #resultImg {
+        position: relative;
+        top: -100vh;
+        left: 50%;
+        width: 50%;
+        transform: translate(-100%, 0%);
+    }
+
+    .stats {
+        font-size: 12px;
+    }
+
+    #quote-label {
+        font-size: 12px;
+
+    }
+
+    .modal-content {
+        width: 90%;
+    }
+
+    .radio-container label {
+        align-items: center;
+        margin-right: 10px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    @keyframes slide-in {
+        from {
+            top: -100vh;
+        }
+
+        to {
+            transform: translate(-100%, 0%);
+            top: 1vh;
+        }
     }
 }
 
@@ -152,7 +203,7 @@ button {
     height: 10px;
     margin: 5px;
     border-radius: 50%;
-    transform: translate(-23%, -23%);
+    transform: translate(-21%, -21%);
     transition: background-color 0.2s ease-in-out;
 }
 
@@ -167,41 +218,6 @@ button {
 
 .radio-container input[type="radio"]:hover:not(:checked)::before {
     background-color: rgb(160, 210, 160);
-}
-
-@media (max-width: 768px) {
-
-    /* For mobile devices with a maximum width of 768px */
-    #resultImg {
-        left: 50%;
-    }
-
-    .stats {
-        font-size: 12px;
-    }
-
-    #quote-label {
-        font-size: 12px;
-    }
-
-    .radio-container label {
-        align-items: center;
-        margin-right: 10px;
-        font-size: 12px;
-        cursor: pointer;
-    }
-
-
-    @keyframes slide-in {
-        from {
-            top: -200px;
-        }
-
-        to {
-            top: 90%;
-            transform: translate(-50%, -50%);
-        }
-    }
 }
 
 .hidden {
@@ -253,14 +269,7 @@ button {
     height: 100%;
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-    background-color: white;
-    margin: 20% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
+    color: black;
 }
 
 .modal input {
@@ -275,4 +284,5 @@ button {
 .modal .button {
     display: block;
     margin-top: 10px;
+    margin-right: 0px;
 }
