@@ -232,7 +232,7 @@ function endTest() {
         document.body.style.backgroundColor = '#AB7D5A';
     } else if (netWPM >= 120 && netWPM < 140) {
         resultImg.setAttribute('src', 'svg/falcon.svg');
-        displaySpeed('Falcon-keyed Typist 🦅', Math.random() * (400 - 300) + 300, '⭐⭐⭐⭐⭐');
+        displaySpeed('Falcon-keyed Typist 🦅', Math.random() * (400 - 300) + 300, '⭐⭐⭐⭐');
         document.body.style.backgroundColor = 'lightblue';
     } else if (netWPM >= 140 && netWPM < 160) {
         resultImg.setAttribute('src', 'svg/hausemaster.svg');
@@ -257,14 +257,11 @@ function calculateNetWPM(endTime) {
     let errorWordCnt = 0;
     typedValue.split(' ').forEach((word, index) => {
         if (word !== words[index]) {
-            console.log(word, words[index]);
             errorWordCnt++;
         }
-        errorWordCnt = Math.max(errorWordCnt - 1, 0)
     });
     const netTyped = currentWordIndex - errorWordCnt + 1;
     const minutes = (endTime - startTime) / 60000; // in minutes
-    console.log(currentWordIndex, errorWordCnt, minutes);
     const netWPM = Math.round(netTyped / minutes);
     return netWPM
 }
