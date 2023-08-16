@@ -263,7 +263,7 @@ function calculateNetWPM(endTime) {
     const netTyped = currentWordIndex - errorWordCnt + 1;
     const minutes = (endTime - startTime) / 60000; // in minutes
     const netWPM = Math.round(netTyped / minutes);
-    return netWPM
+    return netWPM;
 }
 
 function calculateAccuracy(totalTyped, totalErrors) {
