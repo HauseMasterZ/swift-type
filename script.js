@@ -8,7 +8,7 @@ let timerInterval = null;
 let words = [];
 let errorQuote = "";
 let typedValue = "";
-let interval;
+let speedInterval;
 let currentWordIndex = 0;
 const quoteLengthRadios = document.getElementsByName("quoteLength");
 const quoteDisplay = document.getElementById("quote");
@@ -72,7 +72,7 @@ function refreshQuote() {
     resultImg.classList.add('hidden');
     body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
     categoryDisplay.textContent = "";
-    clearInterval(interval);
+    clearInterval(speedInterval);
     clearInterval(timerInterval);
 }
 
@@ -137,7 +137,6 @@ function checkInput(event) {
         }
     }
     try {
-        let isCorrect = true;
         let markedWord = '';
         for (let index = 0; index < latestWord.length; index++) {
             if (latestWord[index] === currentWord[index]) {
@@ -145,11 +144,10 @@ function checkInput(event) {
             }
             else {
                 markedWord += `<span class="error">${currentWord[index] ? currentWord[index] : latestWord[index]}</span>`
-                isCorrect = event['key'] == 'Backspace' ? true : false
             }
         }
         errorQuote[typedWords.length - 1] = markedWord + currentWord.slice(latestWord.length);
-        if (isCorrect) {
+        if ((currentWord[latestWord.length - 1] === latestWord[latestWord.length - 1] && currentWord[latestWord.length - 1]) || event['key'] === 'Backspace') {
             if (event['key'] !== 'Backspace') {
                 wpmDisplay.classList.remove('flash-out-green');
                 void wpmDisplay.offsetWidth; // Trigger a reflow to restart the animation
@@ -176,7 +174,7 @@ function checkInput(event) {
     currentWordIndex = typedWords.length - 1;
     accuracyDisplay.textContent = `Accuracy: ${calculateAccuracy(totalTyped, totalErrors)}%`;
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
-    const isEndOfQuote = typedWords.length >= words.length || typedValue.endsWith('.');
+    const isEndOfQuote = typedWords.length >= words.length && typedValue.endsWith('.');
     if (typedValue === currentQuote || isEndOfQuote) {
         endTest();
         refreshButton.focus();
@@ -197,15 +195,27 @@ function updateTimer() {
 }
 
 function displaySpeed(prefix, number, stars) {
-    let count = 0;
-    interval = setInterval(() => {
-        categoryDisplay.textContent = `${prefix} ${count}km/h ${stars}`;
-        count++;
-        if (count > number) {
-            clearInterval(interval);
+    const duration = 3000; // Total duration for the animation in milliseconds
+    const startTime = Date.now();
+    const easingFactor = 5;
+    function easeOutExpo(t) {
+        return 1 - Math.pow(2, -easingFactor * t);
+    }
+    function updateDisplay() {
+        const currentTime = Date.now();
+        const elapsedTime = currentTime - startTime;
+        const progress = elapsedTime / duration;
+        const easedProgress = easeOutExpo(progress);
+        const currentValue = Math.round(easedProgress * number);
+        if (currentValue >= number) {
+            clearInterval(speedInterval);
+            return;
         }
-    }, 1000 / number);
+        categoryDisplay.textContent = `${prefix} ${currentValue}km/h ${stars}`;
+    }
+    speedInterval = setInterval(updateDisplay, 1000 / number);
 }
+
 
 function endTest() {
     inputBox.disabled = true;
@@ -275,7 +285,7 @@ function calculateNetWPM(endTime) {
     const netTyped = currentWordIndex - errorWordCnt + 1;
     const minutes = (endTime - startTime) / 60000; // in minutes
     const netWPM = Math.round(netTyped / minutes);
-    return netWPM;
+    return Math.max(netWPM, 0);
 }
 
 function calculateAccuracy(totalTyped, totalErrors) {
