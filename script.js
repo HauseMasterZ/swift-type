@@ -3,7 +3,6 @@ let currentQuote = "";
 let totalTyped = 0;
 let totalErrors = 0;
 let startTime = 0;
-let animationTimeout;
 let endTime = 0;
 let timerInterval = null;
 let words = [];
@@ -27,7 +26,6 @@ const customTextModal = document.getElementById("customTextModal");
 const capslockWarning = document.getElementById("capslockWarning");
 const categoryDisplay = document.getElementById("categoryDisplay");
 const resultImg = document.getElementById('resultImg');
-
 const refreshButton = document.getElementById("refreshButton");
 
 window.onload = () => {
@@ -277,7 +275,7 @@ function calculateNetWPM(endTime) {
     const netTyped = currentWordIndex - errorWordCnt + 1;
     const minutes = (endTime - startTime) / 60000; // in minutes
     const netWPM = Math.round(netTyped / minutes);
-    return 142;
+    return netWPM;
 }
 
 function calculateAccuracy(totalTyped, totalErrors) {

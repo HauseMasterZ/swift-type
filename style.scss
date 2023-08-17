@@ -141,19 +141,24 @@ button {
         font-size: 12px;
     }
 
-    #quote-label {
+    #quote-label label {
         font-size: 12px;
-
     }
 
     .modal-content {
         width: 90%;
     }
 
+    .radio-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
     .radio-container label {
         align-items: center;
-        margin-right: 10px;
         font-size: 12px;
+        margin-right: 10px;
         cursor: pointer;
     }
 
@@ -209,10 +214,6 @@ button {
     transition: background-color 0.2s ease-in-out;
 }
 
-#quote-label {
-    margin-top: 5px;
-    font-size: 16px;
-}
 
 .radio-container input[type="radio"]:checked::before {
     background-color: #8BC34A;
@@ -261,7 +262,7 @@ button {
 
 @keyframes flash-green {
     0% {
-        color: #07c944;
+        color: #00FF00;
     }
 
     100% {
