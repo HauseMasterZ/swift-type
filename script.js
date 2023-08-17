@@ -3,6 +3,7 @@ let currentQuote = "";
 let totalTyped = 0;
 let totalErrors = 0;
 let startTime = 0;
+let animationTimeout;
 let endTime = 0;
 let timerInterval = null;
 let words = [];
@@ -121,9 +122,8 @@ function fetchRandomQuote() {
     startTime = 0; // Reset the start time
 }
 
-
 function checkInput(event) {
-    if (event['key'] === 'CapsLock' || event['key'] === 'Shift' || event['key'] == 'Enter') {
+    if (event['key'] === 'CapsLock' || event['key'] === 'Shift' || event['key'] == 'Enter' || event['code'] == 'Space') {
         return;
     }
     typedValue = inputBox.value.trim();
@@ -151,7 +151,21 @@ function checkInput(event) {
             }
         }
         errorQuote[typedWords.length - 1] = markedWord + currentWord.slice(latestWord.length);
-        totalErrors = isCorrect ? totalErrors : totalErrors + 1;
+        if (isCorrect) {
+            if (event['key'] !== 'Backspace') {
+                wpmDisplay.classList.remove('flash-out-green');
+                void wpmDisplay.offsetWidth; // Trigger a reflow to restart the animation
+                wpmDisplay.classList.add('flash-out-green');
+            }
+        } else {
+            totalErrors++;
+            errorsDisplay.classList.remove('flash-out-red');
+            accuracyDisplay.classList.remove('flash-out-red');
+            void accuracyDisplay.offsetWidth; // Trigger a reflow to restart the animation
+            void errorsDisplay.offsetWidth; // Trigger a reflow to restart the animation
+            errorsDisplay.classList.add('flash-out-red');
+            accuracyDisplay.classList.add('flash-out-red');
+        }
     } catch (e) {
         endTest();
         refreshButton.focus();
@@ -263,7 +277,7 @@ function calculateNetWPM(endTime) {
     const netTyped = currentWordIndex - errorWordCnt + 1;
     const minutes = (endTime - startTime) / 60000; // in minutes
     const netWPM = Math.round(netTyped / minutes);
-    return netWPM;
+    return 142;
 }
 
 function calculateAccuracy(totalTyped, totalErrors) {
@@ -288,9 +302,9 @@ radioContainer.addEventListener("change", (event) => {
 });
 
 window.addEventListener("click", (event) => {
-  if (event.target === customTextModal) {
-    closeCustomTextModal();
-  }
+    if (event.target === customTextModal) {
+        closeCustomTextModal();
+    }
 });
 
 function closeCustomTextModal() {

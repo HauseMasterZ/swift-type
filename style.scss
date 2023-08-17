@@ -75,13 +75,15 @@ h1 {
     font-size: 16px;
     margin-bottom: 20px;
     padding: 5px;
-    
+
     box-sizing: border-box;
     background-color: var(--input-background-color);
     border: 1px solid var(--text-color);
     color: var(--text-color);
     transition: background-color 1s ease;
 }
+
+
 
 #timerDisplay {
     font-size: 20px;
@@ -237,6 +239,34 @@ button {
 
 .error {
     color: red;
+}
+
+.flash-out-green {
+    animation: flash-green 0.5s ease-out;
+}
+
+.flash-out-red {
+    animation: flash-red 1s ease-out;
+}
+
+@keyframes flash-red {
+    0% {
+        color: red;
+    }
+
+    100% {
+        color: var(--text-color);
+    }
+}
+
+@keyframes flash-green {
+    0% {
+        color: #07c944;
+    }
+
+    100% {
+        color: var(--text-color);
+    }
 }
 
 #capslockWarning {

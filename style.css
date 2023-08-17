@@ -225,6 +225,30 @@ button {
   color: red;
 }
 
+.flash-out-green {
+  animation: flash-green 0.5s ease-out;
+}
+
+.flash-out-red {
+  animation: flash-red 1s ease-out;
+}
+
+@keyframes flash-red {
+  0% {
+    color: red;
+  }
+  100% {
+    color: var(--text-color);
+  }
+}
+@keyframes flash-green {
+  0% {
+    color: #07c944;
+  }
+  100% {
+    color: var(--text-color);
+  }
+}
 #capslockWarning {
   display: none;
   color: red;
