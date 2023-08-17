@@ -176,7 +176,7 @@ function checkInput(event) {
     currentWordIndex = typedWords.length - 1;
     accuracyDisplay.textContent = `Accuracy: ${calculateAccuracy(totalTyped, totalErrors)}%`;
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
-    const isEndOfQuote = typedWords.length >= words.length && typedValue.endsWith('.');
+    const isEndOfQuote = typedWords.length >= words.length || typedValue.endsWith('.');
     if (typedValue === currentQuote || isEndOfQuote) {
         endTest();
         refreshButton.focus();
