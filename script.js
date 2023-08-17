@@ -34,8 +34,7 @@ window.onload = () => {
     inputBox.addEventListener("keydown", checkCapslock);
     modeToggle.classList.toggle("active");
     body.classList.toggle("dark");
-    body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
-
+    body.style.backgroundColor = '#18191A';
 }
 
 // js code to toggle dark and light mode
@@ -75,8 +74,6 @@ function refreshQuote() {
     clearInterval(speedInterval);
     clearInterval(timerInterval);
 }
-
-
 
 function fetchRandomQuote() {
     let minLength = 0;
