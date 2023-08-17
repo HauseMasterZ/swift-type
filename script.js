@@ -44,15 +44,13 @@ modeToggle.addEventListener("click", () => {
     body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
 });
 
-
 function refreshQuote() {
     timerDisplay.textContent = "Time: 0s";
     if (document.getElementById("customTextInput").value !== "") {
         inputBox.value = "";
         currentQuote = document.getElementById("customTextInput").value;
         quoteDisplay.textContent = currentQuote;
-        words = currentQuote.split(' ');
-        errorQuote = currentQuote.split(' ');
+        errorQuote = words.slice();
         inputBox.disabled = false;
         inputBox.focus();
         totalTyped = 0;
@@ -138,8 +136,7 @@ function checkInput(event) {
         for (let index = 0; index < latestWord.length; index++) {
             if (latestWord[index] === currentWord[index]) {
                 markedWord += `<span class="success">${latestWord[index]}</span>`
-            }
-            else {
+            } else {
                 markedWord += `<span class="error">${currentWord[index] ? currentWord[index] : latestWord[index]}</span>`
             }
         }
@@ -279,6 +276,7 @@ function calculateNetWPM(endTime) {
             errorWordCnt++;
         }
     });
+    totalErrors = Math.max(errorWordCnt, totalErrors    );
     const netTyped = currentWordIndex - errorWordCnt + 1;
     const minutes = (endTime - startTime) / 60000; // in minutes
     const netWPM = Math.round(netTyped / minutes);
