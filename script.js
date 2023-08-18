@@ -390,7 +390,7 @@ function applyCustomText() {
 window.onload = () => {
     fetchRandomQuote();
     inputBox.addEventListener("keyup", checkInput);
-    inputBox.addEventListener("keydown", checkCapslock);
+    body.addEventListener("keydown", checkCapslock);
     refreshButton.addEventListener("click", createRipple);
     document.getElementById("customButton").addEventListener("click", createRipple);
     modeToggle.click();

@@ -84,8 +84,8 @@
     <div id="customTextModal" class="modal">
       <div class="modal-content">
         <h2>Enter Custom Text</h2>
-        <input type="text" id="customTextInput">
-        <button class="button" onclick="applyCustomText()">Apply</button>
+        <input type="text" id="customTextInput" onkeydown="if (event.key === 'Enter') { applyCustomText(); }">
+        <button class="button" onclick="applyCustomText()" >Apply</button>
         <button class="button" onclick="closeCustomTextModal()">Cancel</button>
       </div>
     </div>
