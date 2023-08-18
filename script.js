@@ -89,6 +89,7 @@ const quoteLengthRadios = document.getElementsByName("quoteLength");
 const quoteDisplay = document.getElementById("quote");
 const body = document.querySelector("body");
 const modeToggle = document.querySelector(".dark-light");
+const customTextInput = document.getElementById("customTextInput");
 const radioContainer = document.querySelector(".radio-container");
 const inputBox = document.getElementById("inputBox");
 const timerDisplay = document.getElementById("timerDisplay");
@@ -131,15 +132,10 @@ function createRipple(event) {
     });
 }
 
-function refreshQuote(event) {
-    if (fetchInProgress) {
-        return;
-    }
-    fetchInProgress = true;
-    timerDisplay.textContent = "Time: 0s";
-    if (document.getElementById("customTextInput").value !== "") {
+function refreshQuote() {
+    if (customTextInput.value !== "") {
         inputBox.value = "";
-        currentQuote = document.getElementById("customTextInput").value;
+        currentQuote = customTextInput.value;
         quoteDisplay.textContent = currentQuote;
         errorQuote = words.slice();
         inputBox.disabled = false;
@@ -155,8 +151,13 @@ function refreshQuote(event) {
         accuracyDisplay.textContent = "Accuracy: 100%";
         errorsDisplay.textContent = "Errors: 0";
     } else {
+        if (fetchInProgress) {
+            return;
+        }
+        fetchInProgress = true;
         fetchRandomQuote();
     }
+    timerDisplay.textContent = "Time: 0s";
     resultImg.setAttribute('src', '');
     resultImg.classList.add('hidden');
     body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
@@ -205,11 +206,10 @@ function fetchRandomQuote() {
         .catch(error => {
             console.log("Error fetching quote:", error);
         });
-
 }
 
 function checkInput(event) {
-    if (event['key'] === 'CapsLock' || event['key'] === 'Shift' || event['key'] == 'Enter' || event['code'] == 'Space') {
+    if (event['key'] === 'CapsLock' || event['key'] === 'Shift' || event['key'] == 'Enter' || event['code'] == 'Space' || event['key'] == 'Alt') {
         return;
     }
     typedValue = inputBox.value.trim();
@@ -324,7 +324,7 @@ function endTest() {
     }
     resultImg.setAttribute('src', level.imgSrc);
     displaySpeed(level.title, level.speed, level.stars);
-    document.body.style.backgroundColor = level.backgroundColor;
+    body.style.backgroundColor = level.backgroundColor;
     resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
 }
@@ -361,7 +361,7 @@ function checkCapslock(event) {
 
 function openCustomTextModal() {
     customTextModal.style.display = "block";
-    document.getElementById("customTextInput").focus();
+    customTextInput.focus();
 }
 
 radioContainer.addEventListener("change", (event) => {
@@ -376,15 +376,23 @@ window.addEventListener("click", (event) => {
     }
 });
 
+function clearCustomText() {
+    // Clear the custom text input box
+    customTextInput.value = "";
+    refreshQuote();
+    document.getElementById("clearButton").style.display = "none";
+}
+
 function closeCustomTextModal(event) {
     customTextModal.style.display = "none";
-    if (document.getElementById("customTextInput").value === "" && event['srcElement'].innerText === "Apply") {
+    if (event['srcElement'].innerText === "Apply") {
+        document.getElementById("clearButton").style.display = "inline-block";
         refreshQuote();
     }
 }
 
 function applyCustomText(event) {
-    currentQuote = document.getElementById("customTextInput").value;
+    currentQuote = customTextInput.value;
     if (!currentQuote) {
         return;
     }

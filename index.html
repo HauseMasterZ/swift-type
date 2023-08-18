@@ -25,8 +25,9 @@
     <div id="quote"></div>
     <input type="text" id="inputBox" autofocus>
     <div>
-      <button class="button" id="refreshButton" onclick="refreshQuote(event)">Refresh</button>
+      <button class="button" id="refreshButton" onclick="refreshQuote()">Refresh</button>
       <button class="button" id="customButton" onclick="openCustomTextModal()">Custom Text</button>
+      <button class="button" id="clearButton" onclick="clearCustomText()">Clear Text</button>
     </div>
     <br>
     <div id="timerDisplay"></div>
@@ -84,7 +85,7 @@
     <div id="customTextModal" class="modal">
       <div class="modal-content">
         <h2>Enter Custom Text</h2>
-        <input type="text" id="customTextInput" onkeydown="if (event.key === 'Enter') { applyCustomText(); }">
+        <input type="text" id="customTextInput" onkeydown="if (event.key === 'Enter') { applyCustomText({srcElement: {innerText: 'Apply'}}); }">
         <button class="button" onclick="applyCustomText(event)" >Apply</button>
         <button class="button" onclick="closeCustomTextModal(event)">Cancel</button>
       </div>

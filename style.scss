@@ -88,6 +88,10 @@ h1 {
     margin-bottom: 20px;
 }
 
+#clearButton {
+    display: none;
+}
+
 button {
     border: 1px solid var(--text-color);
 }
@@ -274,7 +278,7 @@ button {
 }
 
 .flash-out-green {
-    animation: flash-green 0.5s ease-out;
+    animation: flash-green 0.4s ease-out;
 }
 
 .flash-out-red {
@@ -312,7 +316,7 @@ button {
     position: relative;
     overflow: hidden;
     display: inline-block;
-    padding: 10px 20px;
+    padding: 10px min(2vw, 20px);
     background-color: #4CAF50;
     color: white;
     text-decoration: none;
@@ -320,7 +324,7 @@ button {
 }
 
 .button:not(:last-child) {
-    margin-right: 10px;
+    margin-right: min(1vw, 10px);
 }
 
 .modal {
