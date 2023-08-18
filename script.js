@@ -345,7 +345,6 @@ function calculateNetWPM(endTime) {
     totalErrors = Math.max(errorWordCnt, totalErrors);
     const netTyped = currentWordIndex - errorWordCnt + 1;
     const minutes = (endTime - startTime) / 60000; // in minutes
-    console.log(netTyped, minutes);
     const netWPM = Math.round(netTyped / minutes);
     return Math.max(netWPM, 0);
 }
