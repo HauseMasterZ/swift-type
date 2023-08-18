@@ -79,10 +79,10 @@ let totalErrors = 0;
 let startTime = 0;
 let endTime = 0;
 let timerInterval = null;
+let fetchInProgress = false;
 let words = [];
 let errorQuote = "";
 let typedValue = "";
-let fetchInProgress = false;
 let speedInterval;
 let currentWordIndex = 0;
 const quoteLengthRadios = document.getElementsByName("quoteLength");
@@ -130,6 +130,7 @@ function createRipple(event) {
         ripple.remove();
     });
 }
+
 function refreshQuote(event) {
     if (fetchInProgress) {
         return;
@@ -198,12 +199,13 @@ function fetchRandomQuote() {
             netWPMDisplay.textContent = "Net WPM: 0";
             accuracyDisplay.textContent = "Accuracy: 100%";
             errorsDisplay.textContent = "Errors: 0";
+            startTime = 0; // Reset the start time
+            fetchInProgress = false;
         })
         .catch(error => {
             console.log("Error fetching quote:", error);
         });
-    startTime = 0; // Reset the start time
-    fetchInProgress = false;
+
 }
 
 function checkInput(event) {
