@@ -2,8 +2,8 @@
 const levels = [
     {
         threshold: 0,
-        imgSrc: 'svg/snail.svg',
-        title: 'Slowpoke Typist 🐌',
+        imgSrc: 'svg/sloth.svg',
+        title: 'Snail-paced Typist 🐌',
         speed: Math.random() * (10 - 5) + 5,
         stars: '⭐',
         backgroundColor: '#C69061'
@@ -119,6 +119,7 @@ function createRipple(event) {
     const size = Math.max(rect.width, rect.height);
     const x = event.clientX - rect.left - size / 2;
     const y = event.clientY - rect.top - size / 2;
+    console.log(event.clientX, rect.left, event.clientY, rect.top);
     ripple.style.width = ripple.style.height = `${size}px`;
     ripple.style.left = `${x}px`;
     ripple.style.top = `${y}px`;
