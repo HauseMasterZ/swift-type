@@ -82,6 +82,7 @@ let timerInterval = null;
 let words = [];
 let errorQuote = "";
 let typedValue = "";
+let fetchInProgress = false;
 let speedInterval;
 let currentWordIndex = 0;
 const quoteLengthRadios = document.getElementsByName("quoteLength");
@@ -129,8 +130,11 @@ function createRipple(event) {
         ripple.remove();
     });
 }
-
 function refreshQuote(event) {
+    if (fetchInProgress) {
+        return;
+    }
+    fetchInProgress = true;
     timerDisplay.textContent = "Time: 0s";
     if (document.getElementById("customTextInput").value !== "") {
         inputBox.value = "";
@@ -199,6 +203,7 @@ function fetchRandomQuote() {
             console.log("Error fetching quote:", error);
         });
     startTime = 0; // Reset the start time
+    fetchInProgress = false;
 }
 
 function checkInput(event) {
