@@ -1,4 +1,78 @@
 "use strict";
+const levels = [
+    {
+        threshold: 0,
+        imgSrc: 'svg/snail.svg',
+        title: 'Slowpoke Typist 🐌',
+        speed: Math.random() * (10 - 5) + 5,
+        stars: '⭐',
+        backgroundColor: '#C69061'
+    },
+    {
+        threshold: 20,
+        imgSrc: 'svg/sea_turtle.svg',
+        title: 'Turtle-paced Typist 🐢',
+        speed: Math.random() * (50 - 10) + 10,
+        stars: '⭐',
+        backgroundColor: 'rgb(151, 54, 193)'
+    },
+    {
+        threshold: 40,
+        imgSrc: 'svg/horse.svg',
+        title: 'Horse-speed Typist 🐎',
+        speed: Math.random() * (90 - 50) + 50,
+        stars: '⭐⭐',
+        backgroundColor: '#BFAA87'
+    },
+    {
+        threshold: 60,
+        imgSrc: 'svg/lion.svg',
+        title: 'Lion-fingered Typist 🦁',
+        speed: Math.random() * (120 - 90) + 90,
+        stars: '⭐⭐',
+        backgroundColor: '#DD8547'
+    },
+    {
+        threshold: 80,
+        imgSrc: 'svg/cheetah.svg',
+        title: 'Cheetah-swift Typist 🐆',
+        speed: Math.random() * (180 - 120) + 120,
+        stars: '⭐⭐⭐',
+        backgroundColor: '#DC864B'
+    },
+    {
+        threshold: 100,
+        imgSrc: 'svg/eagle.svg',
+        title: 'Eagle-eyed Typist 🦅',
+        speed: Math.random() * (300 - 180) + 180,
+        stars: '⭐⭐⭐⭐',
+        backgroundColor: '#AB7D5A'
+    },
+    {
+        threshold: 120,
+        imgSrc: 'svg/falcon.svg',
+        title: 'Falcon-keyed Typist 🦅',
+        speed: Math.random() * (400 - 300) + 300,
+        stars: '⭐⭐⭐⭐',
+        backgroundColor: 'Lightblue'
+    },
+    {
+        threshold: 140,
+        imgSrc: 'svg/hausemaster.svg',
+        title: 'Supersonic Typist 🚀 AKA HauseMaster',
+        speed: Math.random() * (1000 - 300) + 300,
+        stars: '⭐⭐⭐⭐⭐',
+        backgroundColor: 'Red'
+    },
+    {
+        threshold: 160,
+        imgSrc: 'svg/flash.svg',
+        title: 'Lightning-Fast Typist ⚡️',
+        speed: 300000,
+        stars: '⭐⭐⭐⭐⭐',
+        backgroundColor: 'Yellow'
+    }
+];
 let currentQuote = "";
 let totalTyped = 0;
 let totalErrors = 0;
@@ -28,15 +102,6 @@ const categoryDisplay = document.getElementById("categoryDisplay");
 const resultImg = document.getElementById('resultImg');
 const refreshButton = document.getElementById("refreshButton");
 
-window.onload = () => {
-    fetchRandomQuote();
-    inputBox.addEventListener("keyup", checkInput);
-    inputBox.addEventListener("keydown", checkCapslock);
-    modeToggle.classList.toggle("active");
-    body.classList.toggle("dark");
-    body.style.backgroundColor = '#18191A';
-}
-
 // js code to toggle dark and light mode
 modeToggle.addEventListener("click", () => {
     modeToggle.classList.toggle("active");
@@ -44,7 +109,28 @@ modeToggle.addEventListener("click", () => {
     body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
 });
 
-function refreshQuote() {
+function createRipple(event) {
+    const button = event.currentTarget;
+    button.classList.remove("shrink-animation");
+    void button.offsetWidth;
+    button.classList.add("shrink-animation");
+    const ripple = document.createElement("span");
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+    ripple.style.width = ripple.style.height = `${size}px`;
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    ripple.classList.add("ripple");
+    button.appendChild(ripple);
+    ripple.addEventListener("animationend", () => {
+        button.removeChild(ripple);
+        ripple.remove();
+    });
+}
+
+function refreshQuote(event) {
     timerDisplay.textContent = "Time: 0s";
     if (document.getElementById("customTextInput").value !== "") {
         inputBox.value = "";
@@ -107,7 +193,6 @@ function fetchRandomQuote() {
             netWPMDisplay.textContent = "Net WPM: 0";
             accuracyDisplay.textContent = "Accuracy: 100%";
             errorsDisplay.textContent = "Errors: 0";
-
         })
         .catch(error => {
             console.log("Error fetching quote:", error);
@@ -210,7 +295,6 @@ function displaySpeed(prefix, number, stars) {
     speedInterval = setInterval(updateDisplay, 1000 / number);
 }
 
-
 function endTest() {
     inputBox.disabled = true;
     endTime = new Date().getTime();
@@ -222,43 +306,17 @@ function endTest() {
     accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
     clearInterval(timerInterval);
-    if (netWPM < 50) {
-        resultImg.setAttribute('src', 'svg/sloth.svg');
-        displaySpeed('Sloth-paced Typist 🦥', (netWPM / 10) * 2, '⭐');
-        document.body.style.backgroundColor = '#C69061';
-    } else if (netWPM >= 50 && netWPM < 60) {
-        resultImg.setAttribute('src', 'svg/sea_turtle.svg');
-        displaySpeed('Turtle-paced Typist 🐢', Math.random() * (50 - 10) + 10, '⭐');
-        document.body.style.backgroundColor = 'rgb(151, 54, 193)';
-    } else if (netWPM >= 60 && netWPM < 70) {
-        resultImg.setAttribute('src', 'svg/horse.svg');
-        displaySpeed('Horse-speed Typist 🐎', Math.random() * (90 - 50) + 50, '⭐⭐');
-        document.body.style.backgroundColor = '#BFAA87';
-    } else if (netWPM >= 70 && netWPM < 80) {
-        resultImg.setAttribute('src', 'svg/lion.svg');
-        displaySpeed('Lion-fingered Typist 🦁', Math.random() * (120 - 90) + 90, '⭐⭐');
-        document.body.style.backgroundColor = '#DD8547';
-    } else if (netWPM >= 80 && netWPM < 90) {
-        resultImg.setAttribute('src', 'svg/cheetah.svg');
-        displaySpeed('Cheetah-swift Typist 🐆', Math.random() * (180 - 120) + 120, '⭐⭐⭐');
-        document.body.style.backgroundColor = '#DC864B';
-    } else if (netWPM >= 90 && netWPM < 120) {
-        resultImg.setAttribute('src', 'svg/eagle.svg');
-        displaySpeed('Eagle-eyed Typist 🦅', Math.random() * (300 - 180) + 180, '⭐⭐⭐⭐');
-        document.body.style.backgroundColor = '#AB7D5A';
-    } else if (netWPM >= 120 && netWPM < 140) {
-        resultImg.setAttribute('src', 'svg/falcon.svg');
-        displaySpeed('Falcon-keyed Typist 🦅', Math.random() * (400 - 300) + 300, '⭐⭐⭐⭐');
-        document.body.style.backgroundColor = 'lightblue';
-    } else if (netWPM >= 140 && netWPM < 160) {
-        resultImg.setAttribute('src', 'svg/hausemaster.svg');
-        displaySpeed('Supersonic Typist 🚀 AKA HauseMaster', Math.random() * (1000 - 300) + 300, '⭐⭐⭐⭐⭐');
-        document.body.style.backgroundColor = 'Red';
-    } else {
-        displaySpeed('Lightning-Fast Typist ⚡️', 300000, '⭐⭐⭐⭐⭐');
-        document.body.style.backgroundColor = 'yellow';
-        return;
+    let level = levels[0];
+    for (let i = 0; i < levels.length; i++) {
+        if (netWPM >= levels[i].threshold) {
+            level = levels[i];
+        } else {
+            break;
+        }
     }
+    resultImg.setAttribute('src', level.imgSrc);
+    displaySpeed(level.title, level.speed, level.stars);
+    document.body.style.backgroundColor = level.backgroundColor;
     resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
 }
@@ -276,7 +334,7 @@ function calculateNetWPM(endTime) {
             errorWordCnt++;
         }
     });
-    totalErrors = Math.max(errorWordCnt, totalErrors    );
+    totalErrors = Math.max(errorWordCnt, totalErrors);
     const netTyped = currentWordIndex - errorWordCnt + 1;
     const minutes = (endTime - startTime) / 60000; // in minutes
     const netWPM = Math.round(netTyped / minutes);
@@ -326,4 +384,13 @@ function applyCustomText() {
     words = currentQuote.split(' ');
     errorQuote = currentQuote.split(' ');
     closeCustomTextModal();
+}
+
+window.onload = () => {
+    fetchRandomQuote();
+    inputBox.addEventListener("keyup", checkInput);
+    inputBox.addEventListener("keydown", checkCapslock);
+    refreshButton.addEventListener("click", createRipple);
+    document.getElementById("customButton").addEventListener("click", createRipple);
+    modeToggle.click();
 }

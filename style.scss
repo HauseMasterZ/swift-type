@@ -83,8 +83,6 @@ h1 {
     transition: background-color 1s ease;
 }
 
-
-
 #timerDisplay {
     font-size: 20px;
     margin-bottom: 20px;
@@ -94,8 +92,38 @@ button {
     border: 1px solid var(--text-color);
 }
 
-#refreshButton:focus {
-    background-color: #8BC34A;
+@keyframes shrinkAndGrow {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.shrink-animation {
+    animation: shrinkAndGrow 0.5s;
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 0, 0, 0.7);
+    transform: scale(0);
+    animation: ripple-animation 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
 }
 
 #resultImg {
@@ -174,7 +202,6 @@ button {
     }
 }
 
-
 .radio-container {
     display: flex;
     flex-direction: row;
@@ -213,7 +240,6 @@ button {
     transform: translate(-21%, -21%);
     transition: background-color 0.2s ease-in-out;
 }
-
 
 .radio-container input[type="radio"]:checked::before {
     background-color: #8BC34A;
@@ -278,6 +304,8 @@ button {
 }
 
 .button {
+    position: relative;
+    overflow: hidden;
     display: inline-block;
     padding: 10px 20px;
     background-color: #4CAF50;
