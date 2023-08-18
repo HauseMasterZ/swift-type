@@ -119,7 +119,6 @@ function createRipple(event) {
     const size = Math.max(rect.width, rect.height);
     const x = event.clientX - rect.left - size / 2;
     const y = event.clientY - rect.top - size / 2;
-    console.log(event.clientX, rect.left, event.clientY, rect.top);
     ripple.style.width = ripple.style.height = `${size}px`;
     ripple.style.left = `${x}px`;
     ripple.style.top = `${y}px`;
@@ -143,6 +142,7 @@ function refreshQuote(event) {
         totalTyped = 0;
         totalErrors = 0;
         endTime = 0;
+        startTime = 0;
         currentWordIndex = 0;
         wpmDisplay.textContent = "Current WPM: 0";
         grossWPMDisplay.textContent = "Gross WPM: 0";
@@ -338,6 +338,7 @@ function calculateNetWPM(endTime) {
     totalErrors = Math.max(errorWordCnt, totalErrors);
     const netTyped = currentWordIndex - errorWordCnt + 1;
     const minutes = (endTime - startTime) / 60000; // in minutes
+    console.log(netTyped, minutes);
     const netWPM = Math.round(netTyped / minutes);
     return Math.max(netWPM, 0);
 }
@@ -365,18 +366,18 @@ radioContainer.addEventListener("change", (event) => {
 
 window.addEventListener("click", (event) => {
     if (event.target === customTextModal) {
-        closeCustomTextModal();
+        closeCustomTextModal(event);
     }
 });
 
-function closeCustomTextModal() {
+function closeCustomTextModal(event) {
     customTextModal.style.display = "none";
-    if (document.getElementById("customTextInput").value) {
+    if (document.getElementById("customTextInput").value === "" && event['srcElement'].innerText === "Apply") {
         refreshQuote();
     }
 }
 
-function applyCustomText() {
+function applyCustomText(event) {
     currentQuote = document.getElementById("customTextInput").value;
     if (!currentQuote) {
         return;
@@ -384,7 +385,7 @@ function applyCustomText() {
     quoteDisplay.textContent = currentQuote;
     words = currentQuote.split(' ');
     errorQuote = currentQuote.split(' ');
-    closeCustomTextModal();
+    closeCustomTextModal(event);
 }
 
 window.onload = () => {

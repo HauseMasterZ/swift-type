@@ -7,7 +7,7 @@
   <title>Swift Type ~ HauseMaster</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="https://data.typeracer.com/public/images/redesign/typeracer-hot-rod.svg">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" />
   <!-- Stylesheet -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="style.css" />
@@ -85,15 +85,15 @@
       <div class="modal-content">
         <h2>Enter Custom Text</h2>
         <input type="text" id="customTextInput" onkeydown="if (event.key === 'Enter') { applyCustomText(); }">
-        <button class="button" onclick="applyCustomText()" >Apply</button>
-        <button class="button" onclick="closeCustomTextModal()">Cancel</button>
+        <button class="button" onclick="applyCustomText(event)" >Apply</button>
+        <button class="button" onclick="closeCustomTextModal(event)">Cancel</button>
       </div>
     </div>
     <div id="resultImage" class="scrolling-image">
-      <img id="resultImg" class="hidden" src="" alt="" srcset="">
+      <img id="resultImg" class="hidden" src="" alt="Result Speed Image Shows here" srcset="">
     </div>
   </div>
+  <script async src="script.js"></script>
 </body>
-<script src="script.js"></script>
 
 </html>
