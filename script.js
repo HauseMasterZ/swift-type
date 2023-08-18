@@ -395,4 +395,5 @@ window.onload = () => {
     refreshButton.addEventListener("click", createRipple);
     document.getElementById("customButton").addEventListener("click", createRipple);
     modeToggle.click();
+    inputBox.focus();
 }
