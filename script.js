@@ -159,6 +159,7 @@ function refreshQuote() {
     }
     timerDisplay.textContent = "Time: 0s";
     resultImg.setAttribute('src', '');
+    resultImg.classList.remove('slide-in');
     resultImg.classList.add('hidden');
     body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
     categoryDisplay.textContent = "";
@@ -323,9 +324,9 @@ function endTest() {
         }
     }
     resultImg.setAttribute('src', level.imgSrc);
+    resultImg.classList.remove('hidden');
     displaySpeed(level.title, level.speed, level.stars);
     body.style.backgroundColor = level.backgroundColor;
-    resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
 }
 
