@@ -11,8 +11,11 @@ body {
     transition: background-color 1s ease;
 }
 
+
 .success {
     color: #07c944;
+    // color: white;
+    // opacity: 1;
 }
 
 body.dark {
@@ -21,7 +24,6 @@ body.dark {
     --input-background-color: #333333;
     color: var(--text-color);
 }
-
 
 .dark-light {
     left: 0px;
@@ -67,6 +69,12 @@ h1 {
 #quote {
     font-size: 20px;
     margin-bottom: 20px;
+    text-align: center;
+    max-width: 100%;
+    // opacity: 0.6;
+    // white-space: pre-wrap;
+    // word-break: break-all;
+    // overflow-wrap: break-word;
 }
 
 #inputBox {
@@ -75,12 +83,27 @@ h1 {
     font-size: 16px;
     margin-bottom: 20px;
     padding: 5px;
-
     box-sizing: border-box;
     background-color: var(--input-background-color);
     border: 1px solid var(--text-color);
     color: var(--text-color);
     transition: background-color 1s ease;
+}
+
+.cursor {
+    position: absolute;
+    height: 1.2em;
+    width: 2px;
+    background-color: #4CAF50;
+    transition: top 0.1s ease-out;
+    pointer-events: none; 
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
 }
 
 #timerDisplay {
@@ -161,62 +184,12 @@ button {
     max-height: 100vh;
 }
 
-
-@media (max-width: 768px) {
-
-    /* For mobile devices with a maximum width of 768px */
-    #resultImg {
-        position: relative;
-        top: -100vh;
-        left: 50%;
-        width: 50%;
-        transform: translate(-100%, 0%);
-    }
-
-    .stats {
-        font-size: 12px;
-    }
-
-    #quote-label label {
-        font-size: 12px;
-    }
-
-    .modal-content {
-        width: 90%;
-        top: 20%;
-    }
-
-    .radio-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-
-    .radio-container label {
-        align-items: center;
-        font-size: 12px;
-        margin-right: 10px;
-        cursor: pointer;
-    }
-
-    @keyframes slide-in {
-        from {
-            top: -100vh;
-        }
-
-        to {
-            transform: translate(-100%, 0%);
-            top: 1vh;
-        }
-    }
-}
-
 .radio-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin-top: 0px;
+    // transform: translate(-20%, 0%);
 }
 
 .radio-container label {
@@ -258,6 +231,57 @@ button {
     background-color: rgb(160, 210, 160);
 }
 
+@media (max-width: 768px) {
+
+    /* For mobile devices with a maximum width of 768px */
+    #resultImg {
+        position: relative;
+        top: -100vh;
+        left: 50%;
+        width: 50%;
+        transform: translate(-100%, 0%);
+    }
+
+    .stats {
+        font-size: 12px;
+    }
+
+    #quote-label label {
+        font-size: 12px;
+    }
+
+    .modal-content {
+        width: 90%;
+        top: 20%;
+    }
+
+    .radio-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        // transform: translate(0%, 0%);
+
+    }
+
+    .radio-container label {
+        align-items: center;
+        font-size: 12px;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+
+    @keyframes slide-in {
+        from {
+            top: -100vh;
+        }
+
+        to {
+            transform: translate(-100%, 0%);
+            top: 1vh;
+        }
+    }
+}
+
 .hidden {
     display: none;
 }
@@ -266,6 +290,7 @@ button {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
+    align-items: center;
 }
 
 .stat {

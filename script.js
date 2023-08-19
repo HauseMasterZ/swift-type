@@ -3,7 +3,7 @@ const levels = [
     {
         threshold: 0,
         imgSrc: 'svg/sloth.svg',
-        title: 'Snail-paced Typist 🐌',
+        title: 'Sloth-paced Typist 🐌🦥',
         speed: Math.random() * (10 - 5) + 5,
         stars: '⭐',
         backgroundColor: '#C69061'
@@ -89,6 +89,9 @@ const quoteLengthRadios = document.getElementsByName("quoteLength");
 const quoteDisplay = document.getElementById("quote");
 const body = document.querySelector("body");
 const modeToggle = document.querySelector(".dark-light");
+const cursorSpan = document.createElement('span');
+cursorSpan.classList.add('cursor');
+const cursorSpanLength = cursorSpan.outerHTML.length;
 const customTextInput = document.getElementById("customTextInput");
 const radioContainer = document.querySelector(".radio-container");
 const inputBox = document.getElementById("inputBox");
@@ -185,7 +188,7 @@ function fetchRandomQuote() {
         .then(response => response.json())
         .then(data => {
             currentQuote = data[0]['content'];
-            quoteDisplay.textContent = currentQuote;
+            quoteDisplay.innerHTML = cursorSpan.outerHTML + currentQuote;
             words = currentQuote.split(' ');
             inputBox.value = "";
             inputBox.disabled = false;
@@ -210,23 +213,22 @@ function fetchRandomQuote() {
 }
 
 function checkInput(event) {
+    typedValue = inputBox.value.trim();
+    const typedWords = typedValue.split(' ');
+    const length = typedWords.length;
     if (event['key'] === 'CapsLock' || event['key'] === 'Shift' || event['key'] == 'Enter' || event['code'] == 'Space' || event['key'] == 'Alt') {
         return;
-    }
-    typedValue = inputBox.value.trim();
-    totalTyped = typedValue.length;
-    const typedWords = typedValue.split(' ');
-    const latestWord = typedWords[typedWords.length - 1];
-    const currentWord = words[typedWords.length - 1];
-
-    if (event['key'] === 'Backspace') {
-        const nextWordExists = words[typedWords.length];
+    } else if (event['key'] === 'Backspace') {
+        const nextWordExists = words[length];
         if (nextWordExists) {
-            errorQuote[typedWords.length] = `<span class="correct">${nextWordExists}</span>`;
+            errorQuote[length] = `<span class="correct">${nextWordExists}</span>`;
         }
     }
+    totalTyped = typedValue.length;
+    const latestWord = typedWords[length - 1];
+    const currentWord = words[length - 1];
+    let markedWord = '';
     try {
-        let markedWord = '';
         for (let index = 0; index < latestWord.length; index++) {
             if (latestWord[index] === currentWord[index]) {
                 markedWord += `<span class="success">${latestWord[index]}</span>`
@@ -234,7 +236,8 @@ function checkInput(event) {
                 markedWord += `<span class="error">${currentWord[index] ? currentWord[index] : latestWord[index]}</span>`
             }
         }
-        errorQuote[typedWords.length - 1] = markedWord + currentWord.slice(latestWord.length);
+        // errorQuote[length - 1] = markedWord + `<span class="correct">${currentWord.slice(latestWord.length)}</span>`;
+        errorQuote[length - 1] = markedWord + cursorSpan.outerHTML + currentWord.slice(latestWord.length);
         if ((currentWord[latestWord.length - 1] === latestWord[latestWord.length - 1] && currentWord[latestWord.length - 1]) || event['key'] === 'Backspace') {
             if (event['key'] !== 'Backspace') {
                 wpmDisplay.classList.remove('flash-out-green');
@@ -258,11 +261,14 @@ function checkInput(event) {
     if (startTime === 0) {
         startTimer();
     }
+    currentWordIndex = length - 1;
+    if (currentWordIndex - 1 > -1){
+        errorQuote[currentWordIndex - 1] = errorQuote[currentWordIndex - 1].replace(cursorSpan.outerHTML, '');
+    }
     quoteDisplay.innerHTML = errorQuote.join(' ');
-    currentWordIndex = typedWords.length - 1;
     accuracyDisplay.textContent = `Accuracy: ${calculateAccuracy(totalTyped, totalErrors)}%`;
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
-    const isEndOfQuote = typedWords.length >= words.length && typedValue.endsWith('.');
+    const isEndOfQuote = length >= words.length && typedValue.endsWith('.');
     if (typedValue === currentQuote || isEndOfQuote) {
         endTest();
         refreshButton.focus();
