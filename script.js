@@ -541,7 +541,7 @@ window.onload = () => {
 }
 
 window.addEventListener('resize', function () {
-    const lastLetterRect = letterElement[0].getClientRects();
+    const lastLetterRect = letterElements[currentWordIndex][0].getClientRects();
     cursorSpan.style.left = `${lastLetterRect[0].left}px`;
     cursorSpan.style.top = `${lastLetterRect[0].top}px`;
 });

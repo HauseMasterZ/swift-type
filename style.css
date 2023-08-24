@@ -27,6 +27,19 @@ body.dark {
   transform: translate(-40%, 0%);
 }
 
+.github {
+  right: 0px;
+  transform: translate(36.5%, 0%);
+}
+
+.github i {
+  position: absolute;
+  color: var(--text-color);
+  font-size: 22px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
 .dark-light i {
   position: absolute;
   color: var(--text-color);
@@ -94,9 +107,9 @@ h1 {
   height: 1.5em;
   width: 2px;
   background-color: #4CAF50;
-  transition: top 0.1s ease-out;
+  transition: top 0.25s ease-out;
   pointer-events: none;
-  animation: blink 1s infinite;
+  animation: blink 1.25s infinite;
 }
 
 #inputBox {
