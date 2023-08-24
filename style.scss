@@ -11,8 +11,7 @@ body {
     transition: background-color 1s ease;
 }
 
-
-.success {
+.correct {
     color: #07c944;
     // color: white;
     // opacity: 1;
@@ -69,12 +68,37 @@ h1 {
 #quote {
     font-size: 20px;
     margin-bottom: 20px;
-    text-align: center;
     max-width: 100%;
-    // opacity: 0.6;
-    // white-space: pre-wrap;
-    // word-break: break-all;
-    // overflow-wrap: break-word;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    text-align: center;
+    justify-content: center;
+}
+
+.word {
+    position: relative;
+    display: inline;
+    margin-right: 5px;
+    /* Adjust this value to control the spacing between words */
+}
+
+.letter {
+    display: inline;
+    margin-right: 2px;
+    /* Adjust this value to control the spacing between letters */
+}
+
+.cursor {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 1.5em;
+    width: 2px;
+    background-color: #4CAF50;
+    transition: top 0.1s ease-out;
+    pointer-events: none;
+    animation: blink 1s infinite;
 }
 
 #inputBox {
@@ -88,16 +112,6 @@ h1 {
     border: 1px solid var(--text-color);
     color: var(--text-color);
     transition: background-color 1s ease;
-}
-
-.cursor {
-    position: absolute;
-    height: 1.2em;
-    width: 2px;
-    background-color: #4CAF50;
-    transition: top 0.1s ease-out;
-    pointer-events: none; 
-    animation: blink 1s infinite;
 }
 
 @keyframes blink {
@@ -298,8 +312,13 @@ button {
     text-align: center;
 }
 
-.error {
+.incorrect {
     color: red;
+}
+
+.error {
+    text-decoration: underline;
+    text-decoration-color: rgb(156, 2, 2);
 }
 
 .flash-out-green {

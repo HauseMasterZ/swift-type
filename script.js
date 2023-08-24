@@ -80,18 +80,19 @@ let startTime = 0;
 let endTime = 0;
 let timerInterval = null;
 let fetchInProgress = false;
+let letterElements = [];
 let words = [];
-let errorQuote = "";
-let typedValue = "";
+let latestWord = "";
+let lastWordIndex;
 let speedInterval;
+let lastLetterRect;
 let currentWordIndex = 0;
+const punctuationPattern = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
 const quoteLengthRadios = document.getElementsByName("quoteLength");
 const quoteDisplay = document.getElementById("quote");
 const body = document.querySelector("body");
 const modeToggle = document.querySelector(".dark-light");
-const cursorSpan = document.createElement('span');
-cursorSpan.classList.add('cursor');
-const cursorSpanLength = cursorSpan.outerHTML.length;
+const cursorSpan = document.querySelector('.cursor');
 const customTextInput = document.getElementById("customTextInput");
 const radioContainer = document.querySelector(".radio-container");
 const inputBox = document.getElementById("inputBox");
@@ -135,12 +136,38 @@ function createRipple(event) {
     });
 }
 
+function splitQuote(quote) {
+    quoteDisplay.innerHTML = '';
+    const words = quote.split(' ');
+    const wordElements = words.map(word => {
+        const wordElement = document.createElement('div');
+        wordElement.classList.add('word');
+        for (const letter of word) {
+            const letterElement = document.createElement('letter');
+            letterElement.textContent = letter;
+            wordElement.appendChild(letterElement);
+        }
+        return wordElement;
+    });
+    for (const wordElement of wordElements) {
+        quoteDisplay.appendChild(wordElement);
+    }
+    lastWordIndex = wordElements.length - 1;
+}
+
 function refreshQuote() {
     if (customTextInput.value !== "") {
         inputBox.value = "";
         currentQuote = customTextInput.value;
-        quoteDisplay.textContent = currentQuote;
-        errorQuote = words.slice();
+        splitQuote(currentQuote);
+        words = document.querySelectorAll('.word');
+        letterElements = [];
+        for (let index = 0; index < words.length; index++) {
+            letterElements.push(words[index].querySelectorAll('letter'));
+        }
+        const firstLetterRect = letterElements[0][0].getClientRects();
+        cursorSpan.style.left = `${firstLetterRect[0].left}px`;
+        cursorSpan.style.top = `${firstLetterRect[0].top}px`;
         inputBox.disabled = false;
         inputBox.focus();
         totalTyped = 0;
@@ -160,14 +187,15 @@ function refreshQuote() {
         fetchInProgress = true;
         fetchRandomQuote();
     }
+    latestWord = "";
     timerDisplay.textContent = "Time: 0s";
     resultImg.setAttribute('src', '');
     resultImg.classList.remove('slide-in');
     resultImg.classList.add('hidden');
     body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
     categoryDisplay.textContent = "";
-    clearInterval(speedInterval);
     clearInterval(timerInterval);
+    clearInterval(speedInterval);
 }
 
 function fetchRandomQuote() {
@@ -188,14 +216,21 @@ function fetchRandomQuote() {
         .then(response => response.json())
         .then(data => {
             currentQuote = data[0]['content'];
-            quoteDisplay.innerHTML = cursorSpan.outerHTML + currentQuote;
-            words = currentQuote.split(' ');
+            splitQuote(currentQuote);
+            words = document.querySelectorAll('.word');
+            letterElements = [];
+            for (let index = 0; index < words.length; index++) {
+                letterElements.push(words[index].querySelectorAll('letter'));
+            }
+            cursorSpan.classList.remove('hidden');
+            const firstLetterRect = words[0].querySelector('letter').getClientRects();
+            cursorSpan.style.left = `${firstLetterRect[0].left}px`;
+            cursorSpan.style.top = `${firstLetterRect[0].top}px`;
             inputBox.value = "";
             inputBox.disabled = false;
             inputBox.focus();
             totalTyped = 0;
             totalErrors = 0;
-            errorQuote = words.slice();
             endTime = 0;
             timerInterval = null; // Reset the timer interval
             currentWordIndex = 0;
@@ -213,67 +248,153 @@ function fetchRandomQuote() {
 }
 
 function checkInput(event) {
-    typedValue = inputBox.value.trim();
-    const typedWords = typedValue.split(' ');
-    const length = typedWords.length;
-    if (event['key'] === 'CapsLock' || event['key'] === 'Shift' || event['key'] == 'Enter' || event['code'] == 'Space' || event['key'] == 'Alt') {
+    let letterElement = letterElements[currentWordIndex];
+    if (event.data === ' ') {
+        if (currentWordIndex === lastWordIndex) {
+            endTest();
+            refreshButton.focus();
+            return;
+        }
+        totalTyped++;
+        if (latestWord.length < words[currentWordIndex].textContent.length) {
+            totalErrors++;
+            flashErrorDisplays();
+            words[currentWordIndex].classList.add('error');
+        }
+        currentWordIndex++;
+        letterElement = letterElements[currentWordIndex];
+        const firstLetterRect = letterElement[0].getClientRects();
+        cursorSpan.style.left = `${firstLetterRect[0].left}px`;
+        cursorSpan.style.top = `${firstLetterRect[0].top}px`;
+        latestWord = '';
+        accuracyDisplay.textContent = `Accuracy: ${calculateAccuracy(totalTyped, totalErrors)}%`;
+        errorsDisplay.textContent = `Errors: ${totalErrors}`;
         return;
-    } else if (event['key'] === 'Backspace') {
-        const nextWordExists = words[length];
-        if (nextWordExists) {
-            errorQuote[length] = `<span class="correct">${nextWordExists}</span>`;
-        }
     }
-    totalTyped = typedValue.length;
-    const latestWord = typedWords[length - 1];
-    const currentWord = words[length - 1];
-    let markedWord = '';
-    try {
-        for (let index = 0; index < latestWord.length; index++) {
-            if (latestWord[index] === currentWord[index]) {
-                markedWord += `<span class="success">${latestWord[index]}</span>`
-            } else {
-                markedWord += `<span class="error">${currentWord[index] ? currentWord[index] : latestWord[index]}</span>`
+    else if (event.inputType === 'deleteContentBackward') {
+        totalTyped--;
+        if (!latestWord) {
+            currentWordIndex = Math.max(currentWordIndex - 1, 0);
+            latestWord = inputBox.value.trim().split(' ')[currentWordIndex];
+            letterElement = letterElements[currentWordIndex];
+            try {
+                lastLetterRect = letterElement[latestWord.length - 1].getClientRects();
+                cursorSpan.style.left = `${lastLetterRect[0].right}px`;
+                cursorSpan.style.top = `${lastLetterRect[0].top}px`;
             }
-        }
-        // errorQuote[length - 1] = markedWord + `<span class="correct">${currentWord.slice(latestWord.length)}</span>`;
-        errorQuote[length - 1] = markedWord + cursorSpan.outerHTML + currentWord.slice(latestWord.length);
-        if ((currentWord[latestWord.length - 1] === latestWord[latestWord.length - 1] && currentWord[latestWord.length - 1]) || event['key'] === 'Backspace') {
-            if (event['key'] !== 'Backspace') {
-                wpmDisplay.classList.remove('flash-out-green');
-                void wpmDisplay.offsetWidth; // Trigger a reflow to restart the animation
-                wpmDisplay.classList.add('flash-out-green');
+            catch (e) {
+                lastLetterRect = letterElement[0].getClientRects();
+                cursorSpan.style.left = `${lastLetterRect[0].left}px`;
+                cursorSpan.style.top = `${lastLetterRect[0].top}px`;
             }
         } else {
-            totalErrors++;
-            errorsDisplay.classList.remove('flash-out-red');
-            accuracyDisplay.classList.remove('flash-out-red');
-            void accuracyDisplay.offsetWidth; // Trigger a reflow to restart the animation
-            void errorsDisplay.offsetWidth; // Trigger a reflow to restart the animation
-            errorsDisplay.classList.add('flash-out-red');
-            accuracyDisplay.classList.add('flash-out-red');
+            latestWord = latestWord.slice(0, -1);
+            updateWord(latestWord, latestWord.length, true);
+            updateWord(latestWord, latestWord.length - 1, true);
         }
-    } catch (e) {
-        endTest();
-        refreshButton.focus();
+        words[currentWordIndex].classList.remove('error');
+        return;
+    }
+    else if (event.inputType === 'deleteWordBackward') {
+        if (latestWord === '') {
+            currentWordIndex = Math.max(currentWordIndex - 1, 0);
+            letterElement = letterElements[currentWordIndex];
+            if (letterElement[letterElement.length - 1].textContent.match(punctuationPattern)) {
+                latestWord = inputBox.value.trim().split(' ')[currentWordIndex];
+                letterElement[letterElement.length - 1].classList.remove('correct');
+                letterElement[letterElement.length - 1].classList.remove('incorrect');
+                lastLetterRect = letterElement[latestWord.length - 1].getClientRects();
+                cursorSpan.style.left = `${lastLetterRect[0].right}px`;
+                cursorSpan.style.top = `${lastLetterRect[0].top}px`;
+                totalTyped -= 2;
+                return;
+            }
+        } else if (latestWord.match(punctuationPattern)) {
+            latestWord = inputBox.value.trim().split(' ')[currentWordIndex];
+            letterElement[letterElement.length - 1].classList.remove('correct');
+            letterElement[letterElement.length - 1].classList.remove('incorrect');
+            lastLetterRect = letterElement[latestWord.length - 1].getClientRects();
+            cursorSpan.style.left = `${lastLetterRect[0].right}px`;
+            cursorSpan.style.top = `${lastLetterRect[0].top}px`;
+            totalTyped--;
+            return;
+        }
+        letterElement.forEach(letter => {
+            letter.classList.remove('correct');
+            letter.classList.remove('incorrect');
+            totalTyped--;
+        });
+        latestWord = '';
+        const firstLetterRect = letterElement[0].getClientRects();
+        cursorSpan.style.left = `${firstLetterRect[0].left}px`;
+        cursorSpan.style.top = `${firstLetterRect[0].top}px`;
+        words[currentWordIndex].classList.remove('error');
         return;
     }
     if (startTime === 0) {
         startTimer();
     }
-    currentWordIndex = length - 1;
-    if (currentWordIndex - 1 > -1){
-        errorQuote[currentWordIndex - 1] = errorQuote[currentWordIndex - 1].replace(cursorSpan.outerHTML, '');
-    }
-    quoteDisplay.innerHTML = errorQuote.join(' ');
+    cursorSpan.style.animation = 'none';
+    void cursorSpan.offsetWidth; // Trigger a reflow to restart the animation
+    cursorSpan.style.animation = null;
+
+    latestWord += event.data;
+    totalTyped++;
+    updateWord(latestWord, latestWord.length - 1);
     accuracyDisplay.textContent = `Accuracy: ${calculateAccuracy(totalTyped, totalErrors)}%`;
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
-    const isEndOfQuote = length >= words.length && typedValue.endsWith('.');
-    if (typedValue === currentQuote || isEndOfQuote) {
-        endTest();
-        refreshButton.focus();
-        return;
+    if (currentWordIndex === lastWordIndex) {
+        if (latestWord.length >= words[currentWordIndex].textContent.length) {
+            endTest();
+            refreshButton.focus();
+            return;
+        }
     }
+}
+
+function updateWord(latestWord, i, backspaceFlag = false) {
+    const letterElement = letterElements[currentWordIndex];
+    if (letterElement[i] === undefined) {
+        if (!backspaceFlag) {
+            letterElement[letterElement.length - 1].classList.remove('correct');
+            letterElement[letterElement.length - 1].classList.add('incorrect');
+            totalErrors++;
+            flashErrorDisplays();
+        }
+    }
+    else if (latestWord[i] === undefined) {
+        letterElement[i].classList.remove('correct');
+        letterElement[i].classList.remove('incorrect');
+    }
+    else if (latestWord[i] === letterElement[i].textContent) {
+        letterElement[i].classList.remove('incorrect');
+        letterElement[i].classList.add('correct');
+        if (!backspaceFlag) {
+            wpmDisplay.classList.remove('flash-out-green');
+            void wpmDisplay.offsetWidth; // Trigger a reflow to restart the animation
+            wpmDisplay.classList.add('flash-out-green');
+        }
+    }
+    else {
+        letterElement[i].classList.remove('correct');
+        letterElement[i].classList.add('incorrect');
+        if (!backspaceFlag) {
+            totalErrors++;
+            flashErrorDisplays();
+        }
+    }
+    lastLetterRect = latestWord.length > letterElement.length - 1 ? letterElement[letterElement.length - 1].getClientRects() : letterElement[Math.max(latestWord.length - 1, 0)].getClientRects();
+    cursorSpan.style.left = latestWord.length === 0 ? `${lastLetterRect[0].left}px` : `${lastLetterRect[0].right}px`;
+    cursorSpan.style.top = `${lastLetterRect[0].top}px`;
+}
+
+function flashErrorDisplays() {
+    errorsDisplay.classList.remove('flash-out-red');
+    accuracyDisplay.classList.remove('flash-out-red');
+    void accuracyDisplay.offsetWidth; // Trigger a reflow to restart the animation
+    void errorsDisplay.offsetWidth; // Trigger a reflow to restart the animation
+    errorsDisplay.classList.add('flash-out-red');
+    accuracyDisplay.classList.add('flash-out-red');
 }
 
 function startTimer() {
@@ -291,7 +412,7 @@ function updateTimer() {
 function displaySpeed(prefix, number, stars) {
     const duration = 3000; // Total duration for the animation in milliseconds
     const startTime = Date.now();
-    const easingFactor = 5;
+    const easingFactor = 3;
     function easeOutExpo(t) {
         return 1 - Math.pow(2, -easingFactor * t);
     }
@@ -316,11 +437,11 @@ function endTest() {
     const netWPM = calculateNetWPM(endTime);
     const wpm = calculateWPM(endTime);
     const accuracy = calculateAccuracy(totalTyped, totalErrors);
+    clearInterval(timerInterval);
     grossWPMDisplay.textContent = `Gross WPM: ${wpm}`;
     netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
     accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
-    clearInterval(timerInterval);
     let level = levels[0];
     for (let i = 0; i < levels.length; i++) {
         if (netWPM >= levels[i].threshold) {
@@ -329,10 +450,10 @@ function endTest() {
             break;
         }
     }
-    resultImg.setAttribute('src', level.imgSrc);
-    resultImg.classList.remove('hidden');
     displaySpeed(level.title, level.speed, level.stars);
     body.style.backgroundColor = level.backgroundColor;
+    resultImg.setAttribute('src', level.imgSrc);
+    resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
 }
 
@@ -344,9 +465,14 @@ function calculateWPM(endTime) {
 
 function calculateNetWPM(endTime) {
     let errorWordCnt = 0;
-    typedValue.split(' ').forEach((word, index) => {
-        if (word !== words[index]) {
-            errorWordCnt++;
+    inputBox.value.split(' ').forEach((word, index) => {
+        try {
+            if (word !== words[index].textContent) {
+                errorWordCnt++;
+            }
+        }
+        catch (e) {
+            return;
         }
     });
     totalErrors = Math.max(errorWordCnt, totalErrors);
@@ -371,18 +497,6 @@ function openCustomTextModal() {
     customTextInput.focus();
 }
 
-radioContainer.addEventListener("change", (event) => {
-    if (event.target.matches("input[type='radio']")) {
-        refreshQuote();
-    }
-});
-
-window.addEventListener("click", (event) => {
-    if (event.target === customTextModal) {
-        closeCustomTextModal(event);
-    }
-});
-
 function clearCustomText() {
     // Clear the custom text input box
     customTextInput.value = "";
@@ -399,22 +513,35 @@ function closeCustomTextModal(event) {
 }
 
 function applyCustomText(event) {
-    currentQuote = customTextInput.value;
-    if (!currentQuote) {
+    if (!customTextInput.value) {
         return;
     }
-    quoteDisplay.textContent = currentQuote;
-    words = currentQuote.split(' ');
-    errorQuote = currentQuote.split(' ');
     closeCustomTextModal(event);
 }
 
+window.addEventListener("click", (event) => {
+    if (event.target === customTextModal) {
+        closeCustomTextModal(event);
+    }
+});
+
+radioContainer.addEventListener("change", (event) => {
+    if (event.target.matches("input[type='radio']")) {
+        refreshQuote();
+    }
+});
+
 window.onload = () => {
     fetchRandomQuote();
-    inputBox.addEventListener("keyup", checkInput);
+    inputBox.addEventListener("input", checkInput);
     body.addEventListener("keydown", checkCapslock);
     refreshButton.addEventListener("click", createRipple);
     document.getElementById("customButton").addEventListener("click", createRipple);
     modeToggle.click();
-    inputBox.focus();
 }
+
+window.addEventListener('resize', function () {
+    const lastLetterRect = letterElement[0].getClientRects();
+    cursorSpan.style.left = `${lastLetterRect[0].left}px`;
+    cursorSpan.style.top = `${lastLetterRect[0].top}px`;
+});
