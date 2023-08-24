@@ -62,7 +62,7 @@ const levels = [
         title: 'Supersonic Typist 🚀 AKA HauseMaster',
         speed: Math.random() * (1000 - 300) + 300,
         stars: '⭐⭐⭐⭐⭐',
-        backgroundColor: 'Red'
+        backgroundColor: '#E3242B'
     },
     {
         threshold: 160,
@@ -113,6 +113,7 @@ modeToggle.addEventListener("click", () => {
     modeToggle.classList.toggle("active");
     body.classList.toggle("dark");
     body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
+    inputBox.focus();
 });
 
 function createRipple(event) {
@@ -256,7 +257,7 @@ function checkInput(event) {
             return;
         }
         totalTyped++;
-        if (latestWord.length < words[currentWordIndex].textContent.length) {
+        if (latestWord.length < words[currentWordIndex].textContent.length || latestWord !== words[currentWordIndex].textContent) {
             totalErrors++;
             flashErrorDisplays();
             words[currentWordIndex].classList.add('error');
