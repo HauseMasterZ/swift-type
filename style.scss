@@ -69,6 +69,7 @@ body.dark {
     max-width: 600px;
     margin: 0 auto;
     text-align: center;
+    overflow-x: hidden;
     padding: 0;
     padding-top: 2rem;
 }
@@ -268,7 +269,7 @@ button {
         width: 50%;
         transform: translate(-100%, 0%);
     }
-
+    
     .stats {
         font-size: 12px;
     }

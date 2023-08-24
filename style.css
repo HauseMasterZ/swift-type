@@ -67,6 +67,7 @@ body.dark {
   max-width: 600px;
   margin: 0 auto;
   text-align: center;
+  overflow-x: hidden;
   padding: 0;
   padding-top: 2rem;
 }
