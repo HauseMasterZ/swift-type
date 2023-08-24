@@ -245,16 +245,16 @@ button {
 
 .radio-container input[type="radio"]::before {
     content: "";
-    display: inline-block;
+    display: block;
     width: 10px;
     height: 10px;
     margin: 5px;
     border-radius: 50%;
-    transform: translate(-21%, -21%);
     transition: background-color 0.2s ease-in-out;
     position: relative; 
-    top: 0%; 
-    left: 0%; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-100%, -100%);
 }
 
 .radio-container input[type="radio"]:checked::before {
