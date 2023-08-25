@@ -148,11 +148,9 @@ h1 {
     }
 }
 
-
 .cursor.active {
     animation: cursor-active 1s forwards;
 }
-
 
 @keyframes cursor-active {
     0% {
