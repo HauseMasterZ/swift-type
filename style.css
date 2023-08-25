@@ -95,25 +95,15 @@ h1 {
   position: relative;
   display: inline;
   margin-right: 5px;
+  font-variant-ligatures: none;
   /* Adjust this value to control the spacing between words */
 }
 
 .letter {
   display: inline;
   margin-right: 2px;
+  font-variant-ligatures: none;
   /* Adjust this value to control the spacing between letters */
-}
-
-.cursor {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  height: 1.5em;
-  width: 2px;
-  background-color: #4CAF50;
-  transition: top 0.25s ease-out;
-  pointer-events: none;
-  animation: blink 1.25s infinite;
 }
 
 #inputBox {
@@ -129,9 +119,39 @@ h1 {
   transition: background-color 1s ease;
 }
 
-@keyframes blink {
+.cursor {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 1.5em;
+  width: 2px;
+  background-color: #4CAF50;
+  transition: top 0.25s ease-out;
+  pointer-events: none;
+  animation: cursor-blink 1.25s infinite;
+}
+
+@keyframes cursor-blink {
+  0% {
+    opacity: 1;
+  }
   50% {
     opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.cursor.active {
+  animation: cursor-active 1s forwards;
+}
+
+@keyframes cursor-active {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
   }
 }
 #timerDisplay {
@@ -145,6 +165,12 @@ h1 {
 
 button {
   border: 1px solid var(--text-color);
+}
+
+button:active {
+  color: rgb(15, 95, 240);
+  background-color: var(--body-color);
+  outline: none;
 }
 
 @keyframes shrinkAndGrow {
@@ -266,9 +292,6 @@ button {
   }
   .stats {
     font-size: 12px;
-  }
-  .container {
-    overflow: hidden;
   }
   #quote-label label {
     font-size: 12px;

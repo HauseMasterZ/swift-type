@@ -80,6 +80,7 @@ let startTime = 0;
 let endTime = 0;
 let timerInterval = null;
 let fetchInProgress = false;
+let cursorTimeout;
 let letterElements = [];
 let words = [];
 let latestWord = "";
@@ -154,6 +155,7 @@ function splitQuote(quote) {
         quoteDisplay.appendChild(wordElement);
     }
     lastWordIndex = wordElements.length - 1;
+    console.log(quoteDisplay)
 }
 
 function refreshQuote() {
@@ -279,7 +281,7 @@ function checkInput(event) {
             latestWord = inputBox.value.trim().split(' ')[currentWordIndex];
             letterElement = letterElements[currentWordIndex];
             try {
-                lastLetterRect = letterElement[latestWord.length - 1].getClientRects();
+                lastLetterRect = latestWord.length > letterElement.length ? lastLetterRect = letterElement[letterElement.length - 1].getClientRects() : lastLetterRect = letterElement[latestWord.length - 1].getClientRects();
                 cursorSpan.style.left = `${lastLetterRect[0].right}px`;
                 cursorSpan.style.top = `${lastLetterRect[0].top}px`;
             }
@@ -335,10 +337,6 @@ function checkInput(event) {
     if (startTime === 0) {
         startTimer();
     }
-    cursorSpan.style.animation = 'none';
-    void cursorSpan.offsetWidth; // Trigger a reflow to restart the animation
-    cursorSpan.style.animation = null;
-
     latestWord += event.data;
     totalTyped++;
     updateWord(latestWord, latestWord.length - 1);
@@ -384,6 +382,11 @@ function updateWord(latestWord, i, backspaceFlag = false) {
             flashErrorDisplays();
         }
     }
+    clearTimeout(cursorTimeout);
+    cursorSpan.classList.add('active');
+    cursorTimeout = setTimeout(() => {
+      cursorSpan.classList.remove('active');
+    }, 1000);
     lastLetterRect = latestWord.length > letterElement.length - 1 ? letterElement[letterElement.length - 1].getClientRects() : letterElement[Math.max(latestWord.length - 1, 0)].getClientRects();
     cursorSpan.style.left = latestWord.length === 0 ? `${lastLetterRect[0].left}px` : `${lastLetterRect[0].right}px`;
     cursorSpan.style.top = `${lastLetterRect[0].top}px`;
@@ -531,6 +534,7 @@ radioContainer.addEventListener("change", (event) => {
         refreshQuote();
     }
 });
+
 
 window.onload = () => {
     fetchRandomQuote();
