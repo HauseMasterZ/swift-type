@@ -83,10 +83,12 @@ let fetchInProgress = false;
 let cursorTimeout;
 let letterElements = [];
 let words = [];
+let letterRects = [];
+let lastLetterRect;
+let firstLetterRect;
 let latestWord = "";
 let lastWordIndex;
 let speedInterval;
-let lastLetterRect;
 let currentWordIndex = 0;
 const punctuationPattern = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
 const quoteLengthRadios = document.getElementsByName("quoteLength");
@@ -141,8 +143,8 @@ function createRipple(event) {
 
 function splitQuote(quote) {
     quoteDisplay.innerHTML = '';
-    const words = quote.split(' ');
-    const wordElements = words.map(word => {
+    const split_words = quote.split(' ');
+    const wordElements = split_words.map(word => {
         const wordElement = document.createElement('div');
         wordElement.classList.add('word');
         for (const letter of word) {
@@ -159,30 +161,36 @@ function splitQuote(quote) {
 }
 
 function refreshQuote() {
+    letterElements = [];
+    letterRects = [];
+    inputBox.value = "";
+    inputBox.disabled = false;
+    inputBox.focus();
+    totalTyped = 0;
+    totalErrors = 0;
+    endTime = 0;
+    startTime = 0;
+    currentWordIndex = 0;
+    wpmDisplay.textContent = "Current WPM: 0";
+    grossWPMDisplay.textContent = "Gross WPM: 0";
+    netWPMDisplay.textContent = "Net WPM: 0";
+    accuracyDisplay.textContent = "Accuracy: 100%";
+    errorsDisplay.textContent = "Errors: 0";
     if (customTextInput.value.trim() !== "") {
-        inputBox.value = "";
         currentQuote = customTextInput.value;
         splitQuote(currentQuote);
         words = document.querySelectorAll('.word');
-        letterElements = [];
         for (let index = 0; index < words.length; index++) {
             letterElements.push(words[index].querySelectorAll('letter'));
+            let lettersRects = [];
+            words[index].querySelectorAll('letter').forEach(letter => {
+                lettersRects.push(letter.getClientRects());
+            });
+            letterRects.push(lettersRects);
         }
-        const firstLetterRect = letterElements[0][0].getClientRects();
+        firstLetterRect = letterRects[0][0];
         cursorSpan.style.left = `${firstLetterRect[0].left}px`;
         cursorSpan.style.top = `${firstLetterRect[0].top}px`;
-        inputBox.disabled = false;
-        inputBox.focus();
-        totalTyped = 0;
-        totalErrors = 0;
-        endTime = 0;
-        startTime = 0;
-        currentWordIndex = 0;
-        wpmDisplay.textContent = "Current WPM: 0";
-        grossWPMDisplay.textContent = "Gross WPM: 0";
-        netWPMDisplay.textContent = "Net WPM: 0";
-        accuracyDisplay.textContent = "Accuracy: 100%";
-        errorsDisplay.textContent = "Errors: 0";
     } else {
         if (fetchInProgress) {
             return;
@@ -223,29 +231,18 @@ function fetchRandomQuote() {
             loadingSpinner.style.display = "none";
             splitQuote(currentQuote);
             words = document.querySelectorAll('.word');
-            letterElements = [];
             for (let index = 0; index < words.length; index++) {
                 letterElements.push(words[index].querySelectorAll('letter'));
+                let lettersRects = [];
+                words[index].querySelectorAll('letter').forEach(letter => {
+                    lettersRects.push(letter.getClientRects());
+                });
+                letterRects.push(lettersRects);
             }
             cursorSpan.classList.remove('hidden');
-            cursorSpan.classList.add('active');
-            const firstLetterRect = words[0].querySelector('letter').getClientRects();
+            firstLetterRect = letterRects[0][0];
             cursorSpan.style.left = `${firstLetterRect[0].left}px`;
             cursorSpan.style.top = `${firstLetterRect[0].top}px`;
-            inputBox.value = "";
-            inputBox.disabled = false;
-            inputBox.focus();
-            totalTyped = 0;
-            totalErrors = 0;
-            endTime = 0;
-            timerInterval = null; // Reset the timer interval
-            currentWordIndex = 0;
-            wpmDisplay.textContent = "Current WPM: 0";
-            grossWPMDisplay.textContent = "Gross WPM: 0";
-            netWPMDisplay.textContent = "Net WPM: 0";
-            accuracyDisplay.textContent = "Accuracy: 100%";
-            errorsDisplay.textContent = "Errors: 0";
-            startTime = 0; // Reset the start time
             fetchInProgress = false;
         })
         .catch(error => {
@@ -256,6 +253,9 @@ function fetchRandomQuote() {
 
 function checkInput(event) {
     let letterElement = letterElements[currentWordIndex];
+    if (startTime === 0) {
+        startTimer();
+    }
     if (event.data === ' ') {
         if (currentWordIndex === lastWordIndex) {
             endTest();
@@ -270,7 +270,7 @@ function checkInput(event) {
         }
         currentWordIndex++;
         letterElement = letterElements[currentWordIndex];
-        const firstLetterRect = letterElement[0].getClientRects();
+        firstLetterRect = letterRects[currentWordIndex][0];
         cursorSpan.style.left = `${firstLetterRect[0].left}px`;
         cursorSpan.style.top = `${firstLetterRect[0].top}px`;
         latestWord = '';
@@ -281,16 +281,18 @@ function checkInput(event) {
     else if (event.inputType === 'deleteContentBackward') {
         totalTyped--;
         if (!latestWord) {
-            currentWordIndex = Math.max(currentWordIndex - 1, 0);
-            latestWord = inputBox.value.trim().split(' ')[currentWordIndex];
+            const inputBoxValue = inputBox.value.split(' ');
+            currentWordIndex = inputBoxValue.length - 1;
+            latestWord = inputBoxValue[currentWordIndex];
             letterElement = letterElements[currentWordIndex];
-            try {
-                lastLetterRect = latestWord.length > letterElement.length ? lastLetterRect = letterElement[letterElement.length - 1].getClientRects() : lastLetterRect = letterElement[latestWord.length - 1].getClientRects();
+            console.log(latestWord)
+            if (latestWord) {
+                lastLetterRect = latestWord.length > letterElement.length ? letterRects[currentWordIndex][letterElement.length - 1] : letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)];
                 cursorSpan.style.left = `${lastLetterRect[0].right}px`;
                 cursorSpan.style.top = `${lastLetterRect[0].top}px`;
             }
-            catch (e) {
-                lastLetterRect = letterElement[0].getClientRects();
+            else {
+                lastLetterRect = letterRects[currentWordIndex][0];
                 cursorSpan.style.left = `${lastLetterRect[0].left}px`;
                 cursorSpan.style.top = `${lastLetterRect[0].top}px`;
             }
@@ -307,39 +309,44 @@ function checkInput(event) {
             currentWordIndex = Math.max(currentWordIndex - 1, 0);
             letterElement = letterElements[currentWordIndex];
             if (letterElement[letterElement.length - 1].textContent.match(punctuationPattern)) {
-                latestWord = inputBox.value.trim().split(' ')[currentWordIndex];
+                const inputBoxValue = inputBox.value.trim().split(' ');
+                currentWordIndex = inputBoxValue.length - 1;
+                latestWord = inputBoxValue[currentWordIndex];
                 letterElement[letterElement.length - 1].classList.remove('correct');
                 letterElement[letterElement.length - 1].classList.remove('incorrect');
-                lastLetterRect = letterElement[latestWord.length - 1].getClientRects();
+                lastLetterRect = letterRects[currentWordIndex][latestWord.length - 1];
                 cursorSpan.style.left = `${lastLetterRect[0].right}px`;
                 cursorSpan.style.top = `${lastLetterRect[0].top}px`;
                 totalTyped -= 2;
                 return;
             }
         } else if (latestWord.match(punctuationPattern)) {
-            latestWord = inputBox.value.trim().split(' ')[currentWordIndex];
+            const inputBoxValue = inputBox.value.trim().split(' ');
+            currentWordIndex = inputBoxValue.length - 1;
+            latestWord = inputBoxValue[currentWordIndex];
             letterElement[letterElement.length - 1].classList.remove('correct');
             letterElement[letterElement.length - 1].classList.remove('incorrect');
-            lastLetterRect = letterElement[latestWord.length - 1].getClientRects();
+            lastLetterRect = letterRects[currentWordIndex][latestWord.length - 1];
             cursorSpan.style.left = `${lastLetterRect[0].right}px`;
             cursorSpan.style.top = `${lastLetterRect[0].top}px`;
             totalTyped--;
             return;
         }
-        letterElement.forEach(letter => {
+        
+        for (let i = 0; i < letterElement.length; i++) {
+            const letter = letterElement[i];
             letter.classList.remove('correct');
             letter.classList.remove('incorrect');
-            totalTyped--;
-        });
+            if (i < latestWord.length) {
+                totalTyped--;
+            }
+        }
         latestWord = '';
-        const firstLetterRect = letterElement[0].getClientRects();
+        firstLetterRect = letterRects[currentWordIndex][0];
         cursorSpan.style.left = `${firstLetterRect[0].left}px`;
         cursorSpan.style.top = `${firstLetterRect[0].top}px`;
         words[currentWordIndex].classList.remove('error');
         return;
-    }
-    if (startTime === 0) {
-        startTimer();
     }
     latestWord += event.data;
     totalTyped++;
@@ -364,6 +371,7 @@ function updateWord(latestWord, i, backspaceFlag = false) {
             totalErrors++;
             flashErrorDisplays();
         }
+        totalTyped--;
     }
     else if (latestWord[i] === undefined) {
         letterElement[i].classList.remove('correct');
@@ -391,7 +399,7 @@ function updateWord(latestWord, i, backspaceFlag = false) {
     cursorTimeout = setTimeout(() => {
         cursorSpan.classList.remove('active');
     }, 1000);
-    lastLetterRect = latestWord.length > letterElement.length - 1 ? letterElement[letterElement.length - 1].getClientRects() : letterElement[Math.max(latestWord.length - 1, 0)].getClientRects();
+    lastLetterRect = latestWord.length > letterElement.length - 1 ? letterRects[currentWordIndex][letterElement.length - 1] : letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)];
     cursorSpan.style.left = latestWord.length === 0 ? `${lastLetterRect[0].left}px` : `${lastLetterRect[0].right}px`;
     cursorSpan.style.top = `${lastLetterRect[0].top}px`;
 }
@@ -529,11 +537,18 @@ function applyCustomText(event) {
     }
     closeCustomTextModal(event);
 }
-
 function updateCursorPosition() {
+    letterRects = [];
+    for (let index = 0; index < words.length; index++) {
+        let lettersRects = [];
+        words[index].querySelectorAll('letter').forEach(letter => {
+            lettersRects.push(letter.getClientRects());
+        });
+        letterRects.push(lettersRects);
+    }
     const letterRect = latestWord
-        ? letterElements[currentWordIndex][latestWord.length - 1].getClientRects()[0]
-        : letterElements[currentWordIndex][0].getClientRects()[0];
+        ? letterRects[currentWordIndex][latestWord.length - 1][0]
+        : letterRects[currentWordIndex][0][0];
 
     cursorSpan.style.left = `${latestWord ? letterRect.right : letterRect.left}px`;
     cursorSpan.style.top = `${letterRect.top}px`;
