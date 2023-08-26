@@ -5,6 +5,7 @@
 }
 
 body {
+  overflow-x: hidden;
   font-family: "Open Sans", sans-serif;
   background-color: var(--body-color);
   color: var(--text-color);
@@ -161,16 +162,6 @@ h1 {
 
 #clearButton {
   display: none;
-}
-
-button {
-  border: 1px solid var(--text-color);
-}
-
-button:active {
-  color: rgb(15, 95, 240);
-  background-color: var(--body-color);
-  outline: none;
 }
 
 @keyframes shrinkAndGrow {
@@ -384,12 +375,19 @@ button:active {
   padding: 10px min(2vw, 20px);
   background-color: #4CAF50;
   color: white;
+  border: 1px solid var(--text-color);
   text-decoration: none;
   cursor: pointer;
 }
 
 .button:not(:last-child) {
   margin-right: min(1vw, 10px);
+}
+
+.button:active {
+  color: rgb(15, 95, 240);
+  background-color: #167416;
+  outline: none;
 }
 
 .modal {
