@@ -548,7 +548,7 @@ window.onload = () => {
 }
 
 window.addEventListener('resize', function () {
-    const lastLetterRect = letterElements[currentWordIndex][latestWord.length - 1].getClientRects();
+    const lastLetterRect = letterElements[currentWordIndex][Math.max(latestWord.length - 1, 0)].getClientRects();
     cursorSpan.style.left = `${lastLetterRect[0].right}px`;
     cursorSpan.style.top = `${lastLetterRect[0].top}px`;
 });
