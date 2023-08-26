@@ -62,7 +62,7 @@ const levels = [
         title: 'Supersonic Typist 🚀 AKA HauseMaster',
         speed: Math.random() * (1000 - 300) + 300,
         stars: '⭐⭐⭐⭐⭐',
-        backgroundColor: '#E3242B'
+        backgroundColor: 'Red'
     },
     {
         threshold: 160,
@@ -155,11 +155,10 @@ function splitQuote(quote) {
         quoteDisplay.appendChild(wordElement);
     }
     lastWordIndex = wordElements.length - 1;
-    console.log(quoteDisplay)
 }
 
 function refreshQuote() {
-    if (customTextInput.value !== "") {
+    if (customTextInput.value.trim() !== "") {
         inputBox.value = "";
         currentQuote = customTextInput.value;
         splitQuote(currentQuote);
@@ -226,6 +225,7 @@ function fetchRandomQuote() {
                 letterElements.push(words[index].querySelectorAll('letter'));
             }
             cursorSpan.classList.remove('hidden');
+            cursorSpan.classList.add('active');
             const firstLetterRect = words[0].querySelector('letter').getClientRects();
             cursorSpan.style.left = `${firstLetterRect[0].left}px`;
             cursorSpan.style.top = `${firstLetterRect[0].top}px`;
@@ -385,7 +385,7 @@ function updateWord(latestWord, i, backspaceFlag = false) {
     clearTimeout(cursorTimeout);
     cursorSpan.classList.add('active');
     cursorTimeout = setTimeout(() => {
-      cursorSpan.classList.remove('active');
+        cursorSpan.classList.remove('active');
     }, 1000);
     lastLetterRect = latestWord.length > letterElement.length - 1 ? letterElement[letterElement.length - 1].getClientRects() : letterElement[Math.max(latestWord.length - 1, 0)].getClientRects();
     cursorSpan.style.left = latestWord.length === 0 ? `${lastLetterRect[0].left}px` : `${lastLetterRect[0].right}px`;
@@ -513,11 +513,14 @@ function closeCustomTextModal(event) {
     if (event['srcElement'].innerText === "Apply") {
         document.getElementById("clearButton").style.display = "inline-block";
         refreshQuote();
+    } else {
+        customTextInput.value = "";
     }
 }
 
 function applyCustomText(event) {
-    if (!customTextInput.value) {
+    if (!customTextInput.value.trim()) {
+        customTextInput.value = "";
         return;
     }
     closeCustomTextModal(event);
@@ -535,7 +538,6 @@ radioContainer.addEventListener("change", (event) => {
     }
 });
 
-
 window.onload = () => {
     fetchRandomQuote();
     inputBox.addEventListener("input", checkInput);
@@ -546,7 +548,7 @@ window.onload = () => {
 }
 
 window.addEventListener('resize', function () {
-    const lastLetterRect = letterElements[currentWordIndex][0].getClientRects();
-    cursorSpan.style.left = `${lastLetterRect[0].left}px`;
+    const lastLetterRect = letterElements[currentWordIndex][latestWord.length - 1].getClientRects();
+    cursorSpan.style.left = `${lastLetterRect[0].right}px`;
     cursorSpan.style.top = `${lastLetterRect[0].top}px`;
 });
