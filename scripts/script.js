@@ -240,6 +240,7 @@ function fetchRandomQuote() {
                 letterRects.push(lettersRects);
             }
             cursorSpan.classList.remove('hidden');
+            cursorSpan.classList.add('active');
             firstLetterRect = letterRects[0][0];
             cursorSpan.style.left = `${firstLetterRect[0].left}px`;
             cursorSpan.style.top = `${firstLetterRect[0].top}px`;
@@ -248,7 +249,6 @@ function fetchRandomQuote() {
         .catch(error => {
             console.log("Error fetching quote:", error);
         });
-
 }
 
 function checkInput(event) {
@@ -332,7 +332,6 @@ function checkInput(event) {
             totalTyped--;
             return;
         }
-        
         for (let i = 0; i < letterElement.length; i++) {
             const letter = letterElement[i];
             letter.classList.remove('correct');
