@@ -97,6 +97,7 @@ const cursorSpan = document.querySelector('.cursor');
 const customTextInput = document.getElementById("customTextInput");
 const radioContainer = document.querySelector(".radio-container");
 const inputBox = document.getElementById("inputBox");
+const loadingSpinner = document.querySelector(".spinner-border");
 const timerDisplay = document.getElementById("timerDisplay");
 const wpmDisplay = document.getElementById("wpmDisplay");
 const grossWPMDisplay = document.getElementById("grossWPMDisplay");
@@ -187,6 +188,7 @@ function refreshQuote() {
             return;
         }
         fetchInProgress = true;
+        loadingSpinner.style.display = "block";
         fetchRandomQuote();
     }
     latestWord = "";
@@ -218,6 +220,7 @@ function fetchRandomQuote() {
         .then(response => response.json())
         .then(data => {
             currentQuote = data[0]['content'];
+            loadingSpinner.style.display = "none";
             splitQuote(currentQuote);
             words = document.querySelectorAll('.word');
             letterElements = [];
@@ -248,6 +251,7 @@ function fetchRandomQuote() {
         .catch(error => {
             console.log("Error fetching quote:", error);
         });
+
 }
 
 function checkInput(event) {
@@ -526,6 +530,15 @@ function applyCustomText(event) {
     closeCustomTextModal(event);
 }
 
+function updateCursorPosition() {
+    const letterRect = latestWord
+        ? letterElements[currentWordIndex][latestWord.length - 1].getClientRects()[0]
+        : letterElements[currentWordIndex][0].getClientRects()[0];
+
+    cursorSpan.style.left = `${latestWord ? letterRect.right : letterRect.left}px`;
+    cursorSpan.style.top = `${letterRect.top}px`;
+}
+
 window.addEventListener("click", (event) => {
     if (event.target === customTextModal) {
         closeCustomTextModal(event);
@@ -533,7 +546,7 @@ window.addEventListener("click", (event) => {
 });
 
 radioContainer.addEventListener("change", (event) => {
-    if (event.target.matches("input[type='radio']")) {
+    if (event.target.type === "radio") {
         refreshQuote();
     }
 });
@@ -547,8 +560,5 @@ window.onload = () => {
     modeToggle.click();
 }
 
-window.addEventListener('resize', function () {
-    const lastLetterRect = letterElements[currentWordIndex][Math.max(latestWord.length - 1, 0)].getClientRects();
-    cursorSpan.style.left = `${lastLetterRect[0].right}px`;
-    cursorSpan.style.top = `${lastLetterRect[0].top}px`;
-});
+window.addEventListener('resize', updateCursorPosition);
+
