@@ -132,7 +132,7 @@ h1 {
     background-color: #4CAF50;
     transition: top 0.25s ease-out;
     pointer-events: none;
-    animation: cursor-blink 1.25s infinite;
+    animation: cursor-blink 1s infinite;
 }
 
 @keyframes cursor-blink {
