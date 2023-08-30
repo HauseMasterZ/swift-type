@@ -62,7 +62,7 @@ const levels = [
         title: 'Supersonic Typist 🚀 AKA HauseMaster',
         speed: Math.random() * (1000 - 300) + 300,
         stars: '⭐⭐⭐⭐⭐',
-        backgroundColor: 'Red'
+        backgroundColor: '#D21404'
     },
     {
         threshold: 160,
@@ -167,9 +167,6 @@ function refreshQuote() {
     letterElements = [];
     letterRects = [];
     typedWords = [];
-    inputBox.value = "";
-    inputBox.disabled = false;
-    inputBox.focus();
     totalTyped = 0;
     totalErrors = 0;
     endTime = 0;
@@ -195,6 +192,9 @@ function refreshQuote() {
         firstLetterRect = letterRects[0][0];
         cursorSpan.style.left = `${firstLetterRect[0].left}px`;
         cursorSpan.style.top = `${firstLetterRect[0].top}px`;
+        inputBox.value = "";
+        inputBox.disabled = false;
+        inputBox.focus();
     } else {
         if (fetchInProgress) {
             return;
@@ -234,8 +234,12 @@ function fetchRandomQuote() {
     fetch(url)
         .then(response => response.json())
         .then(data => {
+            cursorSpan.style.display = 'block';
             currentQuote = data[0]['content'];
             loadingSpinner.style.display = "none";
+            inputBox.value = "";
+            inputBox.disabled = false;
+            inputBox.focus();
             splitQuote(currentQuote);
             words = document.querySelectorAll('.word');
             for (let index = 0; index < words.length; index++) {
@@ -289,8 +293,6 @@ function checkInput(event) {
         cursorSpan.style.left = `${firstLetterRect[0].left}px`;
         cursorSpan.style.top = `${firstLetterRect[0].top}px`;
         latestWord = '';
-        accuracyDisplay.textContent = `Accuracy: ${calculateAccuracy(totalTyped, totalErrors)}%`;
-        errorsDisplay.textContent = `Errors: ${totalErrors}`;
         return;
     }
     else if (event.inputType === 'deleteContentBackward') {
@@ -375,9 +377,10 @@ function checkInput(event) {
 
 function updateWord(latestWord, i, backspaceFlag = false) {
     const letterElement = letterElements[currentWordIndex];
+    const letterElementLength = letterElement.length;
     if (letterElement[i] === undefined && !backspaceFlag) {
-        letterElement[letterElement.length - 1].classList.remove('correct');
-        letterElement[letterElement.length - 1].classList.add('incorrect');
+        letterElement[letterElementLength - 1].classList.remove('correct');
+        letterElement[letterElementLength - 1].classList.add('incorrect');
         totalErrors++;
         flashErrorDisplays();
     }
@@ -423,7 +426,7 @@ function updateWord(latestWord, i, backspaceFlag = false) {
     cursorTimeout = setTimeout(() => {
         cursorSpan.classList.remove('active');
     }, 1000);
-    lastLetterRect = latestWord.length > letterElement.length - 1 ? letterRects[currentWordIndex][letterElement.length - 1] : letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)];
+    lastLetterRect = latestWord.length > letterElementLength - 1 ? letterRects[currentWordIndex][letterElementLength - 1] : letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)];
     cursorSpan.style.left = latestWord.length === 0 ? `${lastLetterRect[0].left}px` : `${lastLetterRect[0].right}px`;
     cursorSpan.style.top = `${lastLetterRect[0].top}px`;
 }
@@ -452,7 +455,7 @@ function updateTimer() {
 function displaySpeed(prefix, number, stars) {
     const duration = 3000; // Total duration for the animation in milliseconds
     const startTime = Date.now();
-    const easingFactor = 3;
+    const easingFactor = 2.5;
     function easeOutExpo(t) {
         return 1 - Math.pow(2, -easingFactor * t);
     }
@@ -491,6 +494,8 @@ function endTest() {
             break;
         }
     }
+    // categoryDisplay.style.padding = '50px';
+
     displaySpeed(level.title, level.speed, level.stars);
     body.style.backgroundColor = level.backgroundColor;
     resultImg.setAttribute('src', level.imgSrc);
@@ -593,6 +598,7 @@ radioContainer.addEventListener("change", (event) => {
 
 window.onload = () => {
     fetchRandomQuote();
+    // refreshQuote();
     inputBox.addEventListener("input", checkInput);
     body.addEventListener("keydown", checkCapslock);
     refreshButton.addEventListener("click", createRipple);

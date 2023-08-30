@@ -69,7 +69,7 @@ body.dark {
 }
 
 .container {
-  max-width: 600px;
+  max-width: 650px;
   margin: 0 auto;
   text-align: center;
   padding: 0;
@@ -121,6 +121,7 @@ h1 {
 }
 
 .cursor {
+  display: none;
   position: absolute;
   top: 0px;
   left: 0px;
