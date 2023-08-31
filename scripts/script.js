@@ -496,9 +496,14 @@ function endTest() {
             break;
         }
     }
+    const img = new Image();
+    img.src = level.imgSrc;
     displaySpeed(level.title, level.speed, level.stars);
     body.style.backgroundColor = level.backgroundColor;
-    resultImg.setAttribute('src', level.imgSrc);
+    img.onload = () => {
+        resultImg.src = level.imgSrc;
+    };
+    // resultImg.setAttribute('src', level.imgSrc);
     resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
 }
