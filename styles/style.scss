@@ -95,6 +95,8 @@ h1 {
     flex-wrap: wrap;
     text-align: center;
     justify-content: center;
+    user-select: none;
+
 }
 
 .word {
@@ -125,6 +127,11 @@ h1 {
     transition: background-color 1s ease;
 }
 
+#smoothCursor{
+    cursor: pointer;
+    user-select: none;
+}
+
 .cursor {
     display: none;
     position: absolute;
@@ -134,6 +141,7 @@ h1 {
     width: 2px;
     background-color: #4CAF50;
     transition: top 0.25s ease-out;
+
     pointer-events: none;
     animation: cursor-blink 1s infinite;
 }

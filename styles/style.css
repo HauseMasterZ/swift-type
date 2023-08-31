@@ -90,6 +90,9 @@ h1 {
   flex-wrap: wrap;
   text-align: center;
   justify-content: center;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 
 .word {
@@ -118,6 +121,13 @@ h1 {
   border: 1px solid var(--text-color);
   color: var(--text-color);
   transition: background-color 1s ease;
+}
+
+#smoothCursor {
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 
 .cursor {

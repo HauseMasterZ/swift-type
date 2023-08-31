@@ -80,6 +80,7 @@ let startTime = 0;
 let endTime = 0;
 let timerInterval = null;
 let fetchInProgress = false;
+let isSmoothCursorEnabled = false;
 let cursorTimeout;
 let letterElements = [];
 let letterElementLength;
@@ -96,6 +97,7 @@ let currentWordIndex = 0;
 const punctuationPattern = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
 const quoteLengthRadios = document.getElementsByName("quoteLength");
 const quoteDisplay = document.getElementById("quote");
+const smoothCursor = document.getElementById("smoothCursor");
 const body = document.querySelector("body");
 const modeToggle = document.querySelector(".dark-light");
 const cursorSpan = document.querySelector('.cursor');
@@ -260,6 +262,7 @@ function fetchRandomQuote() {
             cursorSpan.style.left = `${firstLetterRect[0].left}px`;
             cursorSpan.style.top = `${firstLetterRect[0].top}px`;
             fetchInProgress = false;
+
         })
         .catch(error => {
             console.log("Error fetching quote:", error);
@@ -503,7 +506,6 @@ function endTest() {
     img.onload = () => {
         resultImg.src = level.imgSrc;
     };
-    // resultImg.setAttribute('src', level.imgSrc);
     resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
 }
@@ -564,6 +566,19 @@ function closeCustomTextModal(event) {
     }
 }
 
+function toggleSmoothCursor() {
+    if (isSmoothCursorEnabled) {
+        smoothCursor.innerHTML = `Smooth Cursor: <span class="incorrect">OFF</span>`;
+        cursorSpan.style.transition = 'none';
+    } else {
+        smoothCursor.innerHTML = `Smooth Cursor: <span class="correct">ON</span>`;
+        cursorSpan.style.transition = 'left 0.06s linear, top 0.25s ease-out';
+    }
+    void cursorSpan.offsetWidth; // Trigger a reflow to restart the animation
+    isSmoothCursorEnabled = !isSmoothCursorEnabled;
+    inputBox.focus();
+}
+
 function applyCustomText(event) {
     if (!customTextInput.value.trim()) {
         customTextInput.value = "";
@@ -571,6 +586,7 @@ function applyCustomText(event) {
     }
     closeCustomTextModal(event);
 }
+
 function updateCursorPosition() {
     letterRects = [];
     for (let index = 0; index < words.length; index++) {
@@ -594,6 +610,10 @@ window.addEventListener("click", (event) => {
     }
 });
 
+smoothCursor.addEventListener('click', () => {
+    toggleSmoothCursor();
+});
+
 radioContainer.addEventListener("change", (event) => {
     if (event.target.type === "radio") {
         refreshQuote();
@@ -601,6 +621,7 @@ radioContainer.addEventListener("change", (event) => {
 });
 
 window.onload = () => {
+    toggleSmoothCursor();
     fetchRandomQuote();
     inputBox.addEventListener("input", checkInput);
     body.addEventListener("keydown", checkCapslock);
