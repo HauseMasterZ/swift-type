@@ -54,7 +54,7 @@ const levels = [
         title: 'Falcon-keyed Typist 🦅',
         speed: Math.random() * (400 - 300) + 300,
         stars: '⭐⭐⭐⭐',
-        backgroundColor: 'Lightblue'
+        backgroundColor: 'rgb(72, 59, 197)'
     },
     {
         threshold: 140,
@@ -70,7 +70,7 @@ const levels = [
         title: 'Lightning-Fast Typist ⚡️',
         speed: 300000,
         stars: '⭐⭐⭐⭐⭐',
-        backgroundColor: 'Yellow'
+        backgroundColor: 'rgb(200, 200, 0)'
     }
 ];
 let currentQuote = "";
@@ -293,6 +293,8 @@ function checkInput(event) {
         cursorSpan.style.left = `${firstLetterRect[0].left}px`;
         cursorSpan.style.top = `${firstLetterRect[0].top}px`;
         latestWord = '';
+        accuracyDisplay.textContent = `Accuracy: ${calculateAccuracy(totalTyped, totalErrors)}%`;
+        errorsDisplay.textContent = `Errors: ${totalErrors}`;
         return;
     }
     else if (event.inputType === 'deleteContentBackward') {
@@ -494,8 +496,6 @@ function endTest() {
             break;
         }
     }
-    // categoryDisplay.style.padding = '50px';
-
     displaySpeed(level.title, level.speed, level.stars);
     body.style.backgroundColor = level.backgroundColor;
     resultImg.setAttribute('src', level.imgSrc);
