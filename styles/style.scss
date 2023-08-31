@@ -12,6 +12,10 @@ body {
     transition: background-color 1s ease;
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
+
 .correct {
     color: #07c944;
     // opacity: 1;
@@ -127,7 +131,7 @@ h1 {
     transition: background-color 1s ease;
 }
 
-#smoothCursor{
+#smoothCursor {
     cursor: pointer;
     user-select: none;
 }
