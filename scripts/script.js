@@ -389,10 +389,6 @@ function updateWord(latestWord, i, backspaceFlag = false) {
         totalErrors++;
         flashErrorDisplays();
     }
-    // else if (latestWord[i] === undefined) {
-    //     letterElement[i].classList.remove('correct');
-    //     letterElement[i].classList.remove('incorrect');
-    // }
     else if (backspaceFlag) {
         if (i === letterElement.length - 1) {
             if (letterElement[i].textContent === latestWord[i]) {
@@ -504,7 +500,7 @@ function endTest() {
     displaySpeed(level.title, level.speed, level.stars);
     body.style.backgroundColor = level.backgroundColor;
     img.onload = () => {
-        resultImg.src = level.imgSrc;
+        resultImg.src = img.src;
     };
     resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
