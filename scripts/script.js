@@ -70,7 +70,7 @@ const levels = [
         title: 'Lightning-Fast Typist ⚡️',
         speed: 300000,
         stars: '⭐⭐⭐⭐⭐',
-        backgroundColor: 'rgb(200, 200, 0)'
+        backgroundColor: 'rgb(230, 230, 0)'
     }
 ];
 let currentQuote = "";
@@ -239,7 +239,7 @@ function fetchRandomQuote() {
             loadingSpinner.style.display = "none";
             inputBox.value = "";
             inputBox.disabled = false;
-            inputBox.focus();
+            customTextModal.style.display === "block" ? customTextInput.focus() : inputBox.focus();
             splitQuote(currentQuote);
             words = document.querySelectorAll('.word');
             for (let index = 0; index < words.length; index++) {
@@ -544,7 +544,6 @@ function openCustomTextModal() {
 }
 
 function clearCustomText() {
-    // Clear the custom text input box
     customTextInput.value = "";
     refreshQuote();
     document.getElementById("clearButton").style.display = "none";
@@ -598,7 +597,6 @@ radioContainer.addEventListener("change", (event) => {
 
 window.onload = () => {
     fetchRandomQuote();
-    // refreshQuote();
     inputBox.addEventListener("input", checkInput);
     body.addEventListener("keydown", checkCapslock);
     refreshButton.addEventListener("click", createRipple);

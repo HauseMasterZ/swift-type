@@ -273,7 +273,7 @@ h1 {
   background-color: rgb(160, 210, 160);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
   /* For mobile devices with a maximum width of 768px */
   #resultImg {
     position: relative;
