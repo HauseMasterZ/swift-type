@@ -181,7 +181,9 @@ function refreshQuote() {
     currentWordIndex = 0;
     wpmDisplay.textContent = "Current WPM: 0";
     grossWPMDisplay.textContent = "Gross WPM: 0";
+    grossWPMDisplay.classList.remove('highlight');
     netWPMDisplay.textContent = "Net WPM: 0";
+    netWPMDisplay.classList.remove('highlight');
     accuracyDisplay.textContent = "Accuracy: 100%";
     errorsDisplay.textContent = "Errors: 0";
     if (customTextInput.value.trim() !== "") {
@@ -500,7 +502,9 @@ function endTest() {
     resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
     grossWPMDisplay.textContent = `Gross WPM: ${wpm}`;
+    grossWPMDisplay.classList.add('highlight');
     netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
+    netWPMDisplay.classList.add('highlight');
     accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
     displaySpeed(level.title, level.speed, level.stars);

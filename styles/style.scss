@@ -6,7 +6,7 @@
 
 body {
     overflow-x: hidden;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Open Sans', sans-serif, Arial;
     background-color: var(--body-color);
     color: var(--text-color);
     transition: background-color 1s ease;
@@ -73,9 +73,9 @@ body.dark {
     pointer-events: none;
 }
 
-// #category-display {
-//     padding-top: 100px;
-// }
+#categoryDisplay {
+    padding-top: 2rem;
+}
 
 .container {
     max-width: 650px;
@@ -129,6 +129,11 @@ h1 {
     border: 1px solid var(--text-color);
     color: var(--text-color);
     transition: background-color 1s ease;
+}
+
+.highlight {
+    font-weight: bold;
+    font-size: 40px;
 }
 
 #smoothCursor {
@@ -330,8 +335,6 @@ h1 {
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
-        // transform: translate(0%, 0%);
-
     }
 
     .radio-container label {
@@ -379,11 +382,11 @@ h1 {
 }
 
 .flash-out-green {
-    animation: flash-green 0.4s ease-out;
+    animation: flash-green 0.5s ease;
 }
 
 .flash-out-red {
-    animation: flash-red 1s ease-out;
+    animation: flash-red 1s ease;
 }
 
 @keyframes flash-red {
