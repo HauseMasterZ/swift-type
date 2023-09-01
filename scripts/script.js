@@ -76,7 +76,9 @@ const levels = [
 for (const level of levels) {
     const img = new Image();
     img.src = level.imgSrc;
+    level.imgSrc = img;
 }
+console.log(levels)
 let currentQuote = "";
 let totalTyped = 0;
 let totalErrors = 0;
@@ -495,7 +497,7 @@ function endTest() {
             break;
         }
     }
-    resultImg.src = level.imgSrc;
+    resultImg.src = level.imgSrc.src;
     grossWPMDisplay.textContent = `Gross WPM: ${wpm}`;
     netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
     accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
@@ -624,7 +626,7 @@ window.onload = () => {
     modeToggle.click();
     setTimeout(() => {
         toggleSmoothCursor();
-    }, 1000);
+    }, 1500);
 }
 
 window.addEventListener('resize', updateCursorPosition);
