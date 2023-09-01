@@ -491,14 +491,14 @@ function endTest() {
             break;
         }
     }
-    resultImg.src = level.imgSrc;
-    resultImg.classList.remove('hidden');
     grossWPMDisplay.textContent = `Gross WPM: ${wpm}`;
     netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
     accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
     displaySpeed(level.title, level.speed, level.stars);
     body.style.backgroundColor = level.backgroundColor;
+    resultImg.src = level.imgSrc;
+    resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
 }
 
