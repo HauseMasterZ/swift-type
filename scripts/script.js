@@ -73,6 +73,10 @@ const levels = [
         backgroundColor: 'rgb(230, 230, 0)'
     }
 ];
+for (const level of levels) {
+    const img = new Image();
+    img.src = level.imgSrc;
+}
 let currentQuote = "";
 let totalTyped = 0;
 let totalErrors = 0;
@@ -498,10 +502,8 @@ function endTest() {
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
     displaySpeed(level.title, level.speed, level.stars);
     body.style.backgroundColor = level.backgroundColor;
-    resultImg.addEventListener('load', () => {
-        resultImg.classList.remove('hidden');
-        resultImg.classList.add('slide-in');
-    });
+    resultImg.classList.remove('hidden');
+    resultImg.classList.add('slide-in');
 }
 
 function calculateWPM(endTime) {
