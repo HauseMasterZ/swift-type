@@ -495,14 +495,10 @@ function endTest() {
             break;
         }
     }
-    const img = new Image();
-    img.src = level.imgSrc;
+    resultImg.src = level.src;
+    resultImg.classList.remove('hidden');
     displaySpeed(level.title, level.speed, level.stars);
     body.style.backgroundColor = level.backgroundColor;
-    img.onload = () => {
-        resultImg.src = img.src;
-    };
-    resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
 }
 
