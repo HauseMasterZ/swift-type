@@ -2,7 +2,7 @@
 const levels = [
     {
         threshold: 0,
-        imgSrc: 'svg/sloth.svg',
+        imgSrc: 'https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/sloth.svg',
         title: 'Sloth-paced Typist 🐌🦥',
         speed: Math.random() * (10 - 5) + 5,
         stars: '⭐',
@@ -10,7 +10,7 @@ const levels = [
     },
     {
         threshold: 20,
-        imgSrc: 'svg/sea_turtle.svg',
+        imgSrc: 'https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/sea_turtle.svg',
         title: 'Turtle-paced Typist 🐢',
         speed: Math.random() * (50 - 10) + 10,
         stars: '⭐',
@@ -18,7 +18,7 @@ const levels = [
     },
     {
         threshold: 40,
-        imgSrc: 'svg/horse.svg',
+        imgSrc: 'https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/horse.svg',
         title: 'Horse-speed Typist 🐎',
         speed: Math.random() * (90 - 50) + 50,
         stars: '⭐⭐',
@@ -26,7 +26,7 @@ const levels = [
     },
     {
         threshold: 60,
-        imgSrc: 'svg/lion.svg',
+        imgSrc: 'https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/lion.svg',
         title: 'Lion-fingered Typist 🦁',
         speed: Math.random() * (120 - 90) + 90,
         stars: '⭐⭐',
@@ -34,7 +34,7 @@ const levels = [
     },
     {
         threshold: 80,
-        imgSrc: 'svg/cheetah.svg',
+        imgSrc: 'https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/cheetah.svg',
         title: 'Cheetah-swift Typist 🐆',
         speed: Math.random() * (180 - 120) + 120,
         stars: '⭐⭐⭐',
@@ -42,7 +42,7 @@ const levels = [
     },
     {
         threshold: 100,
-        imgSrc: 'svg/eagle.svg',
+        imgSrc: 'https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/eagle.svg',
         title: 'Eagle-eyed Typist 🦅',
         speed: Math.random() * (300 - 180) + 180,
         stars: '⭐⭐⭐⭐',
@@ -50,7 +50,7 @@ const levels = [
     },
     {
         threshold: 120,
-        imgSrc: 'svg/falcon.svg',
+        imgSrc: 'https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/falcon.svg',
         title: 'Falcon-keyed Typist 🦅',
         speed: Math.random() * (400 - 300) + 300,
         stars: '⭐⭐⭐⭐',
@@ -58,7 +58,7 @@ const levels = [
     },
     {
         threshold: 140,
-        imgSrc: 'svg/hausemaster.svg',
+        imgSrc: 'https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/hausemaster.svg',
         title: 'Supersonic Typist 🚀 AKA HauseMaster',
         speed: Math.random() * (1000 - 300) + 300,
         stars: '⭐⭐⭐⭐⭐',
@@ -66,7 +66,7 @@ const levels = [
     },
     {
         threshold: 160,
-        imgSrc: 'svg/flash.svg',
+        imgSrc: 'https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/flash.svg',
         title: 'Lightning-Fast Typist ⚡️',
         speed: 300000,
         stars: '⭐⭐⭐⭐⭐',
@@ -524,6 +524,7 @@ function calculateNetWPM(endTime) {
     const netTyped = currentWordIndex - errorWordCnt + 1;
     const minutes = (endTime - startTime) / 60000; // in minutes
     const netWPM = Math.round(netTyped / minutes);
+    return 150;
     return Math.max(netWPM, 0);
 }
 
