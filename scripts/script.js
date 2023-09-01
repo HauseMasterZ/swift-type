@@ -241,6 +241,7 @@ function fetchRandomQuote() {
             loadingSpinner.style.display = "none";
             inputBox.value = "";
             inputBox.disabled = false;
+            inputBox.focus();
             customTextModal.style.display === "block" ? customTextInput.focus() : inputBox.focus();
             splitQuote(currentQuote);
             words = document.querySelectorAll('.word');
@@ -570,7 +571,6 @@ function toggleSmoothCursor() {
         smoothCursor.innerHTML = `Smooth Cursor: <span class="correct">ON</span>`;
         cursorSpan.style.transition = 'left 0.06s linear, top 0.25s ease-out';
     }
-    void cursorSpan.offsetWidth; // Trigger a reflow to restart the animation
     isSmoothCursorEnabled = !isSmoothCursorEnabled;
     inputBox.focus();
 }
@@ -617,13 +617,16 @@ radioContainer.addEventListener("change", (event) => {
 });
 
 window.onload = () => {
-    toggleSmoothCursor();
+    // toggleSmoothCursor();
     fetchRandomQuote();
     inputBox.addEventListener("input", checkInput);
     body.addEventListener("keydown", checkCapslock);
     refreshButton.addEventListener("click", createRipple);
     document.getElementById("customButton").addEventListener("click", createRipple);
     modeToggle.click();
+    setTimeout(() => {
+        toggleSmoothCursor();
+    }, 1000);
 }
 
 window.addEventListener('resize', updateCursorPosition);
