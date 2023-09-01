@@ -353,9 +353,8 @@ function checkInput(event) {
             return;
         }
         for (let i = 0; i < letterElementLength; i++) {
-            const letter = letterElement[i];
-            letter.classList.remove('correct');
-            letter.classList.remove('incorrect');
+            letterElement[i].classList.remove('correct');
+            letterElement[i].classList.remove('incorrect');
             if (i < latestWord.length) {
                 totalTyped--;
             }
@@ -617,7 +616,6 @@ radioContainer.addEventListener("change", (event) => {
 });
 
 window.onload = () => {
-    // toggleSmoothCursor();
     fetchRandomQuote();
     inputBox.addEventListener("input", checkInput);
     body.addEventListener("keydown", checkCapslock);
