@@ -483,10 +483,6 @@ function endTest() {
     const wpm = calculateWPM(endTime);
     const accuracy = calculateAccuracy(totalTyped, totalErrors);
     clearInterval(timerInterval);
-    grossWPMDisplay.textContent = `Gross WPM: ${wpm}`;
-    netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
-    accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
-    errorsDisplay.textContent = `Errors: ${totalErrors}`;
     let level = levels[0];
     for (let i = 0; i < levels.length; i++) {
         if (netWPM >= levels[i].threshold) {
@@ -495,8 +491,12 @@ function endTest() {
             break;
         }
     }
-    resultImg.src = level.src;
+    resultImg.src = level.imgSrc;
     resultImg.classList.remove('hidden');
+    grossWPMDisplay.textContent = `Gross WPM: ${wpm}`;
+    netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
+    accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
+    errorsDisplay.textContent = `Errors: ${totalErrors}`;
     displaySpeed(level.title, level.speed, level.stars);
     body.style.backgroundColor = level.backgroundColor;
     resultImg.classList.add('slide-in');
