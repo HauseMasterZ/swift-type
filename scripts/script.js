@@ -78,7 +78,6 @@ for (const level of levels) {
     img.src = level.imgSrc;
     level.imgSrc = img;
 }
-console.log(levels)
 let currentQuote = "";
 let totalTyped = 0;
 let totalErrors = 0;
@@ -498,14 +497,14 @@ function endTest() {
         }
     }
     resultImg.src = level.imgSrc.src;
+    resultImg.classList.remove('hidden');
+    resultImg.classList.add('slide-in');
     grossWPMDisplay.textContent = `Gross WPM: ${wpm}`;
     netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
     accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
     displaySpeed(level.title, level.speed, level.stars);
     body.style.backgroundColor = level.backgroundColor;
-    resultImg.classList.remove('hidden');
-    resultImg.classList.add('slide-in');
 }
 
 function calculateWPM(endTime) {
