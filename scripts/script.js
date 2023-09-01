@@ -82,7 +82,6 @@ let currentQuote = "";
 let totalTyped = 0;
 let totalErrors = 0;
 let startTime = 0;
-let endTime = 0;
 let timerInterval = null;
 let fetchInProgress = false;
 let isSmoothCursorEnabled = false;
@@ -117,7 +116,6 @@ const netWPMDisplay = document.getElementById("netWPMDisplay");
 const accuracyDisplay = document.getElementById("accuracyDisplay");
 const errorsDisplay = document.getElementById("errorsDisplay");
 const customTextModal = document.getElementById("customTextModal");
-const capslockWarning = document.getElementById("capslockWarning");
 const categoryDisplay = document.getElementById("categoryDisplay");
 const resultImg = document.getElementById('resultImg');
 const refreshButton = document.getElementById("refreshButton");
@@ -176,7 +174,6 @@ function refreshQuote() {
     typedWords = [];
     totalTyped = 0;
     totalErrors = 0;
-    endTime = 0;
     startTime = 0;
     currentWordIndex = 0;
     wpmDisplay.textContent = "Current WPM: 0";
@@ -485,7 +482,7 @@ function displaySpeed(prefix, number, stars) {
 function endTest() {
     typedWords[currentWordIndex] = latestWord;
     inputBox.disabled = true;
-    endTime = new Date().getTime();
+    const endTime = new Date().getTime();
     const netWPM = calculateNetWPM(endTime);
     const wpm = calculateWPM(endTime);
     const accuracy = calculateAccuracy(totalTyped, totalErrors);
@@ -543,7 +540,7 @@ function calculateAccuracy(totalTyped, totalErrors) {
 
 function checkCapslock(event) {
     const capslockOn = event.getModifierState && event.getModifierState("CapsLock");
-    capslockWarning.style.display = capslockOn ? "block" : "none";
+    document.getElementById("capslockWarning").style.display = capslockOn ? "block" : "none";
 }
 
 function openCustomTextModal() {
