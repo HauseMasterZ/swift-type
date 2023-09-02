@@ -74,11 +74,6 @@ body.dark {
     pointer-events: none;
 }
 
-#categoryDisplay {
-    padding-top: 2rem;
-    font-size: 20px;
-}
-
 .container {
     max-width: 650px;
     margin: 0 auto;
@@ -132,7 +127,24 @@ h1 {
 
 .highlight {
     font-weight: bold;
-    font-size: 36px;
+    animation: font-size-highlight 1.5s forwards ease;
+}
+
+#categoryDisplay {
+    padding-top: 2rem;
+    animation: font-size-category 2s forwards ease;
+}
+
+@keyframes font-size-highlight {
+    to {
+        font-size: 38px;
+    }
+}
+
+@keyframes font-size-category {
+    to {
+        font-size: 24px;
+    }
 }
 
 #smoothCursor {
@@ -329,18 +341,24 @@ h1 {
         transform: translate(-100%, 0%);
     }
 
-    #categoryDisplay{
-        font-size: 16px;
-    }
-
+    .stat,
     .stats {
         font-size: 12px;
     }
 
-    .highlight{
-        font-weight: bold;
-        font-size: 24px;
+    @keyframes font-size-highlight {
+        to {
+            font-size: 24px;
+        }
     }
+
+
+    @keyframes font-size-category {
+        to {
+            font-size: 16px;
+        }
+    }
+
 
     .modal-content {
         width: 90%;

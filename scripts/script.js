@@ -218,6 +218,7 @@ function refreshQuote() {
     resultImg.classList.remove('slide-in');
     resultImg.classList.add('hidden');
     body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
+    categoryDisplay.style.animation = 'none';
     categoryDisplay.textContent = "";
     clearInterval(timerInterval);
     clearInterval(speedInterval);
@@ -245,8 +246,6 @@ function fetchRandomQuote() {
             loadingSpinner.style.display = "none";
             inputBox.value = "";
             inputBox.disabled = false;
-            inputBox.focus();
-            customTextModal.style.display === "block" ? customTextInput.focus() : inputBox.focus();
             splitQuote(currentQuote);
             words = document.querySelectorAll('.word');
             for (let index = 0; index < words.length; index++) {
@@ -267,7 +266,7 @@ function fetchRandomQuote() {
             cursorSpan.style.left = `${firstLetterRect[0].left}px`;
             cursorSpan.style.top = `${firstLetterRect[0].top}px`;
             fetchInProgress = false;
-
+            customTextModal.style.display === "block" ? customTextInput.focus() : inputBox.focus();
         })
         .catch(error => {
             console.log("Error fetching quote:", error);
@@ -476,6 +475,7 @@ function displaySpeed(prefix, number, stars) {
         }
         categoryDisplay.textContent = `${prefix} ${currentValue}km/h ${stars}`;
     }
+    categoryDisplay.style.animation = 'font-size-category 1s forwards';
     speedInterval = setInterval(updateDisplay, 1000 / number);
 }
 
