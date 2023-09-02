@@ -30,6 +30,7 @@ body.dark {
 
 .dark-light {
     left: 0px;
+    animation: glow 0.5s;
     transform: translate(-40%, 0%);
 }
 
@@ -75,6 +76,7 @@ body.dark {
 
 #categoryDisplay {
     padding-top: 2rem;
+    font-size: 20px;
 }
 
 .container {
@@ -100,7 +102,6 @@ h1 {
     text-align: center;
     justify-content: center;
     user-select: none;
-
 }
 
 .word {
@@ -121,7 +122,6 @@ h1 {
 #inputBox {
     width: 100%;
     height: 40px;
-    font-size: 16px;
     margin-bottom: 20px;
     padding: 5px;
     box-sizing: border-box;
@@ -183,7 +183,6 @@ h1 {
 }
 
 #timerDisplay {
-    font-size: 20px;
     margin-bottom: 20px;
 }
 
@@ -205,8 +204,22 @@ h1 {
     }
 }
 
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 0 rgba(15, 95, 240, 0.7);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(15, 95, 240, 0.7);
+    }
+
+    100% {
+        box-shadow: 0 0 0 rgba(15, 95, 240, 0.7);
+    }
+}
+
 .shrink-animation {
-    animation: shrinkAndGrow 0.5s;
+    animation: shrinkAndGrow 0.5s, glow 0.5s;
 }
 
 .ripple {
@@ -317,14 +330,18 @@ h1 {
         transform: translate(-100%, 0%);
     }
 
+    #categoryDisplay{
+        font-size: 16px;
+    }
+
     .stats {
         font-size: 12px;
     }
 
-    #quote-label label {
-        font-size: 12px;
+    .highlight{
+        font-weight: bold;
+        font-size: 24px;
     }
-
 
     .modal-content {
         width: 90%;
@@ -382,7 +399,7 @@ h1 {
 }
 
 .flash-out-green {
-    animation: flash-green 0.5s ease;
+    animation: flash-green 0.75s ease;
 }
 
 .flash-out-red {
@@ -401,7 +418,7 @@ h1 {
 
 @keyframes flash-green {
     0% {
-        color: #00FF00;
+        color: #00ff00;
     }
 
     100% {
