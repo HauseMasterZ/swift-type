@@ -475,7 +475,7 @@ function displaySpeed(prefix, number, stars) {
         }
         categoryDisplay.textContent = `${prefix} ${currentValue}km/h ${stars}`;
     }
-    categoryDisplay.style.animation = 'font-size-category 1s forwards';
+    categoryDisplay.style.animation = 'font-size-category 2s forwards ease';
     speedInterval = setInterval(updateDisplay, 1000 / number);
 }
 
@@ -626,7 +626,7 @@ window.onload = () => {
     modeToggle.click();
     setTimeout(() => {
         toggleSmoothCursor();
-    }, 1500);
+    }, 1250);
 }
 
 window.addEventListener('resize', updateCursorPosition);
