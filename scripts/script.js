@@ -459,7 +459,7 @@ function updateTimer() {
 function displaySpeed(prefix, number, stars) {
     const duration = 3000; // Total duration for the animation in milliseconds
     const startTime = Date.now();
-    const easingFactor = 2.5;
+    const easingFactor = 4;
     function easeOutExpo(t) {
         return 1 - Math.pow(2, -easingFactor * t);
     }
@@ -624,7 +624,10 @@ window.onload = () => {
     body.addEventListener("keydown", checkCapslock);
     refreshButton.addEventListener("click", createRipple);
     document.getElementById("customButton").addEventListener("click", createRipple);
-    modeToggle.click();
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // Dark mode
+        modeToggle.click();
+    }
     setTimeout(() => {
         toggleSmoothCursor();
     }, 1250);
