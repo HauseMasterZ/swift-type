@@ -276,6 +276,11 @@ function fetchRandomQuote() {
 function checkInput(event) {
     letterElement = letterElements[currentWordIndex];
     letterElementLength = letterElement.length;
+    clearTimeout(cursorTimeout);
+    cursorSpan.classList.add('active');
+    cursorTimeout = setTimeout(() => {
+        cursorSpan.classList.remove('active');
+    }, 1000);
     if (startTime === 0) {
         startTimer();
     }
@@ -425,11 +430,6 @@ function updateWord(latestWord, i, backspaceFlag = false) {
             flashErrorDisplays();
         }
     }
-    clearTimeout(cursorTimeout);
-    cursorSpan.classList.add('active');
-    cursorTimeout = setTimeout(() => {
-        cursorSpan.classList.remove('active');
-    }, 1000);
     lastLetterRect = latestWord.length > letterElementLength - 1 ? letterRects[currentWordIndex][letterElementLength - 1] : letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)];
     cursorSpan.style.left = latestWord.length === 0 ? `${lastLetterRect[0].left}px` : `${lastLetterRect[0].right}px`;
     cursorSpan.style.top = `${lastLetterRect[0].top}px`;
