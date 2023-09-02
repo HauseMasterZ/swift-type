@@ -20,6 +20,10 @@ body {
   color: #07c944;
 }
 
+.incorrect {
+  color: red;
+}
+
 body.dark {
   --body-color: #18191A;
   --text-color: white;
@@ -27,26 +31,14 @@ body.dark {
   color: var(--text-color);
 }
 
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
 .dark-light {
   left: 0px;
   transform: translate(-40%, 0%);
-}
-
-.github {
-  right: 0px;
-  transform: translate(33%, 0%);
-  margin: 0px;
-  padding: 0px;
-}
-
-.github i {
-  margin: 0px;
-  padding: 0px;
-  position: absolute;
-  color: var(--text-color);
-  font-size: 22px;
-  cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .dark-light i {
@@ -72,17 +64,29 @@ body.dark {
   pointer-events: none;
 }
 
+.github {
+  right: 0px;
+  transform: translate(33%, 0%);
+  margin: 0px;
+  padding: 0px;
+}
+
+.github i {
+  margin: 0px;
+  padding: 0px;
+  position: absolute;
+  color: var(--text-color);
+  font-size: 22px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
 .container {
   max-width: 650px;
   margin: 0 auto;
   text-align: center;
   padding: 0;
   padding-top: 2rem;
-}
-
-h1 {
-  font-size: 24px;
-  margin-bottom: 20px;
 }
 
 #quote {
@@ -111,25 +115,9 @@ h1 {
   /* Adjust this value to control the spacing between letters */
 }
 
-#inputBox {
-  width: 100%;
-  height: 40px;
-  margin-bottom: 20px;
-  padding: 5px;
-  box-sizing: border-box;
-  background-color: var(--input-background-color);
-  border: 1px solid var(--text-color);
-  color: var(--text-color);
-  transition: background-color 1s ease;
-}
-
 .highlight {
   font-weight: bold;
   animation: font-size-highlight 1.5s forwards ease;
-}
-
-#categoryDisplay {
-  padding-top: 2rem;
 }
 
 @keyframes font-size-highlight {
@@ -142,6 +130,22 @@ h1 {
     font-size: 24px;
   }
 }
+#inputBox {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 20px;
+  padding: 5px;
+  box-sizing: border-box;
+  background-color: var(--input-background-color);
+  border: 1px solid var(--text-color);
+  color: var(--text-color);
+  transition: background-color 1s ease;
+}
+
+#categoryDisplay {
+  padding-top: 2rem;
+}
+
 #smoothCursor {
   cursor: pointer;
   -webkit-user-select: none;
@@ -193,6 +197,10 @@ h1 {
   display: none;
 }
 
+.shrink-animation {
+  animation: shrinkAndGrow 0.5s;
+}
+
 @keyframes shrinkAndGrow {
   0% {
     transform: scale(1);
@@ -204,10 +212,6 @@ h1 {
     transform: scale(1);
   }
 }
-.shrink-animation {
-  animation: shrinkAndGrow 0.5s;
-}
-
 .ripple {
   position: absolute;
   border-radius: 50%;
@@ -301,54 +305,6 @@ h1 {
   background-color: rgb(160, 210, 160);
 }
 
-@media (max-width: 1000px) {
-  /* For mobile devices with a maximum width of 768px */
-  #resultImg {
-    position: relative;
-    top: -100vh;
-    left: 80%;
-    width: 80%;
-    transform: translate(-100%, 0%);
-  }
-  .stat,
-  .stats {
-    font-size: 12px;
-  }
-  @keyframes font-size-highlight {
-    to {
-      font-size: 24px;
-    }
-  }
-  @keyframes font-size-category {
-    to {
-      font-size: 16px;
-    }
-  }
-  .modal-content {
-    width: 90%;
-    top: 20%;
-  }
-  .radio-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
-  .radio-container label {
-    align-items: center;
-    font-size: 12px;
-    margin-right: 10px;
-    cursor: pointer;
-  }
-  @keyframes slide-in {
-    from {
-      top: -100vh;
-    }
-    to {
-      transform: translate(-100%, 0%);
-      top: 1vh;
-    }
-  }
-}
 .hidden {
   display: none;
 }
@@ -363,10 +319,6 @@ h1 {
 .stat {
   flex: 1;
   text-align: center;
-}
-
-.incorrect {
-  color: red;
 }
 
 .error {
@@ -456,4 +408,53 @@ h1 {
   display: block;
   margin-top: 10px;
   margin-right: 0px;
+}
+
+@media (max-width: 1000px) {
+  /* For mobile devices with a maximum width of 768px */
+  #resultImg {
+    position: relative;
+    top: -100vh;
+    left: 80%;
+    width: 80%;
+    transform: translate(-100%, 0%);
+  }
+  .stat,
+  .stats {
+    font-size: 12px;
+  }
+  @keyframes font-size-highlight {
+    to {
+      font-size: 24px;
+    }
+  }
+  @keyframes font-size-category {
+    to {
+      font-size: 16px;
+    }
+  }
+  .modal-content {
+    width: 90%;
+    top: 20%;
+  }
+  .radio-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .radio-container label {
+    align-items: center;
+    font-size: 12px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  @keyframes slide-in {
+    from {
+      top: -100vh;
+    }
+    to {
+      transform: translate(-100%, 0%);
+      top: 1vh;
+    }
+  }
 }/*# sourceMappingURL=style.css.map */
