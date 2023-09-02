@@ -132,7 +132,6 @@ h1 {
 
 #categoryDisplay {
     padding-top: 2rem;
-    // animation: font-size-category 2s forwards ease;
 }
 
 @keyframes font-size-highlight {
@@ -352,13 +351,11 @@ h1 {
         }
     }
 
-
     @keyframes font-size-category {
         to {
             font-size: 16px;
         }
     }
-
 
     .modal-content {
         width: 90%;
