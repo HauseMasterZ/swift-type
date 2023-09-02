@@ -561,6 +561,7 @@ function closeCustomTextModal(event) {
         refreshQuote();
     } else {
         customTextInput.value = "";
+        inputBox.focus();
     }
 }
 
