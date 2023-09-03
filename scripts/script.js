@@ -479,7 +479,7 @@ function displaySpeed(prefix, number, stars) {
         categoryDisplay.textContent = `${prefix} ${currentValue}km/h ${stars}`;
     }
     speedInterval = setInterval(updateDisplay, 1000 / number);
-    categoryDisplay.style.animation = 'font-size-category 3s forwards ease';
+    categoryDisplay.style.animation = 'font-size-category 1.5s forwards ease';
 }
 
 function endTest() {
