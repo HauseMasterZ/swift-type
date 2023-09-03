@@ -84,7 +84,7 @@ let totalErrors = 0;
 let startTime = 0;
 let timerInterval = null;
 let fetchInProgress = false;
-let isSmoothCursorEnabled = false;
+let isSmoothCursorEnabled = true;
 let cursorTimeout;
 let letterElements = [];
 let letterElementLength;
@@ -283,6 +283,9 @@ function checkInput(event) {
     }, 1000);
     if (startTime === 0) {
         startTimer();
+        if (isSmoothCursorEnabled) {
+            cursorSpan.style.transition = 'left 0.06s linear, top 0.25s ease-out';
+        }
     }
     if (event.data === ' ') {
         if (currentWordIndex === lastWordIndex) {
@@ -628,9 +631,7 @@ window.onload = () => {
         // Dark mode
         modeToggle.click();
     }
-    setTimeout(() => {
-        toggleSmoothCursor();
-    }, 1250);
+
 }
 
 window.addEventListener('resize', updateCursorPosition);
