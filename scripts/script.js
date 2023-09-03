@@ -574,7 +574,7 @@ function toggleSmoothCursor() {
         cursorSpan.style.transition = 'none';
     } else {
         smoothCursor.innerHTML = `Smooth Cursor: <span class="correct">ON</span>`;
-        cursorSpan.style.transition = 'left 0.06s linear, top 0.25s ease-out';
+        cursorSpan.style.transition = 'left 0.05s linear, top 0.25s ease-out';
     }
     isSmoothCursorEnabled = !isSmoothCursorEnabled;
     inputBox.focus();
