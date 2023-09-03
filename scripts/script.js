@@ -472,14 +472,14 @@ function displaySpeed(prefix, number, stars) {
         const progress = elapsedTime / duration;
         const easedProgress = easeOutExpo(progress);
         const currentValue = Math.round(easedProgress * number);
-        if (currentValue >= number) {
+        if (currentValue > number) {
             clearInterval(speedInterval);
             return;
         }
         categoryDisplay.textContent = `${prefix} ${currentValue}km/h ${stars}`;
     }
-    categoryDisplay.style.animation = 'font-size-category 2s forwards ease';
     speedInterval = setInterval(updateDisplay, 1000 / number);
+    categoryDisplay.style.animation = 'font-size-category 3s forwards ease';
 }
 
 function endTest() {
