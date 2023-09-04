@@ -511,13 +511,13 @@ function endTest(endTime) {
     resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
     grossWPMDisplay.textContent = `Gross WPM: ${grossWPM}`;
-    grossWPMDisplay.classList.add('highlight');
     netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
-    netWPMDisplay.classList.add('highlight');
     accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
     wpmDisplay.textContent = `Raw WPM: ${rawWPM}`;
     displaySpeed(level.title, level.speed, level.stars);
+    grossWPMDisplay.classList.add('highlight');
+    netWPMDisplay.classList.add('highlight');
     body.style.backgroundColor = level.backgroundColor;
 }
 
