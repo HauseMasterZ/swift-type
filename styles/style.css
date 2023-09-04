@@ -330,7 +330,7 @@ h1 {
 }
 
 .flash-out-green {
-  animation: flash-green 0.75s ease;
+  animation: flash-green 0.85s ease;
 }
 
 .flash-out-red {

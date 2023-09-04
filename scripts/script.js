@@ -274,8 +274,6 @@ function fetchRandomQuote() {
 }
 
 function checkInput(event) {
-    letterElement = letterElements[currentWordIndex];
-    letterElementLength = letterElement.length;
     clearTimeout(cursorTimeout);
     cursorSpan.classList.add('active');
     cursorTimeout = setTimeout(() => {
@@ -284,23 +282,27 @@ function checkInput(event) {
     if (startTime === 0) {
         startTimer();
         if (isSmoothCursorEnabled) {
-            cursorSpan.style.transition = 'left 0.06s linear, top 0.25s ease-out';
+            cursorSpan.style.transition = 'left 0.1s linear, top 0.25s ease-out';
         }
     }
+    letterElement = letterElements[currentWordIndex];
+    letterElementLength = letterElement.length;
     if (event.data === ' ') {
-        if (currentWordIndex === lastWordIndex) {
-            endTest();
-            refreshButton.focus();
-            return;
-        }
-        totalTyped++;
-        if (latestWord.length < words[currentWordIndex].textContent.length || latestWord !== words[currentWordIndex].textContent) {
+        const currentWord = words[currentWordIndex].textContent;
+        if (latestWord.length < currentWord.length || latestWord !== currentWord) {
             totalErrors++;
             flashErrorDisplays();
             words[currentWordIndex].classList.add('error');
         } else {
             inputBox.value = '';
         }
+        if (currentWordIndex === lastWordIndex) {
+            const endTime = new Date().getTime();
+            endTest(endTime);
+            refreshButton.focus();
+            return;
+        }
+        totalTyped++;
         typedWords[currentWordIndex] = latestWord;
         currentWordIndex++;
         letterElement = letterElements[currentWordIndex];
@@ -384,7 +386,14 @@ function checkInput(event) {
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
     if (currentWordIndex === lastWordIndex) {
         if (latestWord.length >= letterElementLength) {
-            endTest();
+            const currentWord = words[currentWordIndex].textContent;
+            if (latestWord.length < currentWord.length || latestWord !== currentWord) {
+                totalErrors++;
+                flashErrorDisplays();
+                words[currentWordIndex].classList.add('error');
+            }
+            const endTime = new Date().getTime();
+            endTest(endTime);
             refreshButton.focus();
             return;
         }
@@ -482,13 +491,13 @@ function displaySpeed(prefix, number, stars) {
     categoryDisplay.style.animation = 'font-size-category 1.5s forwards ease';
 }
 
-function endTest() {
+function endTest(endTime) {
     typedWords[currentWordIndex] = latestWord;
-    inputBox.disabled = true;
-    const endTime = new Date().getTime();
     const netWPM = calculateNetWPM(endTime);
-    const wpm = calculateWPM(endTime);
+    const rawWPM = calculateWPM(endTime);
+    const grossWPM = calculateGrossWPM(endTime);
     const accuracy = calculateAccuracy(totalTyped, totalErrors);
+    inputBox.disabled = true;
     clearInterval(timerInterval);
     let level = levels[0];
     for (let i = 0; i < levels.length; i++) {
@@ -501,12 +510,13 @@ function endTest() {
     resultImg.src = level.imgSrc.src;
     resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
-    grossWPMDisplay.textContent = `Gross WPM: ${wpm}`;
+    grossWPMDisplay.textContent = `Gross WPM: ${grossWPM}`;
     grossWPMDisplay.classList.add('highlight');
     netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
     netWPMDisplay.classList.add('highlight');
     accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
+    wpmDisplay.textContent = `Raw WPM: ${rawWPM}`;
     displaySpeed(level.title, level.speed, level.stars);
     body.style.backgroundColor = level.backgroundColor;
 }
@@ -517,16 +527,28 @@ function calculateWPM(endTime) {
     return wpm;
 }
 
+function calculateGrossWPM(endTime) {
+    let netTyped = 0;
+    letterElements.forEach((letters, index) => {
+        let errorCharCnt = 0;
+        letters.forEach((letter, i) => {
+            if (letter.classList.contains("incorrect") || !letter.classList.contains("correct")) {
+                errorCharCnt++;
+            }
+        });
+        netTyped += (letters.length - errorCharCnt) / letters.length;
+    });
+
+    const minutes = (endTime - startTime) / 60000; // in minutes
+    const netWPM = Math.round(netTyped / minutes); // calculate net WPM
+    return netWPM;
+}
+
 function calculateNetWPM(endTime) {
     let errorWordCnt = 0;
-    typedWords.forEach((word, index) => {
-        try {
-            if (word !== words[index].textContent) {
-                errorWordCnt++;
-            }
-        }
-        catch (e) {
-            return;
+    words.forEach((word, index) => {
+        if (word.classList.contains("error")) {
+            errorWordCnt++;
         }
     });
     totalErrors = Math.max(errorWordCnt, totalErrors);
@@ -562,9 +584,6 @@ function closeCustomTextModal(event) {
     if (event['srcElement'].innerText === "Apply") {
         document.getElementById("clearButton").style.display = "inline-block";
         refreshQuote();
-    } else {
-        customTextInput.value = "";
-        inputBox.focus();
     }
 }
 
@@ -574,7 +593,7 @@ function toggleSmoothCursor() {
         cursorSpan.style.transition = 'none';
     } else {
         smoothCursor.innerHTML = `Smooth Cursor: <span class="correct">ON</span>`;
-        cursorSpan.style.transition = 'left 0.05s linear, top 0.25s ease-out';
+        cursorSpan.style.transition = 'left 0.1s linear, top 0.25s ease-out';
     }
     isSmoothCursorEnabled = !isSmoothCursorEnabled;
     inputBox.focus();
