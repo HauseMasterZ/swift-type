@@ -224,7 +224,7 @@ function refreshQuote() {
     clearInterval(speedInterval);
 }
 
-function fetchRandomQuote() {
+const fetchRandomQuote = async () => {
     let minLength = 0;
     let maxLength = 0;
     if (quoteLengthRadios[1].checked) {
@@ -238,40 +238,60 @@ function fetchRandomQuote() {
         maxLength = 430;
     }
     const url = minLength > 0 ? `https://api.quotable.io/quotes/random/?minLength=${minLength}&maxLength=${maxLength}` : "https://api.quotable.io/quotes/random";
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            cursorSpan.style.display = 'block';
-            currentQuote = data[0]['content'];
-            loadingSpinner.style.display = "none";
-            inputBox.value = "";
-            inputBox.disabled = false;
-            splitQuote(currentQuote);
-            words = document.querySelectorAll('.word');
-            for (let index = 0; index < words.length; index++) {
-                letterElements.push(words[index].querySelectorAll('letter'));
-                let lettersRects = [];
-                words[index].querySelectorAll('letter').forEach(letter => {
-                    lettersRects.push(letter.getClientRects());
-                });
-                letterRects.push(lettersRects);
+    let data = null;
+    let retries = 0;
+    while (!data && retries < 5) {
+        try {
+            const response = await Promise.race([
+                fetch(url),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+            ]);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-            cursorSpan.classList.remove('hidden');
-            clearTimeout(cursorTimeout);
-            cursorSpan.classList.add('active');
-            cursorTimeout = setTimeout(() => {
-                cursorSpan.classList.remove('active');
-            }, 1000);
-            firstLetterRect = letterRects[0][0];
-            cursorSpan.style.left = `${firstLetterRect[0].left}px`;
-            cursorSpan.style.top = `${firstLetterRect[0].top}px`;
-            fetchInProgress = false;
-            customTextModal.style.display === "block" ? customTextInput.focus() : inputBox.focus();
-        })
-        .catch(error => {
+            data = await response.json();
+        } catch (error) {
             console.log("Error fetching quote:", error);
+
+            // Display an error message to the user with the current retry count
+            console.log(`Failed to fetch quote (retry ${retries} of 5). Please wait...`);
+
+            // Wait for 1 second before retrying
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            retries++;
+        }
+    }
+    if (!data) {
+        alert("Failed to fetch quote. Please try again later.");
+        return;
+    }
+    cursorSpan.style.display = 'block';
+    currentQuote = data[0]['content'];
+    loadingSpinner.style.display = "none";
+    inputBox.value = "";
+    inputBox.disabled = false;
+    splitQuote(currentQuote);
+    words = document.querySelectorAll('.word');
+    for (let index = 0; index < words.length; index++) {
+        letterElements.push(words[index].querySelectorAll('letter'));
+        let lettersRects = [];
+        words[index].querySelectorAll('letter').forEach(letter => {
+            lettersRects.push(letter.getClientRects());
         });
-}
+        letterRects.push(lettersRects);
+    }
+    cursorSpan.classList.remove('hidden');
+    clearTimeout(cursorTimeout);
+    cursorSpan.classList.add('active');
+    cursorTimeout = setTimeout(() => {
+        cursorSpan.classList.remove('active');
+    }, 1000);
+    firstLetterRect = letterRects[0][0];
+    cursorSpan.style.left = `${firstLetterRect[0].left}px`;
+    cursorSpan.style.top = `${firstLetterRect[0].top}px`;
+    fetchInProgress = false;
+    customTextModal.style.display === "block" ? customTextInput.focus() : inputBox.focus();
+};
 
 function checkInput(event) {
     clearTimeout(cursorTimeout);
