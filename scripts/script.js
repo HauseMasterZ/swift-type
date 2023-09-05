@@ -458,12 +458,12 @@ function flashErrorDisplays() {
 
 function startTimer() {
     startTime = new Date().getTime();
-    timerInterval = setInterval(updateTimer, 1000);
+    timerInterval = setInterval(updateTimer, 200);
 }
 
 function updateTimer() {
     const currentTime = new Date().getTime();
-    const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+    const elapsedTime = ((currentTime - startTime) / 1000).toFixed(1);
     timerDisplay.textContent = `Time: ${elapsedTime}s`;
     wpmDisplay.textContent = `Current WPM: ${calculateWPM(currentTime)}`;
 }
@@ -641,7 +641,7 @@ radioContainer.addEventListener("change", (event) => {
 });
 
 window.onload = () => {
-    fetchRandomQuote();
+    refreshQuote();
     inputBox.addEventListener("input", checkInput);
     body.addEventListener("keydown", checkCapslock);
     refreshButton.addEventListener("click", createRipple);
