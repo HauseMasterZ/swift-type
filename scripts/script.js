@@ -251,6 +251,7 @@ const fetchRandomQuote = async () => {
             }
             data = await response.json();
         } catch (error) {
+
             console.log("Error fetching quote:", error);
 
             // Display an error message to the user with the current retry count
@@ -666,11 +667,6 @@ window.onload = () => {
     body.addEventListener("keydown", checkCapslock);
     refreshButton.addEventListener("click", createRipple);
     document.getElementById("customButton").addEventListener("click", createRipple);
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        // Dark mode
-        modeToggle.click();
-    }
-
 }
 
 window.addEventListener('resize', updateCursorPosition);

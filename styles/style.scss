@@ -12,6 +12,10 @@ body {
     transition: background-color 1s ease;
 }
 
+::selection {
+    background-color: var(--input-background-color);
+}
+
 ::-webkit-scrollbar {
     display: none;
 }
@@ -310,11 +314,12 @@ h1 {
 }
 
 .radio-container input[type="radio"]:checked::before {
-    background-color: #8BC34A;
+    background-color: var(--text-color);
+
 }
 
 .radio-container input[type="radio"]:hover:not(:checked)::before {
-    background-color: rgb(160, 210, 160);
+    background-color: rgba(192, 192, 192, 0.5);
 }
 
 .hidden {
@@ -378,11 +383,10 @@ h1 {
     overflow: hidden;
     display: inline-block;
     padding: 10px min(2vw, 20px);
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--input-background-color);
+    color: var(--text-color);
+    transition: background-color 1s ease;
     border: 1px solid var(--text-color);
-    text-decoration: none;
-    cursor: pointer;
 }
 
 .button:focus {
@@ -396,7 +400,7 @@ h1 {
 
 .button:active {
     color: rgba(15, 95, 240, 1);
-    background-color: #167416;
+    // background-color: #167416;
     outline: none;
 }
 
