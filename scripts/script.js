@@ -2,7 +2,7 @@
 const levels = [
     {
         threshold: 0,
-        imgSrc: 'svg/sloth.svg',
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/sloth.svg', 'svg/sloth.svg'],
         title: 'Sloth-paced Typist 🐌🦥',
         speed: Math.random() * (10 - 5) + 5,
         stars: '⭐',
@@ -10,7 +10,7 @@ const levels = [
     },
     {
         threshold: 20,
-        imgSrc: 'svg/sea_turtle.svg',
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/sea_turtle.svg', 'svg/sea_turtle.svg'],
         title: 'Turtle-paced Typist 🐢',
         speed: Math.random() * (50 - 10) + 10,
         stars: '⭐',
@@ -18,7 +18,7 @@ const levels = [
     },
     {
         threshold: 40,
-        imgSrc: 'svg/horse.svg',
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/horse.svg', 'svg/horse.svg'],
         title: 'Horse-speed Typist 🐎',
         speed: Math.random() * (90 - 50) + 50,
         stars: '⭐⭐',
@@ -26,7 +26,7 @@ const levels = [
     },
     {
         threshold: 60,
-        imgSrc: 'svg/lion.svg',
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/lion.svg', 'svg/lion.svg'],
         title: 'Lion-fingered Typist 🦁',
         speed: Math.random() * (120 - 90) + 90,
         stars: '⭐⭐',
@@ -34,7 +34,7 @@ const levels = [
     },
     {
         threshold: 80,
-        imgSrc: 'svg/cheetah.svg',
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/cheetah.svg', 'svg/cheetah.svg'],
         title: 'Cheetah-swift Typist 🐆',
         speed: Math.random() * (180 - 120) + 120,
         stars: '⭐⭐⭐',
@@ -42,15 +42,15 @@ const levels = [
     },
     {
         threshold: 100,
-        imgSrc: 'svg/eagle.svg',
-        title: 'Eagle-eyed Typist 🦅',
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/eagle.svg', 'svg/eagle.svg'],
+        title: 'Eagle-eyed Typist 🕊️',
         speed: Math.random() * (300 - 180) + 180,
         stars: '⭐⭐⭐⭐',
         backgroundColor: '#AB7D5A'
     },
     {
         threshold: 120,
-        imgSrc: 'svg/falcon.svg',
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/falcon.svg', 'svg/falcon.svg'],
         title: 'Falcon-keyed Typist 🦅',
         speed: Math.random() * (400 - 300) + 300,
         stars: '⭐⭐⭐⭐',
@@ -58,7 +58,7 @@ const levels = [
     },
     {
         threshold: 140,
-        imgSrc: 'svg/hausemaster.svg',
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/hausemaster.svg', 'svg/hausemaster.svg'],
         title: 'Supersonic Typist 🚀 AKA HauseMaster',
         speed: Math.random() * (1000 - 300) + 300,
         stars: '⭐⭐⭐⭐⭐',
@@ -66,18 +66,34 @@ const levels = [
     },
     {
         threshold: 160,
-        imgSrc: 'svg/flash.svg',
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/svg/flash.svg', 'svg/flash.svg'],
         title: 'Lightning-Fast Typist ⚡️',
         speed: 300000,
         stars: '⭐⭐⭐⭐⭐',
         backgroundColor: 'rgb(230, 230, 0)'
     }
 ];
-for (const level of levels) {
-    const img = new Image();
-    img.src = level.imgSrc;
-    level.imgSrc = img;
+
+async function loadImages() {
+    for (const level of levels) {
+        const img = new Image();
+        img.src = level.imgSrc[0];
+        try {
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = () => {
+                    img.src = level.imgSrc[1];
+                    img.onload = resolve;
+                    img.onerror = reject;
+                };
+            });
+            level.imgSrc = img;
+        } catch (error) {
+            console.error(`Failed to load image for level ${level.title}: ${error}`);
+        }
+    }
 }
+
 let currentQuote = "";
 let totalTyped = 0;
 let totalErrors = 0;
@@ -201,6 +217,7 @@ function refreshQuote() {
         inputBox.value = "";
         inputBox.disabled = false;
         inputBox.focus();
+        cursorSpan.style.display = 'block';
     } else {
         if (fetchInProgress) {
             return;
@@ -252,10 +269,8 @@ const fetchRandomQuote = async () => {
             data = await response.json();
         } catch (error) {
 
-            console.log("Error fetching quote:", error);
-
             // Display an error message to the user with the current retry count
-            console.log(`Failed to fetch quote (retry ${retries} of 5). Please wait...`);
+            console.log(`Failed to fetch quote ${error} (retry ${retries} of 5). Please wait...`);
 
             // Wait for 1 second before retrying
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -264,6 +279,8 @@ const fetchRandomQuote = async () => {
     }
     if (!data) {
         alert("Failed to fetch quote. Please try again later.");
+        loadingSpinner.style.display = "none";
+        fetchInProgress = false;
         return;
     }
     cursorSpan.style.display = 'block';
@@ -492,7 +509,7 @@ function updateTimer() {
 function displaySpeed(prefix, number, stars) {
     const duration = 3000; // Total duration for the animation in milliseconds
     const startTime = Date.now();
-    const easingFactor = 4;
+    const easingFactor = 5;
     function easeOutExpo(t) {
         return 1 - Math.pow(2, -easingFactor * t);
     }
@@ -508,18 +525,13 @@ function displaySpeed(prefix, number, stars) {
         }
         categoryDisplay.textContent = `${prefix} ${currentValue}km/h ${stars}`;
     }
-    speedInterval = setInterval(updateDisplay, 1000 / number);
     categoryDisplay.style.animation = 'font-size-category 1.5s forwards ease';
+    speedInterval = setInterval(updateDisplay, 1000 / number);
 }
 
 function endTest(endTime) {
     typedWords[currentWordIndex] = latestWord;
     const netWPM = calculateNetWPM(endTime);
-    const rawWPM = calculateWPM(endTime);
-    const grossWPM = calculateGrossWPM(endTime);
-    const accuracy = calculateAccuracy(totalTyped, totalErrors);
-    inputBox.disabled = true;
-    clearInterval(timerInterval);
     let level = levels[0];
     for (let i = 0; i < levels.length; i++) {
         if (netWPM >= levels[i].threshold) {
@@ -529,8 +541,11 @@ function endTest(endTime) {
         }
     }
     resultImg.src = level.imgSrc.src;
-    resultImg.classList.remove('hidden');
-    resultImg.classList.add('slide-in');
+    const rawWPM = calculateWPM(endTime);
+    const grossWPM = calculateGrossWPM(endTime);
+    const accuracy = calculateAccuracy(totalTyped, totalErrors);
+    inputBox.disabled = true;
+    clearInterval(timerInterval);
     grossWPMDisplay.textContent = `Gross WPM: ${grossWPM}`;
     netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
     accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
@@ -540,6 +555,8 @@ function endTest(endTime) {
     grossWPMDisplay.classList.add('highlight');
     netWPMDisplay.classList.add('highlight');
     body.style.backgroundColor = level.backgroundColor;
+    resultImg.classList.remove('hidden');
+    resultImg.classList.add('slide-in');
 }
 
 function calculateWPM(endTime) {
@@ -645,29 +662,33 @@ function updateCursorPosition() {
     cursorSpan.style.top = `${letterRect.top}px`;
 }
 
-window.addEventListener("click", (event) => {
-    if (event.target === customTextModal) {
-        closeCustomTextModal(event);
-    }
-});
 
-smoothCursor.addEventListener('click', () => {
-    toggleSmoothCursor();
-});
-
-radioContainer.addEventListener("change", (event) => {
-    if (event.target.type === "radio") {
-        refreshQuote();
-    }
-});
-
-window.onload = () => {
+window.onload = async () => {
     refreshQuote();
     inputBox.addEventListener("input", checkInput);
     body.addEventListener("keydown", checkCapslock);
     refreshButton.addEventListener("click", createRipple);
     document.getElementById("customButton").addEventListener("click", createRipple);
+
+    window.addEventListener('resize', updateCursorPosition);
+
+    window.addEventListener("click", (event) => {
+        if (event.target === customTextModal) {
+            closeCustomTextModal(event);
+        }
+    });
+
+    smoothCursor.addEventListener('click', () => {
+        toggleSmoothCursor();
+    });
+
+    radioContainer.addEventListener("change", (event) => {
+        if (event.target.type === "radio") {
+            refreshQuote();
+        }
+    });
+
+    await loadImages();
 }
 
-window.addEventListener('resize', updateCursorPosition);
 
