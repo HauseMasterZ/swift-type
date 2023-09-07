@@ -531,7 +531,13 @@ function displaySpeed(prefix, number, stars) {
 
 function endTest(endTime) {
     typedWords[currentWordIndex] = latestWord;
+    clearInterval(timerInterval);
+    
     const netWPM = calculateNetWPM(endTime);
+    const rawWPM = calculateWPM(endTime);
+    const grossWPM = calculateGrossWPM(endTime);
+    const accuracy = calculateAccuracy(totalTyped, totalErrors);
+
     let level = levels[0];
     for (let i = 0; i < levels.length; i++) {
         if (netWPM >= levels[i].threshold) {
@@ -541,11 +547,7 @@ function endTest(endTime) {
         }
     }
     resultImg.src = level.imgSrc.src;
-    const rawWPM = calculateWPM(endTime);
-    const grossWPM = calculateGrossWPM(endTime);
-    const accuracy = calculateAccuracy(totalTyped, totalErrors);
     inputBox.disabled = true;
-    clearInterval(timerInterval);
     grossWPMDisplay.textContent = `Gross WPM: ${grossWPM}`;
     netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
     accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
@@ -554,9 +556,9 @@ function endTest(endTime) {
     displaySpeed(level.title, level.speed, level.stars);
     grossWPMDisplay.classList.add('highlight');
     netWPMDisplay.classList.add('highlight');
-    body.style.backgroundColor = level.backgroundColor;
     resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
+    body.style.backgroundColor = level.backgroundColor;
 }
 
 function calculateWPM(endTime) {
