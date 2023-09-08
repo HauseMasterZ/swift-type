@@ -120,6 +120,7 @@ h1 {
 }
 
 .highlight {
+    transform: translate3d(0, 0, 0);
     font-weight: bold;
     animation: font-size-highlight 1.5s forwards ease;
 }
@@ -150,6 +151,7 @@ h1 {
 
 #categoryDisplay {
     padding-top: 2rem;
+    transform: translate3d(0, 0, 0);
 }
 
 #smoothCursor {

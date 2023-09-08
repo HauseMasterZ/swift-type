@@ -554,8 +554,8 @@ function endTest(endTime) {
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
     wpmDisplay.textContent = `Raw WPM: ${rawWPM}`;
     displaySpeed(level.title, level.speed, level.stars);
-    // grossWPMDisplay.classList.add('highlight');
-    // netWPMDisplay.classList.add('highlight');
+    grossWPMDisplay.classList.add('highlight');
+    netWPMDisplay.classList.add('highlight');
     resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
     body.style.backgroundColor = level.backgroundColor;
