@@ -247,7 +247,8 @@ h1 {
     left: 70%;
     user-select: none;
     animation: slide-in 1s forwards;
-    transform: translate(-100%, 0%);
+    transform: translate3d(0, 0, 0);
+    // transform: translate(-100%, 0%);
 }
 
 @keyframes slide-in {
