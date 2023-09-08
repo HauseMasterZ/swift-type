@@ -122,7 +122,7 @@ h1 {
 .highlight {
     transform: translate3d(0, 0, 0);
     font-weight: bold;
-    animation: font-size-highlight 1.5s forwards ease;
+    animation: font-size-highlight 1.5s ease 1s forwards;
 }
 
 @keyframes font-size-highlight {
@@ -130,7 +130,6 @@ h1 {
         font-size: 36px;
     }
 }
-
 
 @keyframes font-size-category {
     to {
