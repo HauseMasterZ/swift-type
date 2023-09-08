@@ -532,7 +532,7 @@ function displaySpeed(prefix, number, stars) {
 function endTest(endTime) {
     typedWords[currentWordIndex] = latestWord;
     clearInterval(timerInterval);
-    
+
     const netWPM = calculateNetWPM(endTime);
     const rawWPM = calculateWPM(endTime);
     const grossWPM = calculateGrossWPM(endTime);
