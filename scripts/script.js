@@ -666,7 +666,10 @@ function updateCursorPosition() {
 
 
 window.onload = async () => {
-    refreshQuote();
+    // refreshQuote();
+    loadingSpinner.style.display = "block";
+    await loadImages();
+    await fetchRandomQuote();
     inputBox.addEventListener("input", checkInput);
     body.addEventListener("keydown", checkCapslock);
     refreshButton.addEventListener("click", createRipple);
@@ -690,7 +693,6 @@ window.onload = async () => {
         }
     });
 
-    await loadImages();
 }
 
 
