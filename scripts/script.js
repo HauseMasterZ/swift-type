@@ -235,7 +235,8 @@ function refreshQuote() {
     resultImg.classList.remove('slide-in');
     resultImg.classList.add('hidden');
     body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
-    categoryDisplay.style.animation = 'none';
+    // categoryDisplay.style.animation = 'none';
+    categoryDisplay.classList.remove('highlight-category');
     categoryDisplay.textContent = "";
     clearInterval(timerInterval);
     clearInterval(speedInterval);
@@ -509,7 +510,7 @@ function updateTimer() {
 function displaySpeed(prefix, number, stars) {
     const duration = 3000; // Total duration for the animation in milliseconds
     const startTime = Date.now();
-    const easingFactor = 5;
+    const easingFactor = 5; // Lower values correspond to slower animation
     function easeOutExpo(t) {
         return 1 - Math.pow(2, -easingFactor * t);
     }
@@ -525,7 +526,7 @@ function displaySpeed(prefix, number, stars) {
         }
         categoryDisplay.textContent = `${prefix} ${currentValue}km/h ${stars}`;
     }
-    categoryDisplay.style.animation = 'font-size-category 1.5s ease 1s forwards';
+    categoryDisplay.classList.add('highlight-category');
     speedInterval = setInterval(updateDisplay, 1000 / number);
 }
 
@@ -546,7 +547,7 @@ function endTest(endTime) {
             break;
         }
     }
-    resultImg.src = level.imgSrc.src;
+
     inputBox.disabled = true;
     grossWPMDisplay.textContent = `Gross WPM: ${grossWPM}`;
     netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
@@ -556,9 +557,10 @@ function endTest(endTime) {
     displaySpeed(level.title, level.speed, level.stars);
     grossWPMDisplay.classList.add('highlight');
     netWPMDisplay.classList.add('highlight');
+    body.style.backgroundColor = level.backgroundColor;
+    resultImg.src = level.imgSrc.src;
     resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
-    body.style.backgroundColor = level.backgroundColor;
 }
 
 function calculateWPM(endTime) {
@@ -664,9 +666,7 @@ function updateCursorPosition() {
     cursorSpan.style.top = `${letterRect.top}px`;
 }
 
-
 window.onload = async () => {
-    // refreshQuote();
     loadingSpinner.style.display = "block";
     await loadImages();
     await fetchRandomQuote();
