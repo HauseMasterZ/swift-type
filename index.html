@@ -8,6 +8,8 @@
   <title>Swift Type ~ HauseMaster</title>
   <link rel="icon" type="image/png" href="https://data.typeracer.com/public/images/redesign/typeracer-hot-rod.svg">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="styles/style.css" />
   <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
@@ -86,10 +88,20 @@
     <div class="stats">
       <div class="stat">
         <div id="smoothCursor">Smooth Cursor: <span class="correct">ON</span></div>
-        <div id="categoryDisplay">
+      </div>
+      <div class="stat">
+        <div id="font-family">
+          <label for="font-select">Font family:</label>
+          <select id="font-select">
+            <option value="Roboto" style="font-family: 'Roboto';">Roboto</option>
+            <option value="Open Sans" style="font-family: 'Open Sans';" selected>Open Sans</option>
+            <option value="Poppins" style="font-family: 'Poppins';">Poppins</option>
+            <option value="Ubuntu" style="font-family: 'Ubuntu';">Ubuntu</option>
+          </select>
         </div>
       </div>
     </div>
+    <div id="categoryDisplay"></div>
     <div id="capslockWarning">Caps Lock is ON</div>
     <div id="customTextModal" class="modal">
       <div class="modal-content">
@@ -105,5 +117,4 @@
   <script async src="scripts/script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/spin.js@2.3.2/spin.min.js"></script>
 </body>
-
 </html>

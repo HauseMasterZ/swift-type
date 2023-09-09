@@ -157,8 +157,37 @@ h1 {
 }
 
 #categoryDisplay {
-  padding-top: 2rem;
+  padding-top: 1rem;
   transform: translate3d(0, 0, 0);
+}
+
+#font-select {
+  color: var(--text-color);
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: transparent;
+  outline: none;
+  overflow: hidden;
+}
+
+#font-select:focus {
+  outline: none;
+}
+
+#font-select:hover {
+  cursor: pointer;
+}
+
+#font-select option {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  border: none;
+  outline: none;
+  background-color: var(--body-color);
+  color: var(--text-color);
 }
 
 #smoothCursor {

@@ -119,6 +119,7 @@ const quoteLengthRadios = document.getElementsByName("quoteLength");
 const quoteDisplay = document.getElementById("quote");
 const smoothCursor = document.getElementById("smoothCursor");
 const body = document.querySelector("body");
+const fontSelect = document.getElementById('font-select');
 const modeToggle = document.querySelector(".dark-light");
 const cursorSpan = document.querySelector('.cursor');
 const customTextInput = document.getElementById("customTextInput");
@@ -691,6 +692,13 @@ window.onload = async () => {
         if (event.target.type === "radio") {
             refreshQuote();
         }
+    });
+
+    fontSelect.addEventListener('change', function () {
+        const font = this.value;
+        body.style.fontFamily = font + ', sans-serif, Arial';
+        inputBox.focus();
+        updateCursorPosition();
     });
 
 }
