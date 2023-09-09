@@ -689,7 +689,7 @@ window.onload = async () => {
     loadingSpinner.style.display = "block";
     await loadImages();
     await fetchRandomQuote();
-    if (/Mobi/.test(navigator.userAgent)) {
+    if (/Mobi/.test(navigator.userAgent) || window.innerWidth <= 769) {
         isMobile = true;
         inputBox.addEventListener("keydown", checkInput);
     } else {

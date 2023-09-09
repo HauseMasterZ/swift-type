@@ -521,9 +521,10 @@ h1 {
     }
 
     .radio-container {
-        display: flex;
+        // display: flex;
         flex-wrap: wrap;
-        justify-content: space-between;
+        // flex-wrap: wrap;
+        // justify-content: space-between;
     }
 
     .radio-container label {
