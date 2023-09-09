@@ -1,4 +1,18 @@
 "use strict";
+const keysToIgnore = {
+    "Shift": true,
+    "Control": true,
+    "Alt": true,
+    "Meta": true,
+    "CapsLock": true,
+    "Tab": true,
+    "Enter": true,
+    "Escape": true,
+    "ArrowUp": true,
+    "ArrowDown": true,
+    "ArrowLeft": true,
+    "ArrowRight": true
+};
 const levels = [
     {
         threshold: 0,
@@ -101,6 +115,7 @@ let startTime = 0;
 let timerInterval = null;
 let fetchInProgress = false;
 let isSmoothCursorEnabled = true;
+let isMobile = false;
 let cursorTimeout;
 let letterElements = [];
 let letterElementLength;
@@ -314,8 +329,10 @@ const fetchRandomQuote = async () => {
 };
 
 function checkInput(event) {
+    if (isMobile && keysToIgnore[event.key]) {
+        return;
+    }
     clearTimeout(cursorTimeout);
-    cursorSpan.classList.add('active');
     cursorTimeout = setTimeout(() => {
         cursorSpan.classList.remove('active');
     }, 1000);
@@ -327,7 +344,7 @@ function checkInput(event) {
     }
     letterElement = letterElements[currentWordIndex];
     letterElementLength = letterElement.length;
-    if (event.data === ' ') {
+    if (isMobile ? event.key === ' ' : event.data === ' ') {
         const currentWord = words[currentWordIndex].textContent;
         if (latestWord.length < currentWord.length || latestWord !== currentWord) {
             totalErrors++;
@@ -354,9 +371,9 @@ function checkInput(event) {
         errorsDisplay.textContent = `Errors: ${totalErrors}`;
         return;
     }
-    else if (event.inputType === 'deleteContentBackward') {
+    else if (isMobile ? (!event.ctrlKey && event.key === 'Backspace') : event.inputType === 'deleteContentBackward') {
         totalTyped--;
-        if (!latestWord) {
+        if (!latestWord && words[currentWordIndex - 1].classList.contains('error')) { // or inputBox.value.trim() !== ''
             currentWordIndex = Math.max(currentWordIndex - 1, 0);
             latestWord = typedWords[currentWordIndex];
             letterElement = letterElements[currentWordIndex];
@@ -376,10 +393,11 @@ function checkInput(event) {
             updateWord(latestWord, latestWord.length - 1, true);
             // updateWord(latestWord, latestWord.length, true);
         }
+
         words[currentWordIndex].classList.remove('error');
         return;
     }
-    else if (event.inputType === 'deleteWordBackward') {
+    else if (isMobile ? (event.ctrlKey && event.key === 'Backspace') : event.inputType === 'deleteWordBackward') {
         if (latestWord === '') {
             currentWordIndex = Math.max(currentWordIndex - 1, 0);
             letterElement = letterElements[currentWordIndex];
@@ -419,7 +437,7 @@ function checkInput(event) {
         words[currentWordIndex].classList.remove('error');
         return;
     }
-    latestWord += event.data;
+    latestWord += isMobile ? event.key : event.data;
     totalTyped++;
     updateWord(latestWord, latestWord.length - 1);
     accuracyDisplay.textContent = `Accuracy: ${calculateAccuracy(totalTyped, totalErrors)}%`;
@@ -671,7 +689,12 @@ window.onload = async () => {
     loadingSpinner.style.display = "block";
     await loadImages();
     await fetchRandomQuote();
-    inputBox.addEventListener("input", checkInput);
+    if (/Mobi/.test(navigator.userAgent)) {
+        isMobile = true;
+        inputBox.addEventListener("keydown", checkInput);
+    } else {
+        inputBox.addEventListener("input", checkInput);
+    }
     body.addEventListener("keydown", checkCapslock);
     refreshButton.addEventListener("click", createRipple);
     document.getElementById("customButton").addEventListener("click", createRipple);
