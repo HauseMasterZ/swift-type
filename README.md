@@ -15,7 +15,8 @@ SwiftType is a minimalistic typing test site that allows you to test your typing
 
 ## Features 
  - Blazingly fast
- - Custom theme
+ - Custom fonts
+ - Dark/Light Theme
  - Calculates Current WPM, Gross WPM, Net WPM, accuracy, errors, time taken
  - Shortcut for fast restart and repeat
  - Input field auto clear
