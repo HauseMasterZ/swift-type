@@ -669,13 +669,13 @@ function applyCustomText(event) {
 
 function updateCursorPosition() {
     letterRects = [];
-    for (let index = 0; index < words.length; index++) {
+    words.forEach((word) => {
         let lettersRects = [];
-        words[index].querySelectorAll('letter').forEach(letter => {
+        word.querySelectorAll("letter").forEach((letter) => {
             lettersRects.push(letter.getClientRects());
         });
         letterRects.push(lettersRects);
-    }
+    });
     const letterRect = latestWord
         ? letterRects[currentWordIndex][latestWord.length - 1][0]
         : letterRects[currentWordIndex][0][0];
