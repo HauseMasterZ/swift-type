@@ -152,14 +152,6 @@ const categoryDisplay = document.getElementById("categoryDisplay");
 const resultImg = document.getElementById('resultImg');
 const refreshButton = document.getElementById("refreshButton");
 
-// js code to toggle dark and light mode
-modeToggle.addEventListener("click", () => {
-    modeToggle.classList.toggle("active");
-    body.classList.toggle("dark");
-    body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
-    inputBox.focus();
-});
-
 function createRipple(event) {
     const button = event.currentTarget;
     button.classList.remove("shrink-animation");
@@ -717,7 +709,13 @@ window.onload = async () => {
         updateCursorPosition();
     });
 
-    inputBox.focus();
+    modeToggle.addEventListener("click", () => {
+        modeToggle.classList.toggle("active");
+        body.classList.toggle("dark");
+        body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
+        inputBox.focus();
+    });
+
 }
 
 

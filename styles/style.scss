@@ -193,6 +193,22 @@ h1 {
     color: var(--text-color);
 }
 
+option[value="Roboto"] {
+    font-family: 'Roboto';
+}
+
+option[value="Open Sans"] {
+    font-family: 'Open Sans';
+}
+
+option[value="Poppins"] {
+    font-family: 'Poppins';
+}
+
+option[value="Ubuntu"] {
+    font-family: 'Ubuntu';
+}
+
 #smoothCursor {
     cursor: pointer;
     user-select: none;
@@ -407,7 +423,7 @@ h1 {
 
 @keyframes flash-green {
     0% {
-        color: #00ff00;
+        color: rgba(0, 255, 0, 1);
     }
 
     100% {
