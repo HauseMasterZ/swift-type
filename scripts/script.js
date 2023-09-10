@@ -329,10 +329,11 @@ const fetchRandomQuote = async () => {
 };
 
 function checkInput(event) {
-    // if (isMobile && keysToIgnore[event.key]) {
-    //     return;
-    // }
+    if (isMobile && keysToIgnore[event.key]) {
+        return;
+    }
     clearTimeout(cursorTimeout);
+    cursorSpan.classList.add('active');
     cursorTimeout = setTimeout(() => {
         cursorSpan.classList.remove('active');
     }, 1000);
@@ -344,8 +345,8 @@ function checkInput(event) {
     }
     letterElement = letterElements[currentWordIndex];
     letterElementLength = letterElement.length;
-    // if (isMobile ? event.key === ' ' : event.data === ' ') {
-    if (event.data === ' ') {
+    if (isMobile ? event.key === ' ' : event.data === ' ') {
+    // if (event.data === ' ') {
         const currentWord = words[currentWordIndex].textContent;
         if (latestWord.length < currentWord.length || latestWord !== currentWord) {
             totalErrors++;
@@ -372,8 +373,8 @@ function checkInput(event) {
         errorsDisplay.textContent = `Errors: ${totalErrors}`;
         return;
     }
-    // else if (isMobile ? (!event.ctrlKey && event.key === 'Backspace') : event.inputType === 'deleteContentBackward') {
-    else if (event.inputType === 'deleteContentBackward') {
+    else if (isMobile ? (!event.ctrlKey && event.key === 'Backspace') : event.inputType === 'deleteContentBackward') {
+    // else if (event.inputType === 'deleteContentBackward') {
         totalTyped--;
         if (!latestWord && words[currentWordIndex - 1].classList.contains('error')) { // or inputBox.value.trim() !== ''
             currentWordIndex = Math.max(currentWordIndex - 1, 0);
@@ -399,8 +400,8 @@ function checkInput(event) {
         words[currentWordIndex].classList.remove('error');
         return;
     }
-    // else if (isMobile ? (event.ctrlKey && event.key === 'Backspace') : event.inputType === 'deleteWordBackward') {
-    else if (event.inputType === 'deleteWordBackward') {
+    else if (isMobile ? (event.ctrlKey && event.key === 'Backspace') : event.inputType === 'deleteWordBackward') {
+    // else if (event.inputType === 'deleteWordBackward') {
         if (latestWord === '') {
             currentWordIndex = Math.max(currentWordIndex - 1, 0);
             letterElement = letterElements[currentWordIndex];
@@ -440,8 +441,8 @@ function checkInput(event) {
         words[currentWordIndex].classList.remove('error');
         return;
     }
-    // latestWord += isMobile ? event.key : event.data;
-    latestWord += event.data;
+    latestWord += isMobile ? event.key : event.data;
+    // latestWord += event.data;
     totalTyped++;
     updateWord(latestWord, latestWord.length - 1);
     accuracyDisplay.textContent = `Accuracy: ${calculateAccuracy(totalTyped, totalErrors)}%`;
@@ -696,11 +697,11 @@ window.onload = async () => {
     if (/Mobi/.test(navigator.userAgent)) {
         isMobile = true;
         console.log('mobile')
-        // inputBox.addEventListener("keydown", checkInput);
+        inputBox.addEventListener("keydown", checkInput);
     } else {
         console.log('pc')
+            inputBox.addEventListener("input", checkInput);
     }
-    inputBox.addEventListener("input", checkInput);
     body.addEventListener("keydown", checkCapslock);
     refreshButton.addEventListener("click", createRipple);
     document.getElementById("customButton").addEventListener("click", createRipple);
