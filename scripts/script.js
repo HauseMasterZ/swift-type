@@ -346,7 +346,7 @@ function checkInput(event) {
     letterElement = letterElements[currentWordIndex];
     letterElementLength = letterElement.length;
     if (isMobile ? event.key === ' ' : event.data === ' ') {
-    // if (event.data === ' ') {
+        // if (event.data === ' ') {
         const currentWord = words[currentWordIndex].textContent;
         if (latestWord.length < currentWord.length || latestWord !== currentWord) {
             totalErrors++;
@@ -374,7 +374,7 @@ function checkInput(event) {
         return;
     }
     else if (isMobile ? (!event.ctrlKey && event.key === 'Backspace') : event.inputType === 'deleteContentBackward') {
-    // else if (event.inputType === 'deleteContentBackward') {
+        // else if (event.inputType === 'deleteContentBackward') {
         totalTyped--;
         if (!latestWord && words[currentWordIndex - 1].classList.contains('error')) { // or inputBox.value.trim() !== ''
             currentWordIndex = Math.max(currentWordIndex - 1, 0);
@@ -401,7 +401,7 @@ function checkInput(event) {
         return;
     }
     else if (isMobile ? (event.ctrlKey && event.key === 'Backspace') : event.inputType === 'deleteWordBackward') {
-    // else if (event.inputType === 'deleteWordBackward') {
+        // else if (event.inputType === 'deleteWordBackward') {
         if (latestWord === '') {
             currentWordIndex = Math.max(currentWordIndex - 1, 0);
             letterElement = letterElements[currentWordIndex];
@@ -700,7 +700,7 @@ window.onload = async () => {
         inputBox.addEventListener("keydown", checkInput);
     } else {
         console.log('pc')
-            inputBox.addEventListener("input", checkInput);
+        inputBox.addEventListener("input", checkInput);
     }
     body.addEventListener("keydown", checkCapslock);
     refreshButton.addEventListener("click", createRipple);
