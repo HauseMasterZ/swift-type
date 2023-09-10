@@ -443,6 +443,7 @@ function checkInput(event) {
     if (currentWordIndex === lastWordIndex) {
         if (latestWord.length >= letterElementLength) {
             const currentWord = words[currentWordIndex].textContent;
+            console.log(latestWord.length, currentWord.length, latestWord, currentWord)
             if (latestWord.length < currentWord.length || latestWord !== currentWord) {
                 totalErrors++;
                 flashErrorDisplays();
@@ -689,6 +690,7 @@ window.onload = async () => {
     await fetchRandomQuote();
     isMobile = /Mobi/.test(navigator.userAgent) ? true : false;
     inputBox.addEventListener("input", checkInput);
+    inputBox.addEventListener('compositionend', checkInput);
     body.addEventListener("keydown", checkCapslock);
     refreshButton.addEventListener("click", createRipple);
     document.getElementById("customButton").addEventListener("click", createRipple);
