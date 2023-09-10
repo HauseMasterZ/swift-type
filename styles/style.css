@@ -382,11 +382,11 @@ h1 {
 }
 
 .flash-out-green {
-  animation: flash-green 0.85s ease;
+  animation: flash-green 1s ease-out;
 }
 
 .flash-out-red {
-  animation: flash-red 1s ease;
+  animation: flash-red 1s ease-out;
 }
 
 @keyframes flash-red {

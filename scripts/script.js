@@ -679,7 +679,6 @@ function updateCursorPosition() {
     const letterRect = latestWord
         ? letterRects[currentWordIndex][latestWord.length - 1][0]
         : letterRects[currentWordIndex][0][0];
-
     cursorSpan.style.left = `${latestWord ? letterRect.right : letterRect.left}px`;
     cursorSpan.style.top = `${letterRect.top}px`;
 }
