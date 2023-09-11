@@ -328,9 +328,6 @@ function checkInput(event) {
     }, 1000);
     if (startTime === 0) {
         startTimer();
-        if (isSmoothCursorEnabled) {
-            cursorSpan.style.transition = 'left 0.1s linear, top 0.25s ease-out';
-        }
     }
     letterElement = letterElements[currentWordIndex];
     letterElementLength = letterElement.length;
@@ -716,6 +713,7 @@ window.onload = async () => {
         inputBox.focus();
     });
 
+    cursorSpan.style.transition = 'left 0.1s linear, top 0.25s ease-out';
 }
 
 
