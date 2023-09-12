@@ -114,7 +114,7 @@ let totalErrors = 0;
 let startTime = 0;
 let timerInterval = null;
 let fetchInProgress = false;
-let isSmoothCursorEnabled = true;
+let isSmoothCursorEnabled = false;
 let isMobile = false;
 let cursorTimeout;
 let letterElements = [];
@@ -292,6 +292,7 @@ const fetchRandomQuote = async () => {
         fetchInProgress = false;
         return;
     }
+    fontSelect.setAttribute('size', '4');
     cursorSpan.style.display = 'block';
     currentQuote = data[0]['content'];
     loadingSpinner.style.display = "none";
@@ -706,6 +707,8 @@ window.onload = async () => {
         updateCursorPosition();
     });
 
+    fontSelect.setAttribute('size', '1');
+
     modeToggle.addEventListener("click", () => {
         modeToggle.classList.toggle("active");
         body.classList.toggle("dark");
@@ -713,7 +716,7 @@ window.onload = async () => {
         inputBox.focus();
     });
 
-    cursorSpan.style.transition = 'left 0.1s linear, top 0.25s ease-out';
+    toggleSmoothCursor();
 }
 
 
