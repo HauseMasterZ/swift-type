@@ -250,7 +250,7 @@ function refreshQuote() {
     clearInterval(speedInterval);
 }
 
-const fetchRandomQuote = async () => {
+const fetchRandomQuote = async (fontSelect) => {
     let minLength = 0;
     let maxLength = 0;
     if (quoteLengthRadios[1].checked) {
@@ -276,6 +276,7 @@ const fetchRandomQuote = async () => {
                 throw new Error('Network response was not ok');
             }
             data = await response.json();
+            fontSelect ? fontSelect.setAttribute("size", "4") : null;
         } catch (error) {
 
             // Display an error message to the user with the current retry count
@@ -292,7 +293,6 @@ const fetchRandomQuote = async () => {
         fetchInProgress = false;
         return;
     }
-    fontSelect.setAttribute('size', '4');
     cursorSpan.style.display = 'block';
     currentQuote = data[0]['content'];
     loadingSpinner.style.display = "none";
@@ -318,6 +318,7 @@ const fetchRandomQuote = async () => {
     cursorSpan.style.left = `${firstLetterRect[0].left}px`;
     cursorSpan.style.top = `${firstLetterRect[0].top}px`;
     fetchInProgress = false;
+    fontSelect ? fontSelect.setAttribute("size", "1") : null;
     customTextModal.style.display === "block" ? customTextInput.focus() : inputBox.focus();
 };
 
@@ -676,7 +677,7 @@ function updateCursorPosition() {
 window.onload = async () => {
     loadingSpinner.style.display = "block";
     await loadImages();
-    await fetchRandomQuote();
+    await fetchRandomQuote(fontSelect);
     isMobile = /Mobi/.test(navigator.userAgent) ? true : false;
     inputBox.addEventListener("input", checkInput);
     body.addEventListener("keydown", checkCapslock);
@@ -707,7 +708,6 @@ window.onload = async () => {
         updateCursorPosition();
     });
 
-    fontSelect.setAttribute('size', '1');
 
     modeToggle.addEventListener("click", () => {
         modeToggle.classList.toggle("active");
