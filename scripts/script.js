@@ -114,7 +114,6 @@ let totalErrors = 0;
 let startTime = 0;
 let timerInterval = null;
 let fetchInProgress = false;
-let isSmoothCursorEnabled = false;
 let isMobile = false;
 let cursorTimeout;
 let letterElements = [];
@@ -134,11 +133,8 @@ const quoteLengthRadios = document.getElementsByName("quoteLength");
 const quoteDisplay = document.getElementById("quote");
 const smoothCursor = document.getElementById("smoothCursor");
 const body = document.querySelector("body");
-const fontSelect = document.getElementById('font-select');
-const modeToggle = document.querySelector(".dark-light");
 const cursorSpan = document.querySelector('.cursor');
 const customTextInput = document.getElementById("customTextInput");
-const radioContainer = document.querySelector(".radio-container");
 const inputBox = document.getElementById("inputBox");
 const loadingSpinner = document.querySelector(".spinner-border");
 const timerDisplay = document.getElementById("timerDisplay");
@@ -639,14 +635,14 @@ function closeCustomTextModal(event) {
 }
 
 function toggleSmoothCursor() {
-    if (isSmoothCursorEnabled) {
+    const smoothCursorText = smoothCursor.innerText;
+    if (smoothCursorText.includes("ON")) {
         smoothCursor.innerHTML = `Smooth Cursor: <span class="incorrect">OFF</span>`;
         cursorSpan.style.transition = 'none';
     } else {
         smoothCursor.innerHTML = `Smooth Cursor: <span class="correct">ON</span>`;
         cursorSpan.style.transition = 'left 0.1s linear, top 0.25s ease-out';
     }
-    isSmoothCursorEnabled = !isSmoothCursorEnabled;
     inputBox.focus();
 }
 
@@ -677,7 +673,7 @@ function updateCursorPosition() {
 window.onload = async () => {
     loadingSpinner.style.display = "block";
     await loadImages();
-    await fetchRandomQuote(fontSelect);
+    await fetchRandomQuote(document.getElementById('font-select'));
     isMobile = /Mobi/.test(navigator.userAgent) ? true : false;
     inputBox.addEventListener("input", checkInput);
     body.addEventListener("keydown", checkCapslock);
@@ -695,13 +691,13 @@ window.onload = async () => {
         toggleSmoothCursor();
     });
 
-    radioContainer.addEventListener("change", (event) => {
+    document.querySelector(".radio-container").addEventListener("change", (event) => {
         if (event.target.type === "radio") {
             refreshQuote();
         }
     });
 
-    fontSelect.addEventListener('change', function () {
+    document.getElementById('font-select').addEventListener('change', function () {
         const font = this.value;
         body.style.fontFamily = font + ', sans-serif, Arial';
         inputBox.focus();
@@ -709,8 +705,8 @@ window.onload = async () => {
     });
 
 
-    modeToggle.addEventListener("click", () => {
-        modeToggle.classList.toggle("active");
+    document.querySelector(".dark-light").addEventListener("click", () => {
+        document.querySelector(".dark-light").classList.toggle("active");
         body.classList.toggle("dark");
         body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
         inputBox.focus();
