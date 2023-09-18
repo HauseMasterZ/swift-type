@@ -132,12 +132,12 @@ h1 {
 .highlight {
   transform: translate3d(0, 0, 0);
   font-weight: bold;
-  animation: font-size-highlight 1.5s ease forwards;
+  animation: font-size-highlight 1.5s ease 1s forwards;
 }
 
 .highlight-category {
   transform: translate3d(0, 0, 0);
-  animation: font-size-category 1.5s ease forwards;
+  animation: font-size-category 1.5s ease 1s forwards;
 }
 
 @keyframes font-size-highlight {
@@ -521,12 +521,6 @@ option[value=Ubuntu] {
   .stat,
   .stats {
     font-size: 12px;
-  }
-  .highlight {
-    animation: font-size-highlight 1.5s ease 1s forwards;
-  }
-  .highlight-category {
-    animation: font-size-category 1.5s ease 1s forwards;
   }
   @keyframes font-size-highlight {
     to {
