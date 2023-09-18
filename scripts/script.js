@@ -621,6 +621,7 @@ function closeCustomTextModal(event) {
     if (event['srcElement'].innerText === "Apply") {
         document.getElementById("clearButton").style.display = "inline-block";
         onEnd();
+        customTextInput.value = customTextInput.value.trim();
         refreshQuote();
     }
 }
