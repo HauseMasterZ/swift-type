@@ -19,6 +19,13 @@ body {
     transition: background-color 1s ease;
 }
 
+body.dark {
+    --body-color: #18191A;
+    --text-color: white;
+    --input-background-color: #333333;
+    color: var(--text-color);
+}
+
 ::selection {
     background-color: var(--input-background-color);
 }
@@ -33,13 +40,6 @@ body {
 
 .incorrect {
     color: red;
-}
-
-body.dark {
-    --body-color: #18191A;
-    --text-color: white;
-    --input-background-color: #333333;
-    color: var(--text-color);
 }
 
 h1 {
@@ -451,7 +451,8 @@ option[value="Ubuntu"] {
 
 .button:focus {
     outline: none;
-    box-shadow: 0 0 30px rgba(15, 95, 240, 0.7)
+    // box-shadow: 0 0 30px rgba(15, 95, 240, 0.7);
+    // transition: box-shadow 0.3s ease-in-out;
 }
 
 .button:not(:last-child) {
@@ -461,6 +462,34 @@ option[value="Ubuntu"] {
 .button:active {
     color: rgba(15, 95, 240, 1);
     outline: none;
+}
+
+#flying-focus {
+    position: absolute;
+    margin: 0;
+    background: transparent;
+    transition-property: left, top, width, height;
+    transition-timing-function: cubic-bezier(0, 1, 0, 1);
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#flying-focus.flying-focus_visible {
+    visibility: visible;
+    z-index: 1;
+}
+
+.flying-focus_target {
+    outline: none !important;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    #flying-focus {
+        box-shadow: none;
+        box-shadow: 0 0 30px rgba(15, 95, 240, 1.0);
+        // outline: 5px auto -webkit-focus-ring-color;
+        outline: 1px auto rgba(0, 30, 255, 0.65);
+    }
 }
 
 .modal {

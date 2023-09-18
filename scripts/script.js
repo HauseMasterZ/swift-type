@@ -1,18 +1,5 @@
 "use strict";
-const keysToIgnore = {
-    "Shift": true,
-    "Control": true,
-    "Alt": true,
-    "Meta": true,
-    "CapsLock": true,
-    "Tab": true,
-    "Enter": true,
-    "Escape": true,
-    "ArrowUp": true,
-    "ArrowDown": true,
-    "ArrowLeft": true,
-    "ArrowRight": true
-};
+
 const levels = [
     {
         threshold: 0,
@@ -242,6 +229,7 @@ function refreshQuote() {
     // categoryDisplay.style.animation = 'none';
     categoryDisplay.classList.remove('highlight-category');
     categoryDisplay.textContent = "";
+    onEnd();
     clearInterval(timerInterval);
     clearInterval(speedInterval);
 }
@@ -624,12 +612,15 @@ function clearCustomText() {
     customTextInput.value = "";
     refreshQuote();
     document.getElementById("clearButton").style.display = "none";
+    onEnd();
+
 }
 
 function closeCustomTextModal(event) {
     customTextModal.style.display = "none";
     if (event['srcElement'].innerText === "Apply") {
         document.getElementById("clearButton").style.display = "inline-block";
+        onEnd();
         refreshQuote();
     }
 }
@@ -671,6 +662,10 @@ function updateCursorPosition() {
 }
 
 window.onload = async () => {
+    if (!window.addEventListener) {
+        return;
+    }
+
     loadingSpinner.style.display = "block";
     await loadImages();
     await fetchRandomQuote(document.getElementById('font-select'));
@@ -714,5 +709,3 @@ window.onload = async () => {
 
     toggleSmoothCursor();
 }
-
-
