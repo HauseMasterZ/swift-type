@@ -46,7 +46,7 @@ docElem.addEventListener('focus', (event) => {
 
 docElem.addEventListener('blur', () => {
     onEnd();
-}, true);
+}, false);
 
 function initialize() {
     ringElem = doc.createElement('div');
@@ -57,7 +57,7 @@ function initialize() {
 
 function onEnd() {
     movingId = 0;
-    if (prevFocused) { // Add a check for prevFocused
+    if (prevFocused) {
         ringElem.classList.remove('flying-focus_visible');
         prevFocused.classList.remove('flying-focus_target');
         prevFocused = null;

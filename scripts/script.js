@@ -176,6 +176,7 @@ function splitQuote(quote) {
 }
 
 function refreshQuote() {
+    onEnd();
     letterElements = [];
     letterRects = [];
     typedWords = [];
@@ -229,7 +230,6 @@ function refreshQuote() {
     // categoryDisplay.style.animation = 'none';
     categoryDisplay.classList.remove('highlight-category');
     categoryDisplay.textContent = "";
-    onEnd();
     clearInterval(timerInterval);
     clearInterval(speedInterval);
 }
@@ -328,8 +328,8 @@ function checkInput(event) {
         }
         if (currentWordIndex === lastWordIndex) {
             const endTime = new Date().getTime();
-            endTest(endTime);
             refreshButton.focus();
+            endTest(endTime);
             return;
         }
         totalTyped++;
@@ -417,6 +417,7 @@ function checkInput(event) {
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
     if (currentWordIndex === lastWordIndex) {
         if (latestWord.length >= letterElementLength) {
+            const endTime = new Date().getTime();
             const currentWord = words[currentWordIndex].textContent;
             latestWord.trim()
             if (latestWord.length < currentWord.length || latestWord !== currentWord) {
@@ -424,9 +425,8 @@ function checkInput(event) {
                 flashErrorDisplays();
                 words[currentWordIndex].classList.add('error');
             }
-            const endTime = new Date().getTime();
-            endTest(endTime);
             refreshButton.focus();
+            endTest(endTime);
             return;
         }
     }
@@ -609,21 +609,22 @@ function openCustomTextModal() {
 }
 
 function clearCustomText() {
+    onEnd();
     customTextInput.value = "";
     refreshQuote();
     document.getElementById("clearButton").style.display = "none";
-    onEnd();
 
 }
 
 function closeCustomTextModal(event) {
     customTextModal.style.display = "none";
     if (event['srcElement'].innerText === "Apply") {
-        document.getElementById("clearButton").style.display = "inline-block";
         onEnd();
+        document.getElementById("clearButton").style.display = "inline-block";
         customTextInput.value = customTextInput.value.trim();
         refreshQuote();
     }
+    inputBox.focus();
 }
 
 function toggleSmoothCursor() {
@@ -693,7 +694,7 @@ window.onload = async () => {
         }
     });
 
-    document.getElementById('font-select').addEventListener('change', function () {
+    document.getElementById('font-select').addEventListener('change', () => {
         const font = this.value;
         body.style.fontFamily = font + ', sans-serif, Arial';
         inputBox.focus();
