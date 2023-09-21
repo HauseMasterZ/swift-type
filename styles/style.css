@@ -117,15 +117,15 @@ h1 {
 .word {
   position: relative;
   display: inline;
-  margin-right: 5px;
   font-variant-ligatures: none;
+  margin-right: 5px;
   /* Adjust this value to control the spacing between words */
 }
 
 .letter {
   display: inline;
-  margin-right: 2px;
   font-variant-ligatures: none;
+  margin-right: 2px;
   /* Adjust this value to control the spacing between letters */
 }
 

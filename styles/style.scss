@@ -114,15 +114,15 @@ h1 {
 .word {
     position: relative;
     display: inline;
-    margin-right: 5px;
     font-variant-ligatures: none;
+    margin-right: 5px;
     /* Adjust this value to control the spacing between words */
 }
 
 .letter {
     display: inline;
-    margin-right: 2px;
     font-variant-ligatures: none;
+    margin-right: 2px;
     /* Adjust this value to control the spacing between letters */
 }
 
@@ -451,8 +451,6 @@ option[value="Ubuntu"] {
 
 .button:focus {
     outline: none;
-    // box-shadow: 0 0 30px rgba(15, 95, 240, 0.7);
-    // transition: box-shadow 0.3s ease-in-out;
 }
 
 .button:not(:last-child) {
