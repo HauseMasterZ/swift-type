@@ -101,6 +101,7 @@ let totalErrors = 0;
 let startTime = 0;
 let timerInterval = null;
 let fetchInProgress = false;
+let isQuotableAPI = true;
 let isMobile = false;
 let cursorTimeout;
 let letterElements = [];
@@ -108,6 +109,7 @@ let letterElementLength;
 let letterElement;
 let typedWords = [];
 let words = [];
+let fallbackQuotes = [];
 let letterRects = [];
 let lastLetterRect;
 let firstLetterRect;
@@ -134,6 +136,8 @@ const customTextModal = document.getElementById("customTextModal");
 const categoryDisplay = document.getElementById("categoryDisplay");
 const resultImg = document.getElementById('resultImg');
 const refreshButton = document.getElementById("refreshButton");
+const quotableApiUrl = `https://api.quotable.io/quotes/random/`;
+const fallbackUrl = `https://raw.githubusercontent.com/monkeytypegame/monkeytype/master/frontend/static/quotes/english.json`;
 
 function createRipple(event) {
     const button = event.currentTarget;
@@ -234,6 +238,33 @@ function refreshQuote() {
     clearInterval(speedInterval);
 }
 
+const fetchWithRetries = async (url, fontSelect) => {
+    let data = null;
+    let retries = 0;
+    while (!data && retries < 3) {
+        try {
+            const response = await Promise.race([
+                fetch(url),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+            ]);
+            if (!response.ok) {
+                throw new Error('Network response was not OK');
+            }
+            data = await response.json();
+            fontSelect ? fontSelect.setAttribute("size", "4") : null;
+        } catch (error) {
+
+            // Display an error message to the user with the current retry count
+            console.warn(`Failed to fetch quote ${error} (retry ${retries} of 3). Please wait...`);
+
+            // Wait for 1 second before retrying
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            retries++;
+        }
+    }
+    return data;
+};
+
 const fetchRandomQuote = async (fontSelect) => {
     let minLength = 0;
     let maxLength = 0;
@@ -245,40 +276,50 @@ const fetchRandomQuote = async (fontSelect) => {
         maxLength = 250;
     } else if (quoteLengthRadios[3].checked) {
         minLength = 250;
-        maxLength = 430;
+        maxLength = 99999;
     }
-    const url = minLength > 0 ? `https://api.quotable.io/quotes/random/?minLength=${minLength}&maxLength=${maxLength}` : "https://api.quotable.io/quotes/random";
-    let data = null;
-    let retries = 0;
-    while (!data && retries < 5) {
-        try {
-            const response = await Promise.race([
-                fetch(url),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
-            ]);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            data = await response.json();
-            fontSelect ? fontSelect.setAttribute("size", "4") : null;
-        } catch (error) {
 
-            // Display an error message to the user with the current retry count
-            console.log(`Failed to fetch quote ${error} (retry ${retries} of 5). Please wait...`);
-
-            // Wait for 1 second before retrying
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            retries++;
+    let data;
+    if (isQuotableAPI) {
+        const url = minLength > 0 ? `${quotableApiUrl}?minLength=${minLength}&maxLength=${maxLength}` : quotableApiUrl;
+    
+        const response = await fetchWithRetries(url, fontSelect);
+    
+        if (response) {
+            data = response;
+        } else {
+            console.error("Failed to fetch quote from Quotable API. Using fallback URL...");
+            isQuotableAPI = false;
         }
     }
-    if (!data) {
-        alert("Failed to fetch quote. Please try again later.");
+    if (!data && fallbackQuotes.length === 0) {
+        data = await fetchWithRetries(fallbackUrl, fontSelect);
+        fallbackQuotes = data.quotes;
+    }
+    
+    if (!data && fallbackQuotes.length === 0) {
+        alert("Failed to fetch quote from fallback URL. Please try again later.");
         loadingSpinner.style.display = "none";
         fetchInProgress = false;
         return;
     }
+
     cursorSpan.style.display = 'block';
-    currentQuote = data[0]['content'];
+
+    if (fallbackQuotes.length > 0) {
+        if (minLength > 0) {
+            const filteredQuotes = fallbackQuotes.filter(quote => quote['length'] >= minLength && quote['length'] <= maxLength);
+            if (filteredQuotes.length > 0) {
+                currentQuote = filteredQuotes[Math.floor(Math.random() * filteredQuotes.length)]['text'];
+            } else {
+                currentQuote = data['quotes'][Math.floor(Math.random() * data['quotes'].length)]['text'];
+            }
+        } else {
+            currentQuote = fallbackQuotes[Math.floor(Math.random() * fallbackQuotes.length)]['text'];
+        }
+    } else {
+        currentQuote = data[0]['content'];
+    }
     loadingSpinner.style.display = "none";
     inputBox.value = "";
     inputBox.disabled = false;
