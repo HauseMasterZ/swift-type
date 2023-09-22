@@ -426,13 +426,27 @@ function checkInput(event) {
                 return;
             }
         } else if (latestWord.match(punctuationPattern)) {
-            letterElement[letterElementLength - 1].classList.remove('correct');
-            letterElement[letterElementLength - 1].classList.remove('incorrect');
-            latestWord = latestWord.slice(0, -1);
+            // const lastNonPunctuationIndex = latestWord.replace(punctuationPattern, '').length - 1;
+            // let index = letterElementLength - 1;
+            // while (index > lastNonPunctuationIndex) {
+            //     letterElement[index].classList.remove('correct');
+            //     letterElement[index].classList.remove('incorrect');
+            //     totalTyped--;
+            //     index--;
+            // }
+            // latestWord = latestWord.slice(0, lastNonPunctuationIndex + 1);
+            const lastWord = inputBox.value.trim().split(' ').pop();
+            totalTyped -= latestWord.length - lastWord.length;
+            latestWord = lastWord;
+            let index = letterElementLength - 1;
+            while (index >= latestWord.length) {
+                letterElement[index].classList.remove('correct');
+                letterElement[index].classList.remove('incorrect');
+                index--;
+            }
             lastLetterRect = letterRects[currentWordIndex][latestWord.length - 1];
             cursorSpan.style.left = `${lastLetterRect[0].right}px`;
             cursorSpan.style.top = `${lastLetterRect[0].top}px`;
-            totalTyped--;
             return;
         }
         for (let i = 0; i < letterElementLength; i++) {
@@ -649,22 +663,20 @@ function openCustomTextModal() {
 }
 
 function clearCustomText() {
-    onEnd();
     customTextInput.value = "";
     refreshQuote();
     document.getElementById("clearButton").style.display = "none";
-
 }
 
 function closeCustomTextModal(event) {
     customTextModal.style.display = "none";
     if (event['srcElement'].innerText === "Apply") {
-        onEnd();
         document.getElementById("clearButton").style.display = "inline-block";
         customTextInput.value = customTextInput.value.trim();
         refreshQuote();
     }
     inputBox.focus();
+    onEnd();
 }
 
 function toggleSmoothCursor() {

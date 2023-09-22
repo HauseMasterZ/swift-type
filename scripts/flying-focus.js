@@ -9,8 +9,8 @@ let prevFocused = null;
 let keyDownTime = 0;
 
 docElem.addEventListener('keydown', function (event) {
-    var key = event.key;
     // Show animation only upon Tab or Arrow keys press.
+    // var key = event.key;
     // if (key !== 'Tab' && key !== 'ArrowUp' && key !== 'ArrowDown' && key !== 'ArrowLeft' && key !== 'ArrowRight') {
     //     return;
     // }
@@ -42,6 +42,7 @@ docElem.addEventListener('focus', (event) => {
     target.classList.add('flying-focus_target');
     ringElem.classList.add('flying-focus_visible');
     prevFocused = target;
+
 }, true);
 
 docElem.addEventListener('blur', () => {
