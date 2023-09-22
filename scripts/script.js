@@ -254,10 +254,8 @@ const fetchWithRetries = async (url, fontSelect) => {
             fontSelect ? fontSelect.setAttribute("size", "4") : null;
         } catch (error) {
 
-            // Display an error message to the user with the current retry count
             console.warn(`Failed to fetch quote ${error} (retry ${retries} of 3). Please wait...`);
 
-            // Wait for 1 second before retrying
             await new Promise(resolve => setTimeout(resolve, 1000));
             retries++;
         }
@@ -279,7 +277,7 @@ const fetchRandomQuote = async (fontSelect) => {
         maxLength = 99999;
     }
 
-    let data;
+    let data = null;
     if (isQuotableAPI) {
         const url = minLength > 0 ? `${quotableApiUrl}?minLength=${minLength}&maxLength=${maxLength}` : quotableApiUrl;
     
@@ -544,7 +542,7 @@ function updateTimer() {
 function displaySpeed(prefix, number, stars) {
     const duration = 3000; // Total duration for the animation in milliseconds
     const startTime = Date.now();
-    const easingFactor = 5; // Lower values correspond to slower animation
+    const easingFactor = 3; // Lower values correspond to slower animation
     function easeOutExpo(t) {
         return 1 - Math.pow(2, -easingFactor * t);
     }
@@ -561,6 +559,7 @@ function displaySpeed(prefix, number, stars) {
         categoryDisplay.textContent = `${prefix} ${currentValue}km/h ${stars}`;
     }
     categoryDisplay.classList.add('highlight-category');
+    
     speedInterval = setInterval(updateDisplay, 1000 / number);
 }
 
@@ -735,13 +734,12 @@ window.onload = async () => {
         }
     });
 
-    document.getElementById('font-select').addEventListener('change', () => {
+    document.getElementById('font-select').addEventListener('change', function () {
         const font = this.value;
         body.style.fontFamily = font + ', sans-serif, Arial';
         inputBox.focus();
         updateCursorPosition();
     });
-
 
     document.querySelector(".dark-light").addEventListener("click", () => {
         document.querySelector(".dark-light").classList.toggle("active");
