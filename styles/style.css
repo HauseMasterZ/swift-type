@@ -477,9 +477,8 @@ option[value=Ubuntu] {
 
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
   #flying-focus {
-    box-shadow: none;
     box-shadow: 0 0 30px rgb(15, 95, 240);
-    outline: 1px auto rgba(255, 255, 255, 0.65);
+    outline: 1px auto;
   }
 }
 .modal {
