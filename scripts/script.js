@@ -179,8 +179,7 @@ function splitQuote(quote) {
     lastWordIndex = wordElements.length - 1;
 }
 
-function refreshQuote() {
-    onEnd();
+const refreshQuote = async () => {
     letterElements = [];
     letterRects = [];
     typedWords = [];
@@ -220,7 +219,7 @@ function refreshQuote() {
         }
         fetchInProgress = true;
         loadingSpinner.style.display = "block";
-        fetchRandomQuote();
+        await fetchRandomQuote();
     }
     currentQuote.split(' ').forEach(word => {
         typedWords.push('');
@@ -236,6 +235,7 @@ function refreshQuote() {
     categoryDisplay.textContent = "";
     clearInterval(timerInterval);
     clearInterval(speedInterval);
+    onEnd();
 }
 
 const fetchWithRetries = async (url, fontSelect) => {
@@ -253,7 +253,6 @@ const fetchWithRetries = async (url, fontSelect) => {
             data = await response.json();
             fontSelect ? fontSelect.setAttribute("size", "4") : null;
         } catch (error) {
-
             console.warn(`Failed to fetch quote ${error} (retry ${retries} of 3). Please wait...`);
 
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -263,7 +262,7 @@ const fetchWithRetries = async (url, fontSelect) => {
     return data;
 };
 
-const fetchRandomQuote = async (fontSelect) => {
+const fetchRandomQuote = async (fontSelect = null) => {
     let minLength = 0;
     let maxLength = 0;
     if (quoteLengthRadios[1].checked) {
@@ -280,9 +279,9 @@ const fetchRandomQuote = async (fontSelect) => {
     let data = null;
     if (isQuotableAPI) {
         const url = minLength > 0 ? `${quotableApiUrl}?minLength=${minLength}&maxLength=${maxLength}` : quotableApiUrl;
-    
+
         const response = await fetchWithRetries(url, fontSelect);
-    
+
         if (response) {
             data = response;
         } else {
@@ -294,7 +293,7 @@ const fetchRandomQuote = async (fontSelect) => {
         data = await fetchWithRetries(fallbackUrl, fontSelect);
         fallbackQuotes = data.quotes;
     }
-    
+
     if (!data && fallbackQuotes.length === 0) {
         alert("Failed to fetch quote from fallback URL. Please try again later.");
         loadingSpinner.style.display = "none";
@@ -438,13 +437,20 @@ function checkInput(event) {
             const lastWord = inputBox.value.trim().split(' ').pop();
             totalTyped -= latestWord.length - lastWord.length;
             latestWord = lastWord;
+            const latestWordLength = latestWord.length;
+            console.log(latestWord);
             let index = letterElementLength - 1;
-            while (index >= latestWord.length) {
+            while (index >= latestWordLength) {
                 letterElement[index].classList.remove('correct');
                 letterElement[index].classList.remove('incorrect');
                 index--;
             }
-            lastLetterRect = letterRects[currentWordIndex][latestWord.length - 1];
+            if (latestWordLength >= letterElementLength) {
+                lastLetterRect = letterRects[currentWordIndex][letterElementLength - 1];
+                updateWord(latestWord, latestWordLength - 1, true);
+            } else {
+                lastLetterRect = letterRects[currentWordIndex][latestWordLength - 1];
+            }
             cursorSpan.style.left = `${lastLetterRect[0].right}px`;
             cursorSpan.style.top = `${lastLetterRect[0].top}px`;
             return;
@@ -573,7 +579,7 @@ function displaySpeed(prefix, number, stars) {
         categoryDisplay.textContent = `${prefix} ${currentValue}km/h ${stars}`;
     }
     categoryDisplay.classList.add('highlight-category');
-    
+
     speedInterval = setInterval(updateDisplay, 1000 / number);
 }
 
@@ -746,11 +752,13 @@ window.onload = async () => {
         }
     });
 
-    document.getElementById('font-select').addEventListener('change', function () {
+    document.getElementById('font-select').addEventListener('change', function (event) {
         const font = this.value;
         body.style.fontFamily = font + ', sans-serif, Arial';
-        inputBox.focus();
         updateCursorPosition();
+        if (!event.target.classList.contains('flying-focus_target')) {
+            inputBox.focus();
+          }
     });
 
     document.querySelector(".dark-light").addEventListener("click", () => {
