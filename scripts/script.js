@@ -103,6 +103,7 @@ let timerInterval = null;
 let fetchInProgress = false;
 let isQuotableAPI = true;
 let isMobile = false;
+let isHighlightingEnabled = false;
 let cursorTimeout;
 let letterElements = [];
 let letterElementLength;
@@ -120,11 +121,11 @@ let currentWordIndex = 0;
 const punctuationPattern = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
 const quoteLengthRadios = document.getElementsByName("quoteLength");
 const quoteDisplay = document.getElementById("quote");
-const smoothCursor = document.getElementById("smoothCursor");
 const body = document.querySelector("body");
 const cursorSpan = document.querySelector('.cursor');
 const customTextInput = document.getElementById("customTextInput");
 const inputBox = document.getElementById("inputBox");
+const container = document.querySelector(".container");
 const loadingSpinner = document.querySelector(".spinner-border");
 const timerDisplay = document.getElementById("timerDisplay");
 const wpmDisplay = document.getElementById("wpmDisplay");
@@ -136,6 +137,11 @@ const customTextModal = document.getElementById("customTextModal");
 const categoryDisplay = document.getElementById("categoryDisplay");
 const resultImg = document.getElementById('resultImg');
 const refreshButton = document.getElementById("refreshButton");
+const darkLightToggleElement = document.querySelector(".dark-light");
+const smoothCursorElement = document.getElementById("smoothCursor");
+const fontSelectElement = document.getElementById('font-select');
+const highlightedWordsElement = document.getElementById("highlighted-words");
+
 const quotableApiUrl = `https://api.quotable.io/quotes/random/`;
 const fallbackUrl = `https://raw.githubusercontent.com/monkeytypegame/monkeytype/master/frontend/static/quotes/english.json`;
 
@@ -338,8 +344,9 @@ const fetchRandomQuote = async (fontSelect = null) => {
         });
         letterRects.push(lettersRects);
     }
-    // words[currentWordIndex].style.opacity = 1;
-    // words[currentWordIndex + 1].style.opacity = 0.5;
+    if (isHighlightingEnabled) {
+        handleHighlightedWordsClick(true);
+    }
     cursorSpan.classList.remove('hidden');
     activateCursor();
     firstLetterRect = letterRects[0][0];
@@ -374,12 +381,7 @@ function checkInput(event) {
         totalTyped++;
         typedWords[currentWordIndex] = latestWord;
         currentWordIndex++;
-        // words[currentWordIndex].style.opacity = 1;
-        // try {
-        //     words[currentWordIndex + 1].style.opacity = 0.5;
-        // } catch (error) {
-
-        // }
+        isHighlightingEnabled ? highlightWord() : null;
         letterElement = letterElements[currentWordIndex];
         firstLetterRect = letterRects[currentWordIndex][0];
         cursorSpan.style.left = `${firstLetterRect[0].left}px`;
@@ -391,6 +393,7 @@ function checkInput(event) {
         totalTyped--;
         if (!latestWord && words[currentWordIndex - 1].classList.contains('error')) { // or inputBox.value.trim() !== ''
             currentWordIndex = Math.max(currentWordIndex - 1, 0);
+            isHighlightingEnabled ? highlightWord(true) : null;
             latestWord = typedWords[currentWordIndex];
             letterElement = letterElements[currentWordIndex];
             letterElementLength = letterElement.length;
@@ -409,13 +412,13 @@ function checkInput(event) {
             updateWord(latestWord, latestWord.length - 1, true);
             // updateWord(latestWord, latestWord.length, true);
         }
-
         words[currentWordIndex].classList.remove('error');
         return;
     }
     else if (event.inputType === 'deleteWordBackward') {
         if (latestWord === '') {
             currentWordIndex = Math.max(currentWordIndex - 1, 0);
+            isHighlightingEnabled ? highlightWord(true) : null;
             letterElement = letterElements[currentWordIndex];
             letterElementLength = letterElement.length;
             if (letterElement[letterElementLength - 1].textContent.match(punctuationPattern) && typedWords[currentWordIndex].match(punctuationPattern)) {
@@ -689,16 +692,72 @@ function closeCustomTextModal(event) {
     onEnd();
 }
 
-function toggleSmoothCursor() {
-    const smoothCursorText = smoothCursor.innerText;
-    if (smoothCursorText.includes("ON")) {
-        smoothCursor.innerHTML = `Smooth Cursor: <span class="incorrect">OFF</span>`;
-        cursorSpan.style.transition = 'none';
-    } else {
-        smoothCursor.innerHTML = `Smooth Cursor: <span class="correct">ON</span>`;
-        cursorSpan.style.transition = 'left 0.1s linear, top 0.25s ease-out';
+
+function highlightWord(reverse = false) {
+    if (reverse && currentWordIndex > 0) {
+        words[currentWordIndex + 1].style.opacity = 0.5;
+        words[currentWordIndex + 2].style.opacity = 0.3;
+    } else if (!reverse) {
+        words[currentWordIndex].style.opacity = 1;
+        if (currentWordIndex < lastWordIndex) {
+            words[currentWordIndex + 1].style.opacity = 0.5;
+        }
     }
+}
+
+function handleHighlightedWordsClick(initialQuoteFetch = false) {
+    isHighlightingEnabled = !isHighlightingEnabled || initialQuoteFetch;
+
+    for (let i = currentWordIndex; i <= lastWordIndex; i++) {
+        words[i].style.opacity = isHighlightingEnabled ? 0.3 : 1;
+    }
+    if (isHighlightingEnabled && currentWordIndex < lastWordIndex) {
+        words[currentWordIndex].style.opacity = 1;
+        words[currentWordIndex + 1].style.opacity = 0.5;
+    }
+    initialQuoteFetch ? null : highlightedWordsElement.innerHTML = isHighlightingEnabled ? "Highlighting: <span class='correct'>ON</span>" : "Highlighting: <span class='incorrect'>OFF</span>";
     inputBox.focus();
+}
+
+
+
+function handleSmoothCursorClick() {
+    const isSmoothCursorEnabled = smoothCursorElement.innerText.includes("ON");
+    smoothCursorElement.innerHTML = `Smooth Caret: <span class="${isSmoothCursorEnabled ? 'incorrect' : 'correct'}">${isSmoothCursorEnabled ? 'OFF' : 'ON'}</span>`;
+    cursorSpan.style.transition = isSmoothCursorEnabled ? 'none' : 'left 0.1s linear, top 0.25s ease-out';
+    inputBox.focus();
+}
+
+function handleDarkLightToggleClick() {
+    darkLightToggleElement.classList.toggle("active");
+    body.classList.toggle("dark");
+    body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
+    inputBox.focus();
+}
+
+function handleFontSelectChange() {
+    const font = fontSelectElement.value;
+    body.style.fontFamily = font + ', sans-serif, Arial';
+    updateCursorPosition();
+    inputBox.focus();
+}
+
+function handleClick(event) {
+    if (event.target === smoothCursorElement) {
+        handleSmoothCursorClick();
+    } else if (event.target === highlightedWordsElement) {
+        handleHighlightedWordsClick();
+    } else if (event.target.parentNode === darkLightToggleElement) {
+        handleDarkLightToggleClick();
+    }
+}
+
+function handleChange(event) {
+    if (event.target.type === "radio") {
+        refreshQuote();
+    } else if (event.target === fontSelectElement) {
+        handleFontSelectChange();
+    }
 }
 
 function applyCustomText(event) {
@@ -731,44 +790,17 @@ window.onload = async () => {
     }
     loadingSpinner.style.display = "block";
     await loadImages();
-    await fetchRandomQuote(document.getElementById('font-select'));
+    await fetchRandomQuote(fontSelectElement);
     isMobile = /Mobi/.test(navigator.userAgent) ? true : false;
     inputBox.addEventListener("input", checkInput);
     body.addEventListener("keydown", checkCapslock);
-    refreshButton.addEventListener("click", createRipple);
-    document.getElementById("customButton").addEventListener("click", createRipple);
     window.addEventListener('resize', updateCursorPosition);
-
     window.addEventListener("click", (event) => {
         if (event.target === customTextModal) {
             closeCustomTextModal(event);
         }
     });
-
-    smoothCursor.addEventListener('click', () => {
-        toggleSmoothCursor();
-    });
-
-    document.querySelector(".radio-container").addEventListener("change", (event) => {
-        if (event.target.type === "radio") {
-            refreshQuote();
-        }
-    });
-
-    document.getElementById('font-select').addEventListener('change', function (event) {
-        const font = this.value;
-        body.style.fontFamily = font + ', sans-serif, Arial';
-        updateCursorPosition();
-        // if (!event.target.classList.contains('flying-focus_target')) {
-        inputBox.focus();
-        // }
-    });
-
-    document.querySelector(".dark-light").addEventListener("click", () => {
-        document.querySelector(".dark-light").classList.toggle("active");
-        body.classList.toggle("dark");
-        body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
-        inputBox.focus();
-    });
-    toggleSmoothCursor();
+    container.addEventListener("click", handleClick);
+    container.addEventListener("change", handleChange);
+    cursorSpan.style.transition = 'left 0.1s linear, top 0.25s ease-out';
 }

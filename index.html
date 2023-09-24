@@ -29,9 +29,9 @@
     <div id="quote"></div>
     <input type="text" id="inputBox" autofocus disabled>
     <div>
-      <button class="button" id="refreshButton" onclick="refreshQuote()">Refresh</button>
-      <button class="button" id="customButton" onclick="openCustomTextModal()">Custom Text</button>
-      <button class="button" id="clearButton" onclick="clearCustomText()">Clear Text</button>
+      <button class="button" id="refreshButton" onclick="refreshQuote(); createRipple(event)">Refresh</button>
+      <button class="button" id="customButton" onclick="openCustomTextModal(); createRipple(event)">Custom Text</button>
+      <button class="button" id="clearButton" onclick="clearCustomText(); createRipple(event)">Clear Text</button>
     </div>
     <br>
     <div id="timerDisplay">Time: 0s</div>
@@ -81,7 +81,10 @@
     </div>
     <div class="stats">
       <div class="stat">
-        <div id="smoothCursor">Smooth Cursor: <span class="incorrect">OFF</span></div>
+        <div id="smoothCursor">Smooth Caret: <span class="correct">ON</span></div>
+      </div>
+      <div class="stat">
+        <div id="highlighted-words">Highlighting: <span class="incorrect">OFF</span></div>
       </div>
       <div class="stat">
         <div id="font-family">
@@ -117,7 +120,9 @@
     </div>
     <div class="stats">
       <div class="stat">
-        <img id="resultImg" class="hidden" src="" alt="Result Speed Image" srcset="">
+        <div id="resultImgParent">
+          <img id="resultImg" class="hidden" src="" alt="Result Speed Image" srcset="">
+        </div>
       </div>
     </div>
   </div>

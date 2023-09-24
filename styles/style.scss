@@ -259,6 +259,11 @@ option[value="Ubuntu"] {
     }
 }
 
+#highlighted-words {
+    cursor: pointer;
+    user-select: none;
+}
+
 #timerDisplay {
     margin-bottom: 20px;
 }
@@ -307,11 +312,9 @@ option[value="Ubuntu"] {
     width: 30%;
     left: 70%;
     user-select: none;
-    animation: slide-in 1s forwards;
-    transform: translate3d(0, 0, 0);
     transform: translate(-100%, 0%);
+    animation: slide-in linear 1s forwards, slide-in-alt ease-in 0.75s 0.25s forwards;
 }
-
 
 @keyframes slide-in {
     from {
@@ -320,20 +323,13 @@ option[value="Ubuntu"] {
 
     to {
         top: 50%;
-        transform: translate(0%, -50%);
     }
 }
 
-.modal-content {
-    background-color: rgb(255, 255, 255, 0.8);
-    position: relative;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 20px;
-    border: 1px solid #888;
-    width: 50%;
-    max-height: 100vh;
+@keyframes slide-in-alt {
+    to {
+        transform: translate(0%, -50%);
+    }
 }
 
 .radio-container {
@@ -494,6 +490,18 @@ option[value="Ubuntu"] {
     }
 }
 
+.modal-content {
+    background-color: rgb(255, 255, 255, 0.8);
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    max-height: 100vh;
+}
+
 .modal {
     display: none;
     justify-content: center;
@@ -534,6 +542,7 @@ option[value="Ubuntu"] {
         left: 70%;
         width: 70%;
         transform: translate(-100%, 0%);
+        animation: slide-in ease 1s forwards;
     }
 
     .stat,
@@ -582,4 +591,5 @@ option[value="Ubuntu"] {
             top: 1vh;
         }
     }
+
 }
