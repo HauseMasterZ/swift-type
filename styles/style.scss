@@ -175,7 +175,6 @@ h1 {
     -moz-appearance: none;
     background-color: transparent;
     outline: none;
-    overflow: hidden;
 }
 
 #font-select:focus {
@@ -446,7 +445,7 @@ option[value="Ubuntu"] {
 .button {
     position: relative;
     display: inline-block;
-    overflow: auto;
+    overflow: hidden;
     padding: 10px min(2vw, 20px);
     background-color: var(--input-background-color);
     color: var(--text-color);

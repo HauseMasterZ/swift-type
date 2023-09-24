@@ -165,6 +165,7 @@ function splitQuote(quote) {
     const split_words = quote.split(' ');
     const wordElements = split_words.map(word => {
         const wordElement = document.createElement('div');
+        // wordElement.style.opacity = 0.2;
         wordElement.classList.add('word');
         for (const letter of word) {
             const letterElement = document.createElement('letter');
@@ -178,6 +179,38 @@ function splitQuote(quote) {
     }
     lastWordIndex = wordElements.length - 1;
 }
+
+function activateCursor() {
+    clearTimeout(cursorTimeout);
+    cursorSpan.classList.add('active');
+    cursorTimeout = setTimeout(() => {
+        cursorSpan.classList.remove('active');
+    }, 1000);
+}
+
+const fetchWithRetries = async (url, fontSelect) => {
+    let data = null;
+    let retries = 0;
+    while (!data && retries < 3) {
+        try {
+            const response = await Promise.race([
+                fetch(url),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+            ]);
+            if (!response.ok) {
+                throw new Error('Network response was not OK');
+            }
+            data = await response.json();
+            fontSelect ? fontSelect.setAttribute("size", "4") : null;
+        } catch (error) {
+            console.warn(`Failed to fetch quote ${error} (retry ${retries} of 3). Please wait...`);
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            retries++;
+        }
+    }
+    return data;
+};
 
 const refreshQuote = async () => {
     letterElements = [];
@@ -226,7 +259,7 @@ const refreshQuote = async () => {
     });
     latestWord = "";
     timerDisplay.textContent = "Time: 0s";
-    resultImg.setAttribute('src', '');
+    resultImg.src = '';
     resultImg.classList.remove('slide-in');
     resultImg.classList.add('hidden');
     body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
@@ -237,30 +270,6 @@ const refreshQuote = async () => {
     clearInterval(speedInterval);
     onEnd();
 }
-
-const fetchWithRetries = async (url, fontSelect) => {
-    let data = null;
-    let retries = 0;
-    while (!data && retries < 3) {
-        try {
-            const response = await Promise.race([
-                fetch(url),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
-            ]);
-            if (!response.ok) {
-                throw new Error('Network response was not OK');
-            }
-            data = await response.json();
-            fontSelect ? fontSelect.setAttribute("size", "4") : null;
-        } catch (error) {
-            console.warn(`Failed to fetch quote ${error} (retry ${retries} of 3). Please wait...`);
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            retries++;
-        }
-    }
-    return data;
-};
 
 const fetchRandomQuote = async (fontSelect = null) => {
     let minLength = 0;
@@ -301,8 +310,6 @@ const fetchRandomQuote = async (fontSelect = null) => {
         return;
     }
 
-    cursorSpan.style.display = 'block';
-
     if (fallbackQuotes.length > 0) {
         if (minLength > 0) {
             const filteredQuotes = fallbackQuotes.filter(quote => quote['length'] >= minLength && quote['length'] <= maxLength);
@@ -317,6 +324,7 @@ const fetchRandomQuote = async (fontSelect = null) => {
     } else {
         currentQuote = data[0]['content'];
     }
+    cursorSpan.style.display = 'block';
     loadingSpinner.style.display = "none";
     inputBox.value = "";
     inputBox.disabled = false;
@@ -330,12 +338,10 @@ const fetchRandomQuote = async (fontSelect = null) => {
         });
         letterRects.push(lettersRects);
     }
+    // words[currentWordIndex].style.opacity = 1;
+    // words[currentWordIndex + 1].style.opacity = 0.5;
     cursorSpan.classList.remove('hidden');
-    clearTimeout(cursorTimeout);
-    cursorSpan.classList.add('active');
-    cursorTimeout = setTimeout(() => {
-        cursorSpan.classList.remove('active');
-    }, 1000);
+    activateCursor();
     firstLetterRect = letterRects[0][0];
     cursorSpan.style.left = `${firstLetterRect[0].left}px`;
     cursorSpan.style.top = `${firstLetterRect[0].top}px`;
@@ -345,11 +351,7 @@ const fetchRandomQuote = async (fontSelect = null) => {
 };
 
 function checkInput(event) {
-    clearTimeout(cursorTimeout);
-    cursorSpan.classList.add('active');
-    cursorTimeout = setTimeout(() => {
-        cursorSpan.classList.remove('active');
-    }, 1000);
+    activateCursor();
     if (startTime === 0) {
         startTimer();
     }
@@ -358,7 +360,6 @@ function checkInput(event) {
     if (event.data === ' ') {
         const currentWord = words[currentWordIndex].textContent;
         if (latestWord.length < currentWord.length || latestWord !== currentWord) {
-            totalErrors++;
             flashErrorDisplays();
             words[currentWordIndex].classList.add('error');
         } else if (!isMobile) {
@@ -373,13 +374,17 @@ function checkInput(event) {
         totalTyped++;
         typedWords[currentWordIndex] = latestWord;
         currentWordIndex++;
+        // words[currentWordIndex].style.opacity = 1;
+        // try {
+        //     words[currentWordIndex + 1].style.opacity = 0.5;
+        // } catch (error) {
+
+        // }
         letterElement = letterElements[currentWordIndex];
         firstLetterRect = letterRects[currentWordIndex][0];
         cursorSpan.style.left = `${firstLetterRect[0].left}px`;
         cursorSpan.style.top = `${firstLetterRect[0].top}px`;
         latestWord = '';
-        accuracyDisplay.textContent = `Accuracy: ${calculateAccuracy(totalTyped, totalErrors)}%`;
-        errorsDisplay.textContent = `Errors: ${totalErrors}`;
         return;
     }
     else if (event.inputType === 'deleteContentBackward') {
@@ -438,7 +443,6 @@ function checkInput(event) {
             totalTyped -= latestWord.length - lastWord.length;
             latestWord = lastWord;
             const latestWordLength = latestWord.length;
-            console.log(latestWord);
             let index = letterElementLength - 1;
             while (index >= latestWordLength) {
                 letterElement[index].classList.remove('correct');
@@ -725,7 +729,6 @@ window.onload = async () => {
     if (!window.addEventListener) {
         return;
     }
-
     loadingSpinner.style.display = "block";
     await loadImages();
     await fetchRandomQuote(document.getElementById('font-select'));
@@ -756,9 +759,9 @@ window.onload = async () => {
         const font = this.value;
         body.style.fontFamily = font + ', sans-serif, Arial';
         updateCursorPosition();
-        if (!event.target.classList.contains('flying-focus_target')) {
-            inputBox.focus();
-          }
+        // if (!event.target.classList.contains('flying-focus_target')) {
+        inputBox.focus();
+        // }
     });
 
     document.querySelector(".dark-light").addEventListener("click", () => {
@@ -767,6 +770,5 @@ window.onload = async () => {
         body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
         inputBox.focus();
     });
-
     toggleSmoothCursor();
 }
