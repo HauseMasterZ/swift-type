@@ -11,6 +11,10 @@
   --input-background-color: #fff;
 }
 
+.hidden {
+  display: none;
+}
+
 body {
   overflow-x: hidden;
   font-family: "Open Sans", sans-serif, Arial;
@@ -171,9 +175,6 @@ h1 {
 #font-select {
   color: var(--text-color);
   border: none;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   background-color: transparent;
   outline: none;
 }
@@ -388,10 +389,6 @@ option[value=Ubuntu] {
 
 .radio-container input[type=radio]:hover:not(:checked)::before {
   background-color: rgba(192, 192, 192, 0.5);
-}
-
-.hidden {
-  display: none;
 }
 
 .stats {

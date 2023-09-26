@@ -592,7 +592,6 @@ function displaySpeed(prefix, number, stars) {
         }
         categoryDisplay.textContent = `${prefix} ${currentValue}km/h ${stars}`;
     }
-    categoryDisplay.classList.add('highlight-category');
 
     speedInterval = setInterval(updateDisplay, 1000 / number);
 }
@@ -614,20 +613,20 @@ function endTest(endTime) {
             break;
         }
     }
-
     inputBox.disabled = true;
     grossWPMDisplay.textContent = `Gross WPM: ${grossWPM}`;
     netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
     accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
     errorsDisplay.textContent = `Errors: ${totalErrors}`;
     wpmDisplay.textContent = `Raw WPM: ${rawWPM}`;
-    displaySpeed(level.title, level.speed, level.stars);
     grossWPMDisplay.classList.add('highlight');
     netWPMDisplay.classList.add('highlight');
+    categoryDisplay.classList.add('highlight-category');
     body.style.backgroundColor = level.backgroundColor;
     resultImg.src = level.imgSrc.src;
     resultImg.classList.remove('hidden');
     resultImg.classList.add('slide-in');
+    displaySpeed(level.title, level.speed, level.stars);
 }
 
 function calculateWPM(endTime) {
@@ -760,15 +759,12 @@ function handleFontSelectChange() {
     const font = fontSelectElement.value;
     body.style.fontFamily = font + ', sans-serif, Arial';
     updateCursorPosition();
+    document.getElementById("font-select-label").classList.add('hidden');
     inputBox.focus();
 }
 
 function handleClick(event) {
-    if (event.target === smoothCursorElement) {
-        handleSmoothCursorClick();
-    } else if (event.target === highlightedWordsElement) {
-        handleHighlightedWordsClick();
-    } else if (event.target.parentNode === darkLightToggleElement) {
+    if (event.target.parentNode === darkLightToggleElement) {
         handleDarkLightToggleClick();
     } else if (event.target === clearButton) {
         clearCustomText();
@@ -804,7 +800,9 @@ function updateCursorPosition() {
         });
         letterRects.push(lettersRects);
     });
-    const letterRect = letterRects[currentWordIndex][Math.min(Math.max(latestWord.length - 1, 0), letterElementLength - 1)][0];
+    const letterRect = latestWord
+        ? letterRects[currentWordIndex][Math.min(latestWord.length - 1, letterElementLength - 1)][0]
+        : letterRects[currentWordIndex][0][0];
     cursorSpan.style.left = `${latestWord ? letterRect.right : letterRect.left}px`;
     cursorSpan.style.top = `${letterRect.top}px`;
 }
@@ -835,6 +833,14 @@ window.onload = async () => {
         createRipple(event);
     });
 
+    highlightedWordsElement.addEventListener('click', function (event) {
+        handleHighlightedWordsClick();
+    });
+
+    smoothCursorElement.addEventListener('click', function (event) {
+        handleSmoothCursorClick();
+    });
+
     customTextInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter') {
             applyCustomText({ srcElement: { innerText: 'Apply' } });
@@ -844,4 +850,4 @@ window.onload = async () => {
     container.addEventListener("click", handleClick);
     container.addEventListener("change", handleChange);
     cursorSpan.style.transition = 'left 0.1s linear, top 0.25s ease-out';
-}
+};
