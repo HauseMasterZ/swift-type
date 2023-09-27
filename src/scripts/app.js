@@ -1,3 +1,4 @@
+console.log("app.js loaded");
 "use strict";
 import { onEnd } from "./flying-focus.js";
 // import axios from "axios";
