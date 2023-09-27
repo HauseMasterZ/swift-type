@@ -376,8 +376,7 @@ function checkInput(event) {
     letterElement = letterElements[currentWordIndex];
     letterElementLength = letterElement.length;
     if (event.data === ' ') {
-        const currentWord = words[currentWordIndex].textContent;
-        if (latestWord.length < currentWord.length || latestWord !== currentWord) {
+        if (latestWord.length < letterElementLength || latestWord !== words[currentWordIndex].textContent) {
             flashErrorDisplays();
             words[currentWordIndex].classList.add('error');
         } else if (!isMobile) {
@@ -688,14 +687,20 @@ function clearCustomText() {
     document.getElementById("clearButton").style.display = "none";
 }
 
+function applyCustomText(event) {
+    customTextInput.value = customTextInput.value.trim();
+    if (!customTextInput.value) {
+        return;
+    }
+    closeCustomTextModal(event);
+}
+
 function closeCustomTextModal(event) {
     customTextModal.style.display = "none";
     if (event['srcElement'].innerText === "Apply") {
         document.getElementById("clearButton").style.display = "inline-block";
         customTextInput.value = customTextInput.value.trim();
         refreshQuote();
-    } else {
-        customTextInput.value = currentQuote;
     }
     inputBox.focus();
     onEnd();
@@ -726,6 +731,7 @@ function highlightWord(reverse = false) {
 }
 
 function handleHighlightedWordsClick(initialQuoteFetch = false) {
+    initialQuoteFetch ? null : highlightedWordsElement.innerHTML = `Highlighting: <span class="${isHighlightingEnabled ? 'incorrect' : 'correct'}">${isHighlightingEnabled ? 'OFF' : 'ON'}</span>`;
     isHighlightingEnabled = !isHighlightingEnabled || initialQuoteFetch;
 
     for (let i = currentWordIndex; i <= lastWordIndex; i++) {
@@ -737,7 +743,6 @@ function handleHighlightedWordsClick(initialQuoteFetch = false) {
         words[currentWordIndex].classList.add('active-word');
         words[currentWordIndex + 1].classList.add('subactive-word');
     }
-    initialQuoteFetch ? null : highlightedWordsElement.innerHTML = isHighlightingEnabled ? "Highlighting: <span class='correct'>ON</span>" : "Highlighting: <span class='incorrect'>OFF</span>";
     inputBox.focus();
 }
 
@@ -764,14 +769,25 @@ function handleFontSelectChange() {
 }
 
 function handleClick(event) {
-    if (event.target.parentNode === darkLightToggleElement) {
+    const { target } = event;
+    if (target.parentNode === darkLightToggleElement) {
         handleDarkLightToggleClick();
-    } else if (event.target === clearButton) {
+    } else if (target === clearButton) {
         clearCustomText();
-    } else if (event.target === applyButton) {
+    } else if (target === applyButton) {
         applyCustomText(event);
-    } else if (event.target === cancelButton) {
+    } else if (target === cancelButton) {
         closeCustomTextModal(event);
+    } else if (target === refreshButton) {
+        refreshQuote();
+        createRipple({ currentTarget: event.target, clientX: event.clientX, clientY: event.clientY });
+    } else if (target === customButton) {
+        openCustomTextModal();
+        createRipple({ currentTarget: event.target, clientX: event.clientX, clientY: event.clientY });
+    } else if (target === highlightedWordsElement || target.parentNode === highlightedWordsElement) {
+        handleHighlightedWordsClick();
+    } else if (target === smoothCursorElement || target.parentNode === smoothCursorElement) {
+        handleSmoothCursorClick();
     }
 }
 
@@ -781,14 +797,6 @@ function handleChange(event) {
     } else if (event.target === fontSelectElement) {
         handleFontSelectChange();
     }
-}
-
-function applyCustomText(event) {
-    if (!customTextInput.value.trim()) {
-        customTextInput.value = "";
-        return;
-    }
-    closeCustomTextModal(event);
 }
 
 function updateCursorPosition() {
@@ -822,23 +830,6 @@ window.onload = async () => {
         if (event.target === customTextModal) {
             closeCustomTextModal(event);
         }
-    });
-    refreshButton.addEventListener('click', function (event) {
-        refreshQuote();
-        createRipple(event);
-    });
-
-    customButton.addEventListener('click', function (event) {
-        openCustomTextModal();
-        createRipple(event);
-    });
-
-    highlightedWordsElement.addEventListener('click', function (event) {
-        handleHighlightedWordsClick();
-    });
-
-    smoothCursorElement.addEventListener('click', function (event) {
-        handleSmoothCursorClick();
     });
 
     customTextInput.addEventListener('keydown', function (event) {
