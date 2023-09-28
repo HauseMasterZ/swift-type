@@ -152,6 +152,10 @@ const highlightedWordsElement = document.getElementById("highlighted-words");
 const quotableApiUrl = `https://api.quotable.io/quotes/random/`;
 const fallbackUrl = `https://raw.githubusercontent.com/monkeytypegame/monkeytype/master/frontend/static/quotes/english.json`;
 
+/**
+ * Creates a ripple effect on a button element when clicked.
+ * @param {MouseEvent} event - The click event.
+ */
 function createRipple(event) {
     const button = event.currentTarget;
     button.classList.remove("shrink-animation");
@@ -173,6 +177,10 @@ function createRipple(event) {
     });
 }
 
+/**
+ * Splits a quote into individual words and letters, and displays them on the page.
+ * @param {string} quote - The quote to split and display.
+ */
 function splitQuote(quote) {
     quoteDisplay.innerHTML = '';
     const split_words = quote.split(' ');
@@ -193,6 +201,12 @@ function splitQuote(quote) {
     lastWordIndex = wordElements.length - 1;
 }
 
+/**
+ * Fetches data from a URL with retries in case of failure.
+ * @param {string} url - The URL to fetch data from.
+ * @param {HTMLElement} fontSelect - The font select element to modify.
+ * @returns {Promise<any>} - A promise that resolves with the fetched data.
+ */
 const fetchWithRetries = async (url, fontSelect) => {
     let data = null;
     let retries = 0;
@@ -222,6 +236,14 @@ const fetchWithRetries = async (url, fontSelect) => {
     return data;
 };
 
+/**
+ * Refreshes the quote displayed on the screen. If a custom quote is entered, it splits the quote into words and letters, 
+ * sets up the cursor, and enables input. If no custom quote is entered, it fetches a random quote from the API and displays it.
+ * Resets all relevant variables and displays to their initial state.
+ * @async
+ * @function
+ * @returns {Promise<void>}
+ */
 const refreshQuote = async () => {
     if (fetchInProgress) {
         return;
@@ -287,6 +309,11 @@ const refreshQuote = async () => {
     onEnd();
 }
 
+/**
+ * Fetches a random quote from either the Quotable API or a fallback URL.
+ * @async
+ * @param {HTMLElement} fontSelect - The font select element.
+ */
 const fetchRandomQuote = async (fontSelect = null) => {
     let minLength = 0;
     let maxLength = 0;
@@ -368,7 +395,10 @@ const fetchRandomQuote = async (fontSelect = null) => {
     customTextModal.style.display === "block" ? customTextInput.focus() : inputBox.focus();
 };
 
-
+/**
+ * This function checks the user input and updates the UI accordingly.
+ * @param {Event} event - The input event triggered by the user.
+ */
 function checkInput(event) {
     activateCursor();
     if (startTime === 0) {
@@ -500,6 +530,12 @@ function checkInput(event) {
     }
 }
 
+/**
+ * Updates the letter elements based on the latest word typed by the user.
+ * @param {string} latestWord - The latest word typed by the user.
+ * @param {number} i - The index of the letter being typed.
+ * @param {boolean} [backspaceFlag=false] - A flag indicating whether the backspace key was pressed.
+ */
 function updateWord(latestWord, i, backspaceFlag = false) {
     const letterElement = letterElements[currentWordIndex];
     const letterElementLength = letterElement.length;
@@ -596,6 +632,10 @@ function displaySpeed(prefix, number, stars) {
     speedInterval = setInterval(updateDisplay, 1000 / number);
 }
 
+/**
+ * Ends the typing test and displays the results.
+ * @param {number} endTime - The time the typing test ended.
+ */
 function endTest(endTime) {
     typedWords[currentWordIndex] = latestWord;
     clearInterval(timerInterval);
@@ -766,7 +806,7 @@ function handleFontSelectChange() {
     body.style.fontFamily = font + ', sans-serif, Arial';
     updateCursorPosition();
     document.getElementById("font-select-label").classList.add('hidden');
-    inputBox.focus();
+    inputBox.disabled ? fontSelectElement.focus() : inputBox.focus();
 }
 
 function handleClick(event) {
