@@ -1,7 +1,6 @@
 "use strict";
 import { onEnd } from "./flying-focus.js";
 // import axios from "axios";
-
 const levels = [
     {
         threshold: 0,
