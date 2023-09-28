@@ -5,7 +5,7 @@ import { onEnd } from "./flying-focus.js";
 const levels = [
     {
         threshold: 0,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/static/images/sloth.svg', '../static/images/sloth.svg'],
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/sloth.svg', '../static/images/sloth.svg'],
         title: 'Sloth-paced Typist 🐌🦥',
         speed: Math.random() * (10 - 5) + 5,
         stars: '⭐',
@@ -13,7 +13,7 @@ const levels = [
     },
     {
         threshold: 20,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/static/images/sea_turtle.svg', '../static/images/sea_turtle.svg'],
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/sea_turtle.svg', '../static/images/sea_turtle.svg'],
         title: 'Turtle-paced Typist 🐢',
         speed: Math.random() * (50 - 10) + 10,
         stars: '⭐',
@@ -21,7 +21,7 @@ const levels = [
     },
     {
         threshold: 40,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/static/images/horse.svg', '../static/images/horse.svg'],
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/horse.svg', '../static/images/horse.svg'],
         title: 'Horse-speed Typist 🐎',
         speed: Math.random() * (90 - 50) + 50,
         stars: '⭐⭐',
@@ -29,7 +29,7 @@ const levels = [
     },
     {
         threshold: 60,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/static/images/lion.svg', '../static/images/lion.svg'],
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/lion.svg', '../static/images/lion.svg'],
         title: 'Lion-fingered Typist 🦁',
         speed: Math.random() * (120 - 90) + 90,
         stars: '⭐⭐',
@@ -37,7 +37,7 @@ const levels = [
     },
     {
         threshold: 80,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/static/images/cheetah.svg', '../static/images/cheetah.svg'],
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/cheetah.svg', '../static/images/cheetah.svg'],
         title: 'Cheetah-swift Typist 🐆',
         speed: Math.random() * (180 - 120) + 120,
         stars: '⭐⭐⭐',
@@ -45,7 +45,7 @@ const levels = [
     },
     {
         threshold: 100,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/static/images/eagle.svg', '../static/images/eagle.svg'],
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/eagle.svg', '../static/images/eagle.svg'],
         title: 'Eagle-eyed Typist 🕊️',
         speed: Math.random() * (300 - 180) + 180,
         stars: '⭐⭐⭐⭐',
@@ -53,7 +53,7 @@ const levels = [
     },
     {
         threshold: 120,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/static/images/falcon.svg', '../static/images/falcon.svg'],
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/falcon.svg', '../static/images/falcon.svg'],
         title: 'Falcon-keyed Typist 🦅',
         speed: Math.random() * (400 - 300) + 300,
         stars: '⭐⭐⭐⭐',
@@ -61,7 +61,7 @@ const levels = [
     },
     {
         threshold: 140,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/static/images/hausemaster.svg', '../static/images/hausemaster.svg'],
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/hausemaster.svg', '../static/images/hausemaster.svg'],
         title: 'Supersonic Typist 🚀 AKA HauseMaster',
         speed: Math.random() * (1000 - 300) + 300,
         stars: '⭐⭐⭐⭐⭐',
@@ -69,7 +69,7 @@ const levels = [
     },
     {
         threshold: 160,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/static/images/flash.svg', '../static/images/flash.svg'],
+        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/flash.svg', '../static/images/flash.svg'],
         title: 'Lightning-Fast Typist ⚡️',
         speed: 300000,
         stars: '⭐⭐⭐⭐⭐',
