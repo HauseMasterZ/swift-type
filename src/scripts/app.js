@@ -77,7 +77,6 @@ const levels = [
     }
 ];
 
-
 async function loadImages() {
     for (const level of levels) {
         const img = new Image();
