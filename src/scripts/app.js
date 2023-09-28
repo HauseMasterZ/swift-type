@@ -650,11 +650,12 @@ function mapIntegerToColor(intValue, maxValue) {
  * @param {number} endTime - The time the typing test ended.
  */
 function endTest(endTime) {
-    typedWords[currentWordIndex] = latestWord;
+    errorsDisplay.classList.remove('flash-out-red');
+    accuracyDisplay.classList.remove('flash-out-red');
     clearInterval(timerInterval);
-
+    typedWords[currentWordIndex] = latestWord;
     const netWPM = calculateNetWPM(endTime);
-    const rawWPM = calculateWPM(endTime);
+    const rawWPM = calculateWPM(endTime); 
     const grossWPM = calculateGrossWPM(endTime);
     const accuracy = calculateAccuracy(totalTyped, totalErrors);
     const errorColor = mapIntegerToColor(errorWordCnt, words.length);
