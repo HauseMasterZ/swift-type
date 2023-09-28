@@ -8,7 +8,7 @@
 
 :root {
     --body-color: #E4E9F7;
-    --text-color: #000;
+    --text-color: black;
     --input-background-color: #fff;
 }
 
@@ -50,6 +50,27 @@ body.dark {
 h1 {
     font-size: 24px;
     margin-bottom: 20px;
+}
+
+#title span:first-child {
+    color: #60d3fe;
+}
+
+#title span:last-child {
+    color: #bc8dfd;
+}
+
+.instruction {
+    font-weight: bold;
+    color: #3191d6;
+}
+
+#accuracyDisplay {
+    transition: color 1s ease;
+}
+
+#errorsDisplay {
+    transition: color 1s ease;
 }
 
 .dark-light {

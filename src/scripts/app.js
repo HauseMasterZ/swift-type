@@ -109,10 +109,12 @@ let isQuotableAPI = true;
 let isMobile = false;
 let isHighlightingEnabled = false;
 let cursorTimeout;
+let errorTimeout;
 let letterElements = [];
 let letterElementLength;
 let letterElement;
 let typedWords = [];
+let errorWordCnt = 0;
 let words = [];
 let fallbackQuotes = [];
 let letterRects = [];
@@ -253,14 +255,13 @@ const refreshQuote = async () => {
     letterRects = [];
     typedWords = [];
     totalTyped = 0;
+    errorWordCnt = 0;
     totalErrors = 0;
     startTime = 0;
     currentWordIndex = 0;
     wpmDisplay.textContent = "Current WPM: 0";
     grossWPMDisplay.textContent = "Gross WPM: 0";
-    grossWPMDisplay.classList.remove('highlight');
     netWPMDisplay.textContent = "Net WPM: 0";
-    netWPMDisplay.classList.remove('highlight');
     accuracyDisplay.textContent = "Accuracy: 100%";
     errorsDisplay.textContent = "Errors: 0";
     timerDisplay.textContent = "Time: 0s";
@@ -284,8 +285,7 @@ const refreshQuote = async () => {
         inputBox.disabled = false;
         inputBox.focus();
         cursorSpan.style.display = 'block';
-    }
-    else {
+    } else {
         fetchInProgress = true;
         loadingSpinner.style.display = "block";
         await fetchRandomQuote();
@@ -297,13 +297,16 @@ const refreshQuote = async () => {
 
     latestWord = "";
     resultImg.src = '';
-    resultImg.classList.remove('slide-in');
     resultImg.classList.add('hidden');
-    body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
-
-    // categoryDisplay.style.animation = 'none';
+    grossWPMDisplay.classList.remove('highlight');
+    netWPMDisplay.classList.remove('highlight');
+    resultImg.classList.remove('slide-in');
     categoryDisplay.classList.remove('highlight-category');
+    errorsDisplay.style.color = 'var(--text-color)';
+    accuracyDisplay.style.color = 'var(--text-color)';
     categoryDisplay.textContent = "";
+
+    body.classList.contains("dark") ? body.style.backgroundColor = '#18191A' : body.style.backgroundColor = '#E4E9F7';
     clearInterval(timerInterval);
     clearInterval(speedInterval);
     onEnd();
@@ -632,6 +635,16 @@ function displaySpeed(prefix, number, stars) {
     speedInterval = setInterval(updateDisplay, 1000 / number);
 }
 
+function mapIntegerToColor(intValue, maxValue) {
+    intValue = Math.min(Math.max(intValue, 0), maxValue);
+    const percentage = (intValue / maxValue);
+    const red = 255;
+    const green = Math.min(255 * (1 - percentage), 150);
+    const blue = Math.min(255 * (1 - percentage), 50);
+    const color = `rgb(${Math.round(red)}, ${Math.round(green)}, ${Math.round(blue)})`;
+    return color;
+}
+
 /**
  * Ends the typing test and displays the results.
  * @param {number} endTime - The time the typing test ended.
@@ -644,6 +657,7 @@ function endTest(endTime) {
     const rawWPM = calculateWPM(endTime);
     const grossWPM = calculateGrossWPM(endTime);
     const accuracy = calculateAccuracy(totalTyped, totalErrors);
+    const errorColor = mapIntegerToColor(errorWordCnt, words.length);
 
     let level = levels[0];
     for (let i = 0; i < levels.length; i++) {
@@ -653,6 +667,9 @@ function endTest(endTime) {
             break;
         }
     }
+    resultImg.src = level.imgSrc.src;
+    resultImg.classList.remove('hidden');
+    resultImg.classList.add('slide-in');
     inputBox.disabled = true;
     grossWPMDisplay.textContent = `Gross WPM: ${grossWPM}`;
     netWPMDisplay.textContent = `Net WPM: ${netWPM}`;
@@ -663,9 +680,11 @@ function endTest(endTime) {
     netWPMDisplay.classList.add('highlight');
     categoryDisplay.classList.add('highlight-category');
     body.style.backgroundColor = level.backgroundColor;
-    resultImg.src = level.imgSrc.src;
-    resultImg.classList.remove('hidden');
-    resultImg.classList.add('slide-in');
+    clearTimeout(errorTimeout);
+    errorTimeout = setTimeout(() => {
+        errorsDisplay.style.color = errorColor;
+        accuracyDisplay.style.color = errorColor;
+    }, 1000);
     displaySpeed(level.title, level.speed, level.stars);
 }
 
@@ -693,7 +712,6 @@ function calculateGrossWPM(endTime) {
 }
 
 function calculateNetWPM(endTime) {
-    let errorWordCnt = 0;
     words.forEach((word, index) => {
         if (word.classList.contains("error")) {
             errorWordCnt++;
