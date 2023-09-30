@@ -363,14 +363,15 @@ const fetchRandomQuote = async (fontSelect = null) => {
         if (response) {
             data = response;
         } else {
-            console.error("Failed to fetch quote from Quotable API. Using fallback URL...");
+            console.info("Failed to fetch quote from Quotable API. Using fallback URL...");
             isQuotableAPI = false;
         }
     }
 
     if (!data && fallbackQuotes.length === 0) {
-        data = await fetchWithRetries(fallbackUrl, fontSelect);
-        fallbackQuotes = data.quotes;
+        data = await fetchWithRetries(fallbackUrl);
+        fallbackQuotes = data ? data : await fetchWithRetries('../static/quotes/english.json');
+        fallbackQuotes = fallbackQuotes ? fallbackQuotes.quotes : [];
     }
 
     if (!data && fallbackQuotes.length === 0) {
@@ -729,10 +730,8 @@ function calculateGrossWPM(endTime) {
         });
         netTyped += (letters.length - errorCharCnt) / letters.length;
     });
-
     const minutes = (endTime - startTime) / 60000;
     const netWPM = Math.round(netTyped / minutes);
-
     return netWPM;
 }
 
