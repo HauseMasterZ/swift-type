@@ -98,6 +98,27 @@ async function loadImages() {
     }
 }
 
+function replaceUnorthodoxLetters(str) {
+    return str.replace(/[àáâãäå]/g, 'a')
+        .replace(/[ç]/g, 'c')
+        .replace(/[èéêë]/g, 'e')
+        .replace(/[ìíîï]/g, 'i')
+        .replace(/[ñ]/g, 'n')
+        .replace(/[òóôõö]/g, 'o')
+        .replace(/[ùúûü]/g, 'u')
+        .replace(/[ýÿ]/g, 'y')
+        .replace(/[ÀÁÂÃÄÅ]/g, 'A')
+        .replace(/[Ç]/g, 'C')
+        .replace(/[ÈÉÊË]/g, 'E')
+        .replace(/[ÌÍÎÏ]/g, 'I')
+        .replace(/[Ñ]/g, 'N')
+        .replace(/[ÒÓÔÕÖ]/g, 'O')
+        .replace(/[ÙÚÛÜ]/g, 'U')
+        .replace(/[‘’]/g, "'")
+        .replace(/[—]/g, '-')
+        .replace(/[Ý]/g, 'Y');
+}
+
 let currentQuote = "";
 let totalTyped = 0;
 let totalErrors = 0;
@@ -267,6 +288,7 @@ const refreshQuote = async () => {
     timerDisplay.textContent = "Time: 0s";
     if (customTextInput.value.trim() !== "") {
         currentQuote = customTextInput.value;
+        currentQuote = replaceUnorthodoxLetters(currentQuote);
         splitQuote(currentQuote);
         words = document.querySelectorAll('.word');
         for (let index = 0; index < words.length; index++) {
@@ -373,6 +395,7 @@ const fetchRandomQuote = async (fontSelect = null) => {
         currentQuote = data[0]['content'];
     }
 
+    currentQuote = replaceUnorthodoxLetters(currentQuote);
     cursorSpan.style.display = 'block';
     loadingSpinner.style.display = "none";
     inputBox.value = "";
@@ -412,7 +435,7 @@ function checkInput(event) {
     if (event.data === ' ') {
         if (latestWord.length < letterElementLength || latestWord !== words[currentWordIndex].textContent) {
             flashErrorDisplays();
-            words[currentWordIndex].classList.add('error');
+            words[currentWordIndex].classList.add('underline-text');
         } else if (!isMobile) {
             inputBox.value = '';
         }
@@ -435,7 +458,7 @@ function checkInput(event) {
     }
     else if (event.inputType === 'deleteContentBackward') {
         totalTyped--;
-        if (!latestWord && words[currentWordIndex - 1].classList.contains('error')) { // or inputBox.value.trim() !== ''
+        if (!latestWord && words[currentWordIndex - 1].classList.contains('underline-text')) { // or inputBox.value.trim() !== ''
             currentWordIndex = Math.max(currentWordIndex - 1, 0);
             isHighlightingEnabled ? highlightWord(true) : null;
             latestWord = typedWords[currentWordIndex];
@@ -456,7 +479,7 @@ function checkInput(event) {
             updateWord(latestWord, latestWord.length - 1, true);
             // updateWord(latestWord, latestWord.length, true);
         }
-        words[currentWordIndex].classList.remove('error');
+        words[currentWordIndex].classList.remove('underline-text');
         return;
     }
     else if (event.inputType === 'deleteWordBackward') {
@@ -473,7 +496,7 @@ function checkInput(event) {
                 cursorSpan.style.left = `${lastLetterRect[0].right}px`;
                 cursorSpan.style.top = `${lastLetterRect[0].top}px`;
                 totalTyped -= 2;
-                words[currentWordIndex].classList.remove('error');
+                words[currentWordIndex].classList.remove('underline-text');
                 return;
             }
         } else if (latestWord.match(punctuationPattern)) {
@@ -508,7 +531,7 @@ function checkInput(event) {
         firstLetterRect = letterRects[currentWordIndex][0];
         cursorSpan.style.left = `${firstLetterRect[0].left}px`;
         cursorSpan.style.top = `${firstLetterRect[0].top}px`;
-        words[currentWordIndex].classList.remove('error');
+        words[currentWordIndex].classList.remove('underline-text');
         return;
     }
     latestWord += event.data;
@@ -524,7 +547,7 @@ function checkInput(event) {
             if (latestWord.length < currentWord.length || latestWord !== currentWord) {
                 totalErrors++;
                 flashErrorDisplays();
-                words[currentWordIndex].classList.add('error');
+                words[currentWordIndex].classList.add('underline-text');
             }
             refreshButton.focus();
             endTest(endTime);
@@ -639,8 +662,8 @@ function mapIntegerToColor(intValue, maxValue) {
     intValue = Math.min(Math.max(intValue, 0), maxValue);
     const percentage = (intValue / maxValue);
     const red = 255;
-    const green = Math.min(255 * (1 - percentage), 150);
-    const blue = Math.min(255 * (1 - percentage), 50);
+    const green = Math.max(255 * (1 - percentage), 150);
+    const blue = Math.max(255 * (1 - percentage), 50);
     const color = `rgb(${Math.round(red)}, ${Math.round(green)}, ${Math.round(blue)})`;
     return color;
 }
@@ -650,8 +673,6 @@ function mapIntegerToColor(intValue, maxValue) {
  * @param {number} endTime - The time the typing test ended.
  */
 function endTest(endTime) {
-    errorsDisplay.classList.remove('flash-out-red');
-    accuracyDisplay.classList.remove('flash-out-red');
     clearInterval(timerInterval);
     typedWords[currentWordIndex] = latestWord;
     const netWPM = calculateNetWPM(endTime);
@@ -681,6 +702,8 @@ function endTest(endTime) {
     netWPMDisplay.classList.add('highlight');
     categoryDisplay.classList.add('highlight-category');
     body.style.backgroundColor = level.backgroundColor;
+    errorsDisplay.classList.remove('flash-out-red');
+    accuracyDisplay.classList.remove('flash-out-red');
     clearTimeout(errorTimeout);
     errorTimeout = setTimeout(() => {
         errorsDisplay.style.color = errorColor;
@@ -696,6 +719,7 @@ function calculateWPM(endTime) {
 }
 
 function calculateGrossWPM(endTime) {
+    // Calculate the net number of characters typed per minute
     let netTyped = 0;
     letterElements.forEach((letters, index) => {
         let errorCharCnt = 0;
@@ -707,14 +731,16 @@ function calculateGrossWPM(endTime) {
         netTyped += (letters.length - errorCharCnt) / letters.length;
     });
 
+    // Calculate the net WPM
     const minutes = (endTime - startTime) / 60000; // in minutes
-    const netWPM = Math.round(netTyped / minutes); // calculate net WPM
+    const netWPM = Math.round(netTyped / minutes);
+
     return netWPM;
 }
 
 function calculateNetWPM(endTime) {
     words.forEach((word, index) => {
-        if (word.classList.contains("error")) {
+        if (word.classList.contains("underline-text")) {
             errorWordCnt++;
         }
     });

@@ -424,9 +424,30 @@ option[value=Ubuntu] {
   text-align: center;
 }
 
-.error {
-  text-decoration: underline;
-  text-decoration-color: rgba(156, 2, 2, 0.5);
+.underline-text {
+  text-decoration-color: rgba(255, 2, 2, 0.5);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+  -webkit-text-decoration-skip-ink: none;
+          text-decoration-skip-ink: none;
+  text-decoration-style: dotted;
+  text-decoration-line: underline;
+}
+
+.underline-text::before {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background-color: red;
+  bottom: 0;
+  left: 0;
+  transition: width 0.5s ease;
+}
+
+.underline-animation::before {
+  width: 100%;
+  transition: width 0.5s ease;
 }
 
 .flash-out-green {
