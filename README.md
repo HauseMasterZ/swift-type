@@ -1,7 +1,6 @@
 <p align="center">
-  <a name="banner" href="#banner">![banner](/static/swift-type-banner.jpg)</a>
+  <a name="banner" href="#banner"><img src="./static/swift-type-banner.jpg" alt="banner"></a>
 </p>
-
 
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 ![SCSS](https://img.shields.io/badge/Sass-CC6699?style=for-the-badge&logo=sass&logoColor=white)
