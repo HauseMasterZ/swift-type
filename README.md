@@ -1,5 +1,5 @@
 <p align="center">
-  <a name="banner" href="#banner">![banner](./static/swift-type-banner.jpg)</a>
+  <a name="banner" href="#banner">![banner](/static/swift-type-banner.jpg)</a>
 </p>
 
 

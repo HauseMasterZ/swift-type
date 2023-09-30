@@ -592,7 +592,7 @@ function updateWord(latestWord, i, backspaceFlag = false) {
         letterElement[i].classList.add('correct');
         if (!backspaceFlag) {
             wpmDisplay.classList.remove('flash-out-green');
-            void wpmDisplay.offsetWidth; // Trigger a reflow to restart the animation
+            void wpmDisplay.offsetWidth;
             wpmDisplay.classList.add('flash-out-green');
         }
     }
@@ -713,13 +713,12 @@ function endTest(endTime) {
 }
 
 function calculateWPM(endTime) {
-    const minutes = (endTime - startTime) / 60000; // in minutes
+    const minutes = (endTime - startTime) / 60000;
     const wpm = Math.round((currentWordIndex + 1) / minutes);
     return wpm;
 }
 
 function calculateGrossWPM(endTime) {
-    // Calculate the net number of characters typed per minute
     let netTyped = 0;
     letterElements.forEach((letters, index) => {
         let errorCharCnt = 0;
@@ -731,8 +730,7 @@ function calculateGrossWPM(endTime) {
         netTyped += (letters.length - errorCharCnt) / letters.length;
     });
 
-    // Calculate the net WPM
-    const minutes = (endTime - startTime) / 60000; // in minutes
+    const minutes = (endTime - startTime) / 60000;
     const netWPM = Math.round(netTyped / minutes);
 
     return netWPM;
@@ -746,7 +744,7 @@ function calculateNetWPM(endTime) {
     });
     totalErrors = Math.max(errorWordCnt, totalErrors);
     const netTyped = currentWordIndex - errorWordCnt + 1;
-    const minutes = (endTime - startTime) / 60000; // in minutes
+    const minutes = (endTime - startTime) / 60000;
     const netWPM = Math.round(netTyped / minutes);
     return Math.max(netWPM, 0);
 }
