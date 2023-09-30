@@ -459,7 +459,7 @@ function checkInput(event) {
     }
     else if (event.inputType === 'deleteContentBackward') {
         totalTyped--;
-        if (!latestWord && words[currentWordIndex - 1].classList.contains('underline-text')) { // or inputBox.value.trim() !== ''
+        if (latestWord === '' && (words[currentWordIndex - 1].classList.contains('underline-text') || isMobile)) { // or inputBox.value.trim() !== ''
             currentWordIndex = Math.max(currentWordIndex - 1, 0);
             isHighlightingEnabled ? highlightWord(true) : null;
             latestWord = typedWords[currentWordIndex];
@@ -484,7 +484,7 @@ function checkInput(event) {
         return;
     }
     else if (event.inputType === 'deleteWordBackward') {
-        if (latestWord === '') {
+        if (latestWord === '' && (words[currentWordIndex - 1].classList.contains('underline-text') || isMobile)) { // or inputBox.value.trim() !== ''
             currentWordIndex = Math.max(currentWordIndex - 1, 0);
             isHighlightingEnabled ? highlightWord(true) : null;
             letterElement = letterElements[currentWordIndex];
