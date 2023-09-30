@@ -1,0 +1,3 @@
+[submodule "src/static/quotes"]
+	path = src/static/quotes
+	url = https://github.com/monkeytypegame/monkeytype.git
