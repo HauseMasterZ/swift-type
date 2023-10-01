@@ -280,8 +280,10 @@ const fetchRandomQuote = async (fontSelect = null) => {
 
     if (!data && fallbackQuotes.length === 0) {
         data = await fetchWithRetries(fallbackUrl);
-        fallbackQuotes = data ? data : await fetchWithRetries('../static/mt-submodule/frontend/static/quotes/english.json');
-        fallbackQuotes = fallbackQuotes ? fallbackQuotes.quotes : [];
+        if (!data) {
+            data = await fetchWithRetries('../static/mt-submodule/frontend/static/quotes/english.json');
+        }
+        fallbackQuotes = data ? data.quotes : [];
     }
 
     if (!data && fallbackQuotes.length === 0) {
