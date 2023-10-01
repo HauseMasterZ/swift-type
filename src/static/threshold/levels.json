@@ -1,0 +1,146 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "User",
+    "description": "A list of users",
+    "type": "array",
+    "items": {
+        "title": "User",
+        "description": "A user",
+        "type": "object",
+        "properties": {
+            "id": {
+                "description": "The unique identifier for a user",
+                "type": "integer"
+            },
+            "name": {
+                "description": "Name of the user",
+                "type": "string"
+            },
+            "email": {
+                "description": "Email of the user",
+                "type": "string"
+            },
+            "password": {
+                "description": "Password of the user",
+                "type": "string"
+            },
+            "created_at": {
+                "description": "Date of creation",
+                "type": "string"
+            },
+            "updated_at": {
+                "description": "Date of last update",
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "name",
+            "email",
+            "password",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "thresholds": [
+        {
+            "threshold": 0,
+            "imgSrc": [
+                "https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/sloth.svg",
+                "../static/images/sloth.svg"
+            ],
+            "title": "Sloth-paced Typist 🐌🦥",
+            "speed": 6.382380414209633,
+            "stars": "⭐",
+            "backgroundColor": "#C69061"
+        },
+        {
+            "threshold": 20,
+            "imgSrc": [
+                "https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/sea_turtle.svg",
+                "../static/images/sea_turtle.svg"
+            ],
+            "title": "Turtle-paced Typist 🐢",
+            "speed": 10.297275129342802,
+            "stars": "⭐",
+            "backgroundColor": "rgb(151, 54, 193)"
+        },
+        {
+            "threshold": 40,
+            "imgSrc": [
+                "https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/horse.svg",
+                "../static/images/horse.svg"
+            ],
+            "title": "Horse-speed Typist 🐎",
+            "speed": 52.342792933223386,
+            "stars": "⭐⭐",
+            "backgroundColor": "#BFAA87"
+        },
+        {
+            "threshold": 60,
+            "imgSrc": [
+                "https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/lion.svg",
+                "../static/images/lion.svg"
+            ],
+            "title": "Lion-fingered Typist 🦁",
+            "speed": 108.33194938675561,
+            "stars": "⭐⭐",
+            "backgroundColor": "#DD8547"
+        },
+        {
+            "threshold": 80,
+            "imgSrc": [
+                "https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/cheetah.svg",
+                "../static/images/cheetah.svg"
+            ],
+            "title": "Cheetah-swift Typist 🐆",
+            "speed": 137.97368908660192,
+            "stars": "⭐⭐⭐",
+            "backgroundColor": "#DC864B"
+        },
+        {
+            "threshold": 100,
+            "imgSrc": [
+                "https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/eagle.svg",
+                "../static/images/eagle.svg"
+            ],
+            "title": "Eagle-eyed Typist 🕊️",
+            "speed": 202.80408206236797,
+            "stars": "⭐⭐⭐⭐",
+            "backgroundColor": "#AB7D5A"
+        },
+        {
+            "threshold": 120,
+            "imgSrc": [
+                "https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/falcon.svg",
+                "../static/images/falcon.svg"
+            ],
+            "title": "Falcon-keyed Typist 🦅",
+            "speed": 305.00509071971646,
+            "stars": "⭐⭐⭐⭐",
+            "backgroundColor": "rgb(72, 59, 197)"
+        },
+        {
+            "threshold": 140,
+            "imgSrc": [
+                "https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/hausemaster.svg",
+                "../static/images/hausemaster.svg"
+            ],
+            "title": "Supersonic Typist 🚀 AKA HauseMaster",
+            "speed": 593.0705712834465,
+            "stars": "⭐⭐⭐⭐⭐",
+            "backgroundColor": "#D21404"
+        },
+        {
+            "threshold": 160,
+            "imgSrc": [
+                "https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/flash.svg",
+                "../static/images/flash.svg"
+            ],
+            "title": "Lightning-Fast Typist ⚡️",
+            "speed": 300000,
+            "stars": "⭐⭐⭐⭐⭐",
+            "backgroundColor": "rgb(230, 230, 0)"
+        }
+    ]
+}

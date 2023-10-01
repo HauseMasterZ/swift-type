@@ -348,6 +348,7 @@ option[value="Ubuntu"] {
     user-select: none;
     transform: translate(-100%, 0%);
     animation: slide-in linear 1s forwards, slide-in-alt ease-in 0.75s 0.25s forwards;
+    transition: top 1s ease;
 }
 
 @keyframes slide-in {
