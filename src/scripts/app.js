@@ -2,123 +2,6 @@
 import { onEnd } from "./flying-focus.js";
 // import axios from "axios";
 
-const levels = [
-    {
-        threshold: 0,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/sloth.svg', '../static/images/sloth.svg'],
-        title: 'Sloth-paced Typist 🐌🦥',
-        speed: Math.random() * (10 - 5) + 5,
-        stars: '⭐',
-        backgroundColor: '#C69061'
-    },
-    {
-        threshold: 20,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/sea_turtle.svg', '../static/images/sea_turtle.svg'],
-        title: 'Turtle-paced Typist 🐢',
-        speed: Math.random() * (50 - 10) + 10,
-        stars: '⭐',
-        backgroundColor: 'rgb(151, 54, 193)'
-    },
-    {
-        threshold: 40,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/horse.svg', '../static/images/horse.svg'],
-        title: 'Horse-speed Typist 🐎',
-        speed: Math.random() * (90 - 50) + 50,
-        stars: '⭐⭐',
-        backgroundColor: '#BFAA87'
-    },
-    {
-        threshold: 60,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/lion.svg', '../static/images/lion.svg'],
-        title: 'Lion-fingered Typist 🦁',
-        speed: Math.random() * (120 - 90) + 90,
-        stars: '⭐⭐',
-        backgroundColor: '#DD8547'
-    },
-    {
-        threshold: 80,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/cheetah.svg', '../static/images/cheetah.svg'],
-        title: 'Cheetah-swift Typist 🐆',
-        speed: Math.random() * (180 - 120) + 120,
-        stars: '⭐⭐⭐',
-        backgroundColor: '#DC864B'
-    },
-    {
-        threshold: 100,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/eagle.svg', '../static/images/eagle.svg'],
-        title: 'Eagle-eyed Typist 🕊️',
-        speed: Math.random() * (300 - 180) + 180,
-        stars: '⭐⭐⭐⭐',
-        backgroundColor: '#AB7D5A'
-    },
-    {
-        threshold: 120,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/falcon.svg', '../static/images/falcon.svg'],
-        title: 'Falcon-keyed Typist 🦅',
-        speed: Math.random() * (400 - 300) + 300,
-        stars: '⭐⭐⭐⭐',
-        backgroundColor: 'rgb(72, 59, 197)'
-    },
-    {
-        threshold: 140,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/hausemaster.svg', '../static/images/hausemaster.svg'],
-        title: 'Supersonic Typist 🚀 AKA HauseMaster',
-        speed: Math.random() * (1000 - 300) + 300,
-        stars: '⭐⭐⭐⭐⭐',
-        backgroundColor: '#D21404'
-    },
-    {
-        threshold: 160,
-        imgSrc: ['https://raw.githubusercontent.com/HauseMasterZ/swift-type/main/src/static/images/flash.svg', '../static/images/flash.svg'],
-        title: 'Lightning-Fast Typist ⚡️',
-        speed: 300000,
-        stars: '⭐⭐⭐⭐⭐',
-        backgroundColor: 'rgb(230, 230, 0)'
-    }
-];
-
-async function loadImages() {
-    for (const level of levels) {
-        const img = new Image();
-        img.src = level.imgSrc[0];
-        try {
-            await new Promise((resolve, reject) => {
-                img.onload = resolve;
-                img.onerror = () => {
-                    img.src = level.imgSrc[1];
-                    img.onload = resolve;
-                    img.onerror = reject;
-                    console.warn(`Failed to load image from CDN. Using local image instead.`);
-                };
-            });
-            level.imgSrc = img;
-        } catch (error) {
-            console.error(`Failed to load image for level ${level.title}: ${error}`);
-        }
-    }
-}
-
-function replaceUnorthodoxLetters(str) {
-    return str.replace(/[àáâãäå]/g, 'a')
-        .replace(/[ç]/g, 'c')
-        .replace(/[èéêë]/g, 'e')
-        .replace(/[ìíîï]/g, 'i')
-        .replace(/[ñ]/g, 'n')
-        .replace(/[òóôõö]/g, 'o')
-        .replace(/[ùúûü]/g, 'u')
-        .replace(/[ýÿ]/g, 'y')
-        .replace(/[ÀÁÂÃÄÅ]/g, 'A')
-        .replace(/[Ç]/g, 'C')
-        .replace(/[ÈÉÊË]/g, 'E')
-        .replace(/[ÌÍÎÏ]/g, 'I')
-        .replace(/[Ñ]/g, 'N')
-        .replace(/[ÒÓÔÕÖ]/g, 'O')
-        .replace(/[ÙÚÛÜ]/g, 'U')
-        .replace(/[‘’]/g, "'")
-        .replace(/[—]/g, '-')
-        .replace(/[Ý]/g, 'Y');
-}
-
 let currentQuote = "";
 let totalTyped = 0;
 let totalErrors = 0;
@@ -134,6 +17,7 @@ let errorTimeout;
 let letterElements = [];
 let letterElementLength;
 let letterElement;
+let levels = [];
 let typedWords = [];
 let errorWordCnt = 0;
 let words = [];
@@ -198,6 +82,32 @@ function createRipple(event) {
         button.removeChild(ripple);
         ripple.remove();
     });
+}
+
+/**
+ * Replaces unorthodox letters in a string with their closest ASCII equivalent.
+ * @param {string} str - The input string.
+ * @returns {string} The input string with unorthodox letters replaced.
+ */
+function replaceUnorthodoxLetters(str) {
+    return str.replace(/[àáâãäå]/g, 'a')
+        .replace(/[ç]/g, 'c')
+        .replace(/[èéêë]/g, 'e')
+        .replace(/[ìíîï]/g, 'i')
+        .replace(/[ñ]/g, 'n')
+        .replace(/[òóôõö]/g, 'o')
+        .replace(/[ùúûü]/g, 'u')
+        .replace(/[ýÿ]/g, 'y')
+        .replace(/[ÀÁÂÃÄÅ]/g, 'A')
+        .replace(/[Ç]/g, 'C')
+        .replace(/[ÈÉÊË]/g, 'E')
+        .replace(/[ÌÍÎÏ]/g, 'I')
+        .replace(/[Ñ]/g, 'N')
+        .replace(/[ÒÓÔÕÖ]/g, 'O')
+        .replace(/[ÙÚÛÜ]/g, 'U')
+        .replace(/[‘’]/g, "'")
+        .replace(/[—]/g, '-')
+        .replace(/[Ý]/g, 'Y');
 }
 
 /**
@@ -370,7 +280,7 @@ const fetchRandomQuote = async (fontSelect = null) => {
 
     if (!data && fallbackQuotes.length === 0) {
         data = await fetchWithRetries(fallbackUrl);
-        fallbackQuotes = data ? data : await fetchWithRetries('../static/quotes/english.json');
+        fallbackQuotes = data ? data : await fetchWithRetries('../static/mt-submodule/frontend/static/quotes/english.json');
         fallbackQuotes = fallbackQuotes ? fallbackQuotes.quotes : [];
     }
 
@@ -898,11 +808,34 @@ function updateCursorPosition() {
     cursorSpan.style.top = `${letterRect.top}px`;
 }
 
+async function loadImages() {
+    for (const level of levels) {
+        const img = new Image();
+        img.src = level.imgSrc[0];
+        try {
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = () => {
+                    img.src = level.imgSrc[1];
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    console.warn(`Failed to load image from CDN. Using local image instead.`);
+                };
+            });
+            level.imgSrc = img;
+        } catch (error) {
+            console.error(`Failed to load image for level ${level.title}: ${error}`);
+        }
+    }
+}
+
 window.onload = async () => {
     if (!window.addEventListener) {
         return;
     }
     loadingSpinner.style.display = "block";
+    levels = await fetchWithRetries('../static/threshold/levels.json');
+    levels = levels.thresholds;
     await loadImages();
     await fetchRandomQuote(fontSelectElement);
     isMobile = /Mobi/.test(navigator.userAgent) ? true : false;

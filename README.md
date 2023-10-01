@@ -13,6 +13,9 @@ Visit the site here: <a href="https://hausemasterz.github.io/swift-type/" target
 
 SwiftType is a minimalistic typing test site that allows you to test your typing speed and accuracy. It features a simple and minimal interface, with the ability to toggle dark and light theme. Uses [Quotable API](https://github.com/lukePeavey/quotable) to fetch random quotes.
 
+## Contributing
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for more info.
+
 ## Features 
  - Blazingly fast
  - Custom fonts
