@@ -39,6 +39,3 @@ To build and test the site locally, follow these steps:
 6. Open your web browser and navigate to `http://localhost:3000`.
 7. To run the tests, open a new terminal window and navigate to the project directory.
 8. Run the command `npm test` to run the test suite.
-
-
-That's it! You should now be able to build and test the site locally. If you encounter any issues, please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file for more information on how to contribute to the project.
