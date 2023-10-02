@@ -33,9 +33,11 @@ To build and test the site locally, follow these steps:
 
 1. Clone the repository to your local machine.
 2. Navigate to the project directory in your terminal.
-3. Install the necessary dependencies by running `npm install`.
-4. To build the project, run the command `npm run build`.
-5. To start the development server, run the command `npm run server`.
-6. Open your web browser and navigate to `http://localhost:3000`.
-7. To run the tests, open a new terminal window and navigate to the project directory.
-8. Run the command `npm test` to run the test suite.
+3. (Optional) Run the command `git submodule update --init --recursive` to update the submodule.
+4. (Optional) Run the command `git pull` to pull the latest changes.
+5. Install the necessary dependencies by running `npm install`.
+6. To build the project, run the command `npm run build`.
+7. To start the development server, run the command `npm run server`.
+8. Open your web browser and navigate to `http://localhost:3000`.
+9. To run the tests, open a new terminal window and navigate to the project directory.
+10. Run the command `npm test` to run the test suite.
