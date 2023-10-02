@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Change to the submodule directory
+cd src/static/mt-submodule
+
+# Pull from the origin master branch
+git pull origin master
+git add .
+git commit -m "Update submodule"
+
+# Change back to the main directory
+cd ../..
+
+# Exit with a success status code
+exit 0

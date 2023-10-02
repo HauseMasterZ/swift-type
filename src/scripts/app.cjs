@@ -569,7 +569,7 @@ function displaySpeed(prefix, number, stars) {
             clearInterval(speedInterval);
             return;
         }
-        categoryDisplay.textContent = `${prefix} ${currentValue}km/h ${stars}`;
+        categoryDisplay.textContent = `${prefix} ${currentValue}kph ${stars}`;
     }
 
     speedInterval = setInterval(updateDisplay, 1000 / number);
@@ -761,7 +761,7 @@ function handleDarkLightToggleClick() {
 
 function handleFontSelectChange() {
     const font = fontSelectElement.value;
-    body.style.fontFamily = font + ', Times New Roman, Arial';
+    body.style.fontFamily = font + ', sans-serif, Arial';
     updateCursorPosition();
     document.getElementById("font-select-label").classList.add('hidden');
     inputBox.disabled ? fontSelectElement.focus() : inputBox.focus();
@@ -781,7 +781,7 @@ function handleClick(event) {
         refreshQuote(true);
         createRipple({ currentTarget: event.target, clientX: event.clientX, clientY: event.clientY });
     } else if (target === refreshButton) {
-        clearCustomText();
+        customTextInput.value.trim() ? clearCustomText() : null;
         refreshQuote();
         createRipple({ currentTarget: event.target, clientX: event.clientX, clientY: event.clientY });
     } else if (target === customButton) {

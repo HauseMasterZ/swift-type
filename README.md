@@ -2,12 +2,28 @@
   <a name="banner" href="#banner"><img src="./static/images/swift-type-logo.jpg" alt="banner"></a>
 </p>
 
-<!-- ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white) -->
-![SCSS](https://img.shields.io/badge/Sass-CC6699?style=for-the-badge&logo=sass&logoColor=white)
-![EXPRESSJS](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
-![NODEJS](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
-![JS](https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&logo=JavaScript&logoColor=black)
-![ACTIONS](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=black)
+<!-- <picture>
+  <img src="https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white" alt="HTML">
+</picture> -->
+<picture>
+  <img src="https://img.shields.io/badge/Sass-CC6699?style=for-the-badge&logo=sass&logoColor=white" alt="SCSS">
+</picture>
+<picture>
+  <img src="https://img.shields.io/badge/-Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap">
+</picture>
+<picture>
+  <img src="https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white" alt="NODEJS">
+</picture>
+<picture>
+  <img src="https://img.shields.io/badge/Express.js-404D59?style=for-the-badge" alt="EXPRESSJS">
+</picture>
+<picture>
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&logo=JavaScript&logoColor=black" alt="JS">
+</picture>
+<picture>
+  <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=black" alt="ACTIONS">
+</picture>
+
 ## About
 Visit the site here: <a href="https://hausemasterz.github.io/swift-type/" target="_blank">SwiftType</a>.
 
