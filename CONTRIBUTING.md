@@ -25,7 +25,7 @@ Now, you are ready to start making changes.
 
 ## Code of Conduct
 Be cool and follow the norm.
-<!--I have a [Code of Conduct](CODE_OF_CONDUCT.md) that I expect all contributors to adhere to. Please read it to understand the expectations for behavior within our community. -->
+I have a [Code of Conduct](CODE_OF_CONDUCT.md) that I expect all contributors to adhere to. Please read it to understand the expectations for behavior within our community.
 
 ## How to Contribute
 
@@ -48,7 +48,7 @@ Before submitting a pull request (PR), please ensure the following:
 
 ## Reporting Issues
 
-If you encounter a bug, have a feature request, or have questions about the project, please open an issue in our [issue tracker](https://github.com/maddox05/wpm-game/issues). When reporting issues, please provide as much detail as possible, including:
+If you encounter a bug, have a feature request, or have questions about the project, please open an issue in our [issue tracker](https://github.com/HauseMasterZ/swift-type/issues). When reporting issues, please provide as much detail as possible, including:
 
 - A clear and concise description of the issue or request.
 - Steps to reproduce the issue.
@@ -57,8 +57,8 @@ If you encounter a bug, have a feature request, or have questions about the proj
 
 ## License
 
-By contributing to this project, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE) of this project.
+By contributing to this project, you agree that your contributions will be licensed under the [MIT License](LICENSE) of this project.
 
 Thank you for your contribution!
 
--- Maddox
+-- HauseMaster

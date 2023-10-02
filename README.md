@@ -27,5 +27,18 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for mo
  - Smooth caret (on | off)
  - Control + Backspace delete
 
+## Building and Testing
+
+To build and test the site locally, follow these steps:
+
+1. Clone the repository to your local machine.
+2. Navigate to the project directory in your terminal.
+3. Install the necessary dependencies by running `npm install`.
+4. To build the project, run the command `npm run build`.
+5. To start the development server, run the command `npm run server`.
+6. Open your web browser and navigate to `http://localhost:3000`.
+7. To run the tests, open a new terminal window and navigate to the project directory.
+8. Run the command `npm test` to run the test suite.
 
 
+That's it! You should now be able to build and test the site locally. If you encounter any issues, please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file for more information on how to contribute to the project.
