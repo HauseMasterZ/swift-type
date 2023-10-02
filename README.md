@@ -20,10 +20,11 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for mo
  - Blazingly fast
  - Custom fonts
  - Dark/Light Theme
- - Calculates Current WPM, Gross WPM, Net WPM, accuracy, errors, time taken
+ - Calculates Current WPM, Gross WPM, Net WPM, Raw WPM, accuracy, errors, time taken
  - Shortcut for fast restart and repeat
  - Input field auto clear
  - Result highlighting
+ - Word highlighting (on | off)
  - Smooth caret (on | off)
  - Control + Backspace delete
 
