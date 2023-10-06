@@ -23,9 +23,13 @@
 <picture>
   <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=black" alt="ACTIONS">
 </picture>
+<p align="center">
+  <p align="center">
 <picture>
-  <img src="https://readme-typing-svg.demolab.com?font=Open+Sans&pause=500&color=60D0FA&center=true&vCenter=true&width=250&height=25&lines=Swift+Type+~+HauseMaster;Responsive+Typing+Test." alt="ACTIONS">
+  <img src="https://readme-typing-svg.demolab.com?font=Open+Sans&pause=500&color=60D0FA&center=true&vCenter=true&width=290&height=25&lines=Swift+Type+~+HauseMaster;Responsive+Typing+Test." alt="TYPINGANIM">
 </picture>
+  </p>
+</p>
 
 ## About
 Visit the site here: <a href="https://hausemasterz.github.io/swift-type/" target="_blank">SwiftType</a>.

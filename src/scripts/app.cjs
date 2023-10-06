@@ -329,7 +329,7 @@ const fetchRandomQuote = async (fontSelect = null) => {
     }
     isHighlightingEnabled ? handleHighlightedWordsClick(true) : null;
     cursorSpan.classList.remove('hidden');
-    activateCursor();
+    // activateCursor();
     firstLetterRect = letterRects[0][0];
     cursorSpan.style.left = `${firstLetterRect[0].left}px`;
     cursorSpan.style.top = `${firstLetterRect[0].top}px`;
@@ -337,13 +337,13 @@ const fetchRandomQuote = async (fontSelect = null) => {
     fontSelect ? fontSelect.setAttribute("size", "1") : null;
     customTextModal.style.display === "block" ? customTextInput.focus() : inputBox.focus();
 };
-
+    
 /**
  * This function checks the user input and updates the UI accordingly.
  * @param {Event} event - The input event triggered by the user.
  */
 function checkInput(event) {
-    activateCursor();
+    // activateCursor();
     if (startTime === 0) {
         startTimer();
     }
@@ -858,13 +858,14 @@ window.onload = async () => {
         }
     });
 
-    customTextInput.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter') {
-            applyCustomText({ srcElement: { innerText: 'Apply' } });
-        }
-    });
+    // customTextInput.addEventListener('keydown', function (event) {
+    //     if (event.key === 'Enter') {
+    //         applyCustomText({ srcElement: { innerText: 'Apply' } });
+    //     }
+    // });
 
     container.addEventListener("click", handleClick);
     container.addEventListener("change", handleChange);
     cursorSpan.style.transition = 'left 0.1s linear, top 0.25s ease-out';
+    cursorSpan.classList.add('active');
 };
