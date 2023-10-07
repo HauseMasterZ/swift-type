@@ -321,9 +321,8 @@ option[value=Ubuntu] {
   height: 1.5em;
   width: 2px;
   background-color: #4CAF50;
-  transition: top 0.25s ease-out;
+  transition: left 0.1s linear, top 0.25s ease-out;
   pointer-events: none;
-  animation: cursor-blink 1s infinite;
 }
 
 @keyframes cursor-blink {
@@ -579,10 +578,17 @@ form > * {
   display: inline-block;
   overflow: hidden;
   padding: 10px min(2vw, 20px);
-  background-color: var(--input-background-color);
-  color: var(--text-color);
-  transition: background-color 1s ease;
+  border-radius: 0%;
+  box-shadow: 10px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.4s ease;
+  background-color: #a2d2ff;
+  color: black;
   border: 1px solid var(--text-color);
+}
+
+.button:hover {
+  border-radius: 0% 0% 50% 50%/0% 0% 10% 10%;
+  box-shadow: 5px 5px rgba(0, 0, 0, 0.25);
 }
 
 .button:focus {

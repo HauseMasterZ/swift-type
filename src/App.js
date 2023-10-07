@@ -1,749 +1,934 @@
 import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import thresholds from './static/data/thresholds.json';
+import Modal from './components/Modal.js';
 import "./styles.scss";
 // import QuoteDisplay from './quoteDisplay.js';
-// import { checkInput, refreshQuote, openCustomTextModal, clearCustomText, applyCustomText, closeCustomTextModal, checkCapslock, createRipple } from './functions.js';
 function App() {
 
-   // let cursorTimeout;
-   // let errorTimeout;
-   // let letterElementLength;
-   // let letterElement;
-   // let levels = [];
-   // let currentWordIndex = 0;
-   // let typedWords = [];
-   // let errorWordCnt = 0;
-   // let words = [];
-   // let fallbackQuotes = [];
-   // let lastLetterRect;
-   // let firstLetterRect;
-   // let latestWord = "";
-   // let lastWordIndex;
-   // let currentQuote = "";
-   // let totalTyped = 0;
-   // let totalErrors = 0;
-   // let startTime = 0;
-   // let isMobile = false;
 
-   const [cursorTimeout, setCursorTimeout] = useState(null);
-   const [errorTimeout, setErrorTimeout] = useState(null);
-   const [levels, setLevels] = useState([]);
-   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-   const [typedWords, setTypedWords] = useState([]);
-   const [errorWordCnt, setErrorWordCnt] = useState(0);
-   const [fallbackQuotes, setFallbackQuotes] = useState([]);
-   const [lastLetterRect, setLastLetterRect] = useState(null);
-   const [firstLetterRect, setFirstLetterRect] = useState(null);
-   const [latestWord, setLatestWord] = useState("");
-   const [lastWordIndex, setLastWordIndex] = useState(null);
-   const [currentQuote, setCurrentQuote] = useState("");
-   const [totalTyped, setTotalTyped] = useState(0);
-   const [totalErrors, setTotalErrors] = useState(0);
-   const [startTime, setStartTime] = useState(0);
-   const [isMobile, setIsMobile] = useState(false);
-   const [backspaceFlag, setBackspaceFlag] = useState(false);
+    const [startTime, setStartTime] = useState(0);
+    const [levels, setLevels] = useState([]);
+    const [currentWordIndex, setCurrentWordIndex] = useState(0);
+    const [typedWords, setTypedWords] = useState([]);
+    const [fallbackQuotes, setFallbackQuotes] = useState([]);
+    const [lastLetterRect, setLastLetterRect] = useState(null);
+    const [firstLetterRect, setFirstLetterRect] = useState(null);
+    const [latestWord, setLatestWord] = useState("");
+    const [lastWordIndex, setLastWordIndex] = useState(null);
+    const [totalTyped, setTotalTyped] = useState(0);
+    const [totalErrors, setTotalErrors] = useState(0);
+    const [customText, setCustomText] = useState('');
+    const [isMobile, setIsMobile] = useState(false);
+    const [backspaceFlag, setBackspaceFlag] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(true);
+    const [quoteLength, setQuoteLength] = useState('random');
+    const [inputValue, setInputValue] = useState('');
+    const [isCapsLockOn, setIsCapsLockOn] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isCursorHidden, setIsCursorHidden] = useState(true);
+    const [isInputDisabled, setIsInputDisabled] = useState(false);
+    const [wpm, setWpm] = useState(0);
+    const [grossWpm, setGrossWpm] = useState(0);
+    const [netWpm, setNetWpm] = useState(0);
+    const [cursorStyle, setCursorStyle] = useState({});
+    const [resultImgSrc, setResultImgSrc] = useState('');
+    const [isSmoothCursorOn, setIsSmoothCursorOn] = useState(true);
+    const [selectedFont, setSelectedFont] = useState('Open Sans');
+    const resultImgParentRef = useRef(null);
+    const handleSmoothCursorChange = () => {
+        !isSmoothCursorOn ? cursorRef.current.style.transition = 'left 0.1s linear, top 0.25s ease-out' : cursorRef.current.style.transition = 'top 0.25s ease-out';
+        setIsSmoothCursorOn(!isSmoothCursorOn);
+        inputBoxRef.current.focus();
+    };
 
-   const [isDarkMode, setIsDarkMode] = useState(false);
-   const [quoteLength, setQuoteLength] = useState('random');
-   const [inputValue, setInputValue] = useState('');
-   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
-   const [isCustomTextModalOpen, setIsCustomTextModalOpen] = useState(false);
-   const [isLoading, setIsLoading] = useState(false);
-   const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
-   const [isCursorHidden, setIsCursorHidden] = useState(true);
-   const [timer, setTimer] = useState(0);
-   const [isInputDisabled, setIsInputDisabled] = useState(false);
-   const [wpm, setWpm] = useState(0);
-   const [grossWpm, setGrossWpm] = useState(0);
-   const [netWpm, setNetWpm] = useState(0);
-   // Create state for word class names
-   const [cursorStyle, setCursorStyle] = useState({});
+    const handleHighlightingChange = () => {
+        setIsHighlightingEnabled(!isHighlightingEnabled);
+    };
 
-   const [isSmoothCursorOn, setIsSmoothCursorOn] = useState(true);
-   const [isHighlightingOn, setIsHighlightingOn] = useState(false);
-   const [selectedFont, setSelectedFont] = useState('Open Sans');
+    const highlightedWordsElementRef = useRef(null);
 
-   const handleSmoothCursorChange = () => {
-      setIsSmoothCursorOn(!isSmoothCursorOn);
-   };
 
-   const handleHighlightingChange = () => {
-      setIsHighlightingOn(!isHighlightingOn);
-   };
 
-   const handleFontChange = event => {
-      setSelectedFont(event.target.value);
-   };
-   const wpmDisplayRef = useRef(null);
-   const refreshButtonRef = useRef(null);
-   const [isHighlightingEnabled, setIsHighlightingEnabled] = useState(false);
-   const [inputBoxValue, setInputBoxValue] = useState('');
-   const [accuracy, setAccuracy] = useState(0);
-   const [errors, setErrors] = useState(0);
-   const [category, setCategory] = useState('');
-   // const cursorSpanRef = useRef(null);
-   const inputBoxRef = useRef(null);
-   const quotableApiUrl = `https://api.quotable.io/quotes/random/`;
-   const punctuationPattern = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
-   const [words, setWordRefs] = useState([]);
-   const [letterElements, setLetterRefs] = useState([]);
-   const [letterRects, setLetterRects] = useState([]);
-   const handleModeToggle = () => {
-      setIsDarkMode(!isDarkMode);
-      // inputBoxRef.current.focus();
-   };
-   const [quote, setQuote] = useState('');
-   const quoteRef = useRef(null);
+    const handleFontChange = event => {
+        setSelectedFont(event.target.value);
+    };
 
-   const fetchRandomQuote = () => {
-      fetch('https://api.quotable.io/random?minLength=250&maxLength=1000')
-         .then(response => response.json())
-         .then(data => {
-            setWordRefs([]);
-            setLetterRefs([]);
-            setLetterRects([]);
-            setQuote(data.content);
-         });
-   }
+    useEffect(() => {
+        document.body.style.fontFamily = selectedFont;
+        inputBoxRef.current.focus();
+        updateCursorPosition();
 
-   useEffect(() => {
-      fetchRandomQuote();
-   }, []);
+    }, [selectedFont]);
 
-   const renderQuote = () => {
-      const words = quote.split(' ');
-      return (
-         words.map((word, wordIndex) => {
-            return (
-               <div key={wordIndex} className="word">
-                  {word.split('').map((letter, letterIndex) => {
-                     return (
-                        <div key={letterIndex} className="letter">
-                           {letter}
-                        </div>
-                     );
-                  })}
-               </div>
-            );
-         })
+    const wpmDisplayRef = useRef(null);
+    const refreshButtonRef = useRef(null);
+    const [isHighlightingEnabled, setIsHighlightingEnabled] = useState(false);
+    const [inputBoxValue, setInputBoxValue] = useState('');
+    const [accuracy, setAccuracy] = useState(0);
+    const [category, setCategory] = useState('');
+    const categoryDisplayRef = useRef(null);
+    const netWpmDisplayRef = useRef(null);
+    const grossWpmDisplayRef = useRef(null);
+    // const cursorSpanRef = useRef(null);
+    const inputBoxRef = useRef(null);
+    const punctuationPattern = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
+    const [words, setWordRefs] = useState([]);
+    const [letterElements, setLetterRefs] = useState([]);
+    const [letterRects, setLetterRects] = useState([]);
+    const handleModeToggle = () => {
+        setIsDarkMode(!isDarkMode);
+        // inputBoxRef.current.focus();
+    };
 
-      );
-   };
+    const fetchWithRetries = async (url) => {
+        let data = null;
+        let retries = 0;
+        while (!data && retries < 3) {
+            try {
+                // const response = await Promise.race([
+                //     fetch(url),
+                //     new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+                // ]);
+                // if (!response.ok) {
+                //     throw new Error('Network response was not OK');
+                // }
+                // data = await response.json();
+                const response = await axios.get(url, { timeout: 5000 });
+                if (!response.status === 200) {
+                    throw new Error('Network response was not OK');
+                }
+                data = response.data;
+            } catch (error) {
+                console.warn(`Failed to fetch quote ${error} (retry ${retries} of 3). Please wait...`);
 
-   useEffect(() => {
-      if (quoteRef.current) {
-         const quoteDiv = document.getElementById('quote'); // Replace 'myDiv' with the actual ID
-         if (quoteDiv) {
-            const children = Array.from(quoteDiv.children);
-            setWordRefs(children);
-         }
-         const wordElements = quoteRef.current.querySelectorAll('.word');
-         wordElements.forEach((wordElement) => {
-            const letters = wordElement.querySelectorAll('.letter');
-            let newLetterRefs = [];
-            let newLetterRects = [];
-            letters.forEach((letterElement) => {
-               const rect = letterElement.getBoundingClientRect();
-               newLetterRefs.push(letterElement);
-               newLetterRects.push(rect);
-            });
-            letterElements.push(newLetterRefs);
-            letterRects.push(newLetterRects);
-         });
-         if (letterRects[0]) {
-            setCursorStyle({ top: letterRects[0][0].top, left: letterRects[0][0].left });
-         }
-         setIsCursorHidden(false);
-      }
-   }, [quote]);
-
-   // async function fetchRandomQuote() {
-   //   let minLength = 0;
-   //   let maxLength = 0;
-   //   if (quoteLength === 'small') {
-   //     minLength = 1;
-   //     maxLength = 100;
-   //   } else if (quoteLength === 'medium') {
-   //     minLength = 100;
-   //     maxLength = 250;
-   //   } else if (quoteLength === 'large') {
-   //     minLength = 250;
-   //     maxLength = 430;
-   //   }
-   //   const url = minLength > 0 ? `https://api.quotable.io/quotes/random/?minLength=${minLength}&maxLength=${maxLength}` : "https://api.quotable.io/quotes/random";
-   //   try {
-   //     const response = await fetch(url);
-   //     let data = await response.json();
-   //     data = data[0].content;
-   //     setCurrentQuote(data);
-   //     await setAsyncLetterClassNames()
-   //   }
-   //   catch (error) {
-   //     console.log("Error fetching quote:", error);
-   //   };
-   // }
-
-   const startTimer = () => {
-      setStartTime(Date.now());
-      const timerDisplay = document.getElementById('timerDisplay');
-      const timerInterval = setInterval(() => {
-         const elapsedTime = Date.now() - startTime;
-         setTimer(Math.floor(elapsedTime / 1000));
-         if (timerDisplay) {
-            timerDisplay.textContent = `${Math.floor(elapsedTime / 1000)}s`;
-         }
-      }, 1000);
-   };
-
-   const handleQuoteLengthChange = (event) => {
-      setQuoteLength(event.target.value);
-      // console.log(event)
-   };
-
-   const errorsDisplayRef = useRef(null);
-   const accuracyDisplayRef = useRef(null);
-   function flashErrorDisplays() {
-      errorsDisplayRef.current.classList.remove('flash-out-red');
-      accuracyDisplayRef.current.classList.remove('flash-out-red');
-      void accuracyDisplayRef.current.offsetWidth; // Trigger a reflow to restart the animation
-      void errorsDisplayRef.current.offsetWidth; // Trigger a reflow to restart the animation
-      errorsDisplayRef.current.classList.add('flash-out-red');
-      accuracyDisplayRef.current.classList.add('flash-out-red');
-   }
-
-   function highlightWord(reverse = false) {
-      if (reverse && currentWordIndex > 0) {
-         words.current[currentWordIndex + 1].classList.remove('active-word');
-         words.current[currentWordIndex + 2].classList.remove('subactive-word');
-         words.current[currentWordIndex + 1].classList.add('subactive-word');
-         words.current[currentWordIndex + 2].classList.add('inactive-word');
-      } else if (!reverse) {
-         words.current[currentWordIndex].classList.remove('subactive-word');
-         words.current[currentWordIndex].classList.add('active-word');
-         if (currentWordIndex < lastWordIndex) {
-            words.current[currentWordIndex + 1].classList.remove('inactive-word');
-            words.current[currentWordIndex + 1].classList.add('subactive-word');
-         }
-      }
-   }
-
-   // function checkInput(event) {
-   //    // activateCursor();
-   //    event = event.nativeEvent;
-   //    // if (startTime === 0) {
-   //    //    startTimer();
-   //    // }
-   //    const letterElement = letterRefs[currentWordIndex];
-   //    let letterElementLength = letterElement.length;
-   //    if (event.data === ' ') {
-   //       if (latestWord.length < letterElementLength || latestWord !== wordRefs[currentWordIndex].textContent) {
-   //          flashErrorDisplays();
-   //          wordRefs[currentWordIndex].classList.add('underline-text');
-   //       } else if (!isMobile || true) {
-   //          setInputBoxValue('');
-   //          inputBoxRef.current.value = '';
-   //       }
-   //       if (currentWordIndex === lastWordIndex) {
-   //          const endTime = new Date().getTime();
-   //          refreshButtonRef.current.focus();
-   //          endTest(endTime);
-   //          return;
-   //       }
-   //       setTotalTyped(totalTyped + 1);
-   //       setTypedWords((prevTypedWords) => {
-   //          const newTypedWords = [...prevTypedWords];
-   //          newTypedWords[currentWordIndex] = latestWord;
-   //          return newTypedWords;
-   //       });
-   //       setCurrentWordIndex((prevCurrentWordIndex) => prevCurrentWordIndex + 1);
-   //       if (isHighlightingEnabled) {
-   //          highlightWord();
-   //       }
-   //       letterElementLength = letterRefs[currentWordIndex].length;
-   //       const firstLetterRect = letterRects[currentWordIndex + 1][0];
-   //       setCursorStyle({
-   //          top: `${firstLetterRect.top}px`,
-   //          left: `${firstLetterRect.left}px`,
-   //       });
-   //       setLatestWord('');
-   //       return;
-   //    } else if (event.inputType === 'deleteContentBackward') {
-   //       setTotalTyped((prevTotalTyped) => prevTotalTyped - 1);
-   //       if (latestWord === '' && (wordRefs[currentWordIndex - 1].classList.contains('underline-text') || isMobile)) {
-   //          setCurrentWordIndex((prevCurrentWordIndex) => Math.max(prevCurrentWordIndex - 1, 0));
-   //          if (isHighlightingEnabled) {
-   //             highlightWord(true);
-   //          }
-   //          setLatestWord(typedWords[currentWordIndex]);
-   //          letterElementLength = letterRefs[currentWordIndex - 1].length;
-   //          setLastLetterRect(latestWord.length > letterElementLength ? letterRects[currentWordIndex][letterElementLength - 1] : letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)]);
-   //          const lastLetterRect = letterRects[currentWordIndex][letterElementLength - 1];
-   //          setCursorStyle({
-   //             top: `${lastLetterRect.top}px`,
-   //             left: `${lastLetterRect.right}px`,
-   //          });
-   //       } else {
-   //          console.log('error')
-   //          setLatestWord((prevLatestWord) => prevLatestWord.slice(0, -1));
-   //          updateWord(latestWord.slice(0, -1), latestWord.length - 2, true);
-   //       }
-   //       wordRefs[currentWordIndex].classList.remove('underline-text');
-   //       return;
-   //    } else if (event.inputType === 'deleteWordBackward') {
-   //       if (latestWord === '' && (wordRefs[currentWordIndex - 1].classList.contains('underline-text') || isMobile)) {
-   //          setCurrentWordIndex((prevCurrentWordIndex) => Math.max(prevCurrentWordIndex - 1, 0));
-   //          if (isHighlightingEnabled) {
-   //             highlightWord(true);
-   //          }
-   //          letterElementLength = letterRefs[currentWordIndex].length;
-   //          if (letterElement[letterElementLength - 1].textContent.match(punctuationPattern) && typedWords[currentWordIndex].match(punctuationPattern)) {
-   //             setLatestWord(typedWords[currentWordIndex].slice(0, -1));
-   //             letterElement[letterElementLength - 1].classList.remove('correct');
-   //             letterElement[letterElementLength - 1].classList.remove('incorrect');
-   //             setLastLetterRect(letterRects[currentWordIndex][letterElementLength - 2]);
-   //             setCursorStyle({
-   //                top: `${lastLetterRect.top}px`,
-   //                left: `${lastLetterRect.right}px`,
-   //             });
-   //             setTotalTyped((prevTotalTyped) => prevTotalTyped - 2);
-   //             wordRefs[currentWordIndex].classList.remove('underline-text');
-   //             return;
-   //          }
-   //       } else if (latestWord.match(punctuationPattern)) {
-   //          const lastWord = inputBoxValue.trim().split(' ').pop();
-   //          setTotalTyped((prevTotalTyped) => prevTotalTyped - latestWord.length + lastWord.length);
-   //          setLatestWord(lastWord);
-   //          const latestWordLength = latestWord.length;
-   //          let index = letterElementLength - 1;
-   //          while (index >= latestWordLength) {
-   //             letterElement[index].classList.remove('correct');
-   //             letterElement[index].classList.remove('incorrect');
-   //             index--;
-   //          }
-   //          if (latestWordLength >= letterElementLength) {
-   //             setLastLetterRect(letterRects[currentWordIndex][letterElementLength - 1]);
-   //             updateWord(latestWord, latestWordLength - 1, true);
-   //          } else {
-   //             setLastLetterRect(letterRects[currentWordIndex][latestWordLength - 1]);
-   //          }
-   //          setCursorStyle({
-   //             top: `${lastLetterRect.top}px`,
-   //             left: `${lastLetterRect.right}px`,
-   //          });
-   //          return;
-   //       }
-   //       for (let i = 0; i < letterElementLength; i++) {
-   //          letterElement[i].classList.remove('correct');
-   //          letterElement[i].classList.remove('incorrect');
-   //          if (i < latestWord.length) {
-   //             setTotalTyped((prevTotalTyped) => prevTotalTyped - 1);
-   //          }
-   //       }
-   //       setLatestWord('');
-   //       const firstLetterRect = letterRects[currentWordIndex][0];
-   //       // setLastLetterRect(latestWord.length > letterElementLength - 1 ? letterRects[currentWordIndex][letterElementLength - 1] : letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)]);
-   //       setCursorStyle({
-   //          top: `${firstLetterRect.top}px`,
-   //          left: `${firstLetterRect.left}px`,
-   //       });
-   //       wordRefs[currentWordIndex].classList.remove('underline-text');
-   //       return;
-   //    }
-   //    setLatestWord((prevLatestWord) => prevLatestWord + event.data);
-   //    setInputBoxValue((prevInputBoxValue) => prevInputBoxValue + event.data);
-   //    setTotalTyped((prevTotalTyped) => prevTotalTyped + 1);
-   //    updateWord(latestWord + event.data, latestWord.length);
-   //    setAccuracy(calculateAccuracy(totalTyped, totalErrors));
-   //    setErrors(totalErrors);
-   //    if (currentWordIndex === lastWordIndex) {
-   //       if (latestWord.length >= letterElementLength) {
-   //          const endTime = new Date().getTime();
-   //          const currentWord = wordRefs[currentWordIndex].textContent;
-   //          latestWord.trim();
-   //          if (latestWord.length < currentWord.length || latestWord !== currentWord) {
-   //             setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
-   //             flashErrorDisplays();
-   //             wordRefs[currentWordIndex].classList.add('underline-text');
-   //          }
-   //          refreshButtonRef.current.focus();
-   //          endTest(endTime);
-   //          return;
-   //       }
-   //    }
-   // }
-
-   function checkInput(event) {
-      event = event.nativeEvent;
-      if (startTime === 0) {
-         startTimer();
-      }
-      const letterElement = letterElements[currentWordIndex];
-      const letterElementLength = letterElement.length;
-      if (event.data === ' ') {
-         if (latestWord.length < letterElementLength || latestWord !== words[currentWordIndex].textContent) {
-            flashErrorDisplays();
-            words[currentWordIndex].classList.add('underline-text');
-         } else if (!isMobile) {
-            inputBoxRef.current.value = '';
-         }
-         setTypedWords((prevTypedWords) => [...prevTypedWords, latestWord]);
-         setLatestWord('');
-         setCurrentWordIndex((prevCurrentWordIndex) => prevCurrentWordIndex + 1);
-      } else if (event.inputType === 'deleteContentBackward') {
-         setBackspaceFlag(true);
-         if (latestWord === '' && (words[currentWordIndex - 1].classList.contains('underline-text') || isMobile)) { // or inputBox.value.trim() !== ''
-            setLatestWord(typedWords[currentWordIndex - 1]);
-            words[currentWordIndex - 1].classList.remove('underline-text');
-            setCurrentWordIndex((prevCurrentWordIndex) => Math.max(prevCurrentWordIndex - 1, 0));
-            return;
-         }
-         setLatestWord((prevLatestWord) => prevLatestWord.slice(0, -1));
-      } else if (event.inputType === 'deleteWordBackward') {
-         if (latestWord === '' && (words[currentWordIndex - 1].classList.contains('underline-text') || isMobile)) { // or inputBox.value.trim() !== ''
-            setLatestWord(typedWords[currentWordIndex - 1]);
-            setCurrentWordIndex((prevCurrentWordIndex) => Math.max(prevCurrentWordIndex - 1, 0));
-            return;
-         }
-         setLatestWord((prevLatestWord) => prevLatestWord.slice(0, -1));
-      } else {
-         setLatestWord((prevLatestWord) => prevLatestWord + event.data);
-      }
-   }
-   useEffect(() => {
-      if (letterRects[currentWordIndex] === undefined) return;
-      if (latestWord === '') {
-         setCursorStyle((prevCursorStyle) => ({
-            left: `${letterRects[currentWordIndex][0].left}px`,
-            top: `${letterRects[currentWordIndex][0].top}px`,
-         }));
-      } else {
-         updateWord(latestWord, latestWord.length - 1, true);
-      }
-   }, [currentWordIndex]);
-
-   useEffect(() => {
-      if (latestWord === '' && !backspaceFlag) return;
-      updateWord(latestWord, latestWord.length - 1, backspaceFlag);
-   }, [latestWord]);
-
-   function updateWord(latestWord, i, backspaceFlag = false) {
-      const letterElement = letterElements[currentWordIndex];
-      const letterElementLength = letterElement.length;
-      if (letterElement[i] === undefined && !backspaceFlag) {
-         letterElement[letterElementLength - 1].classList.remove('correct');
-         letterElement[letterElementLength - 1].classList.add('incorrect');
-         setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
-         flashErrorDisplays();
-      } else if (backspaceFlag) {
-         if (i === letterElement.length - 1) {
-            if (letterElement[i].textContent === latestWord[i]) {
-               letterElement[i].classList.add('correct');
-               letterElement[i].classList.remove('incorrect');
-            } else {
-               letterElement[i].classList.remove('correct');
-               letterElement[i].classList.add('incorrect');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                retries++;
             }
-         } else if (i < letterElement.length) {
-            letterElement[i + 1].classList.remove('correct');
-            letterElement[i + 1].classList.remove('incorrect');
-         }
-      } else if (latestWord[i] === letterElement[i].textContent) {
-         letterElement[i].classList.remove('incorrect');
-         letterElement[i].classList.add('correct');
-         if (!backspaceFlag) {
-            wpmDisplayRef.current.classList.remove('flash-out-green');
-            void wpmDisplayRef.current.offsetWidth;
-            wpmDisplayRef.current.classList.add('flash-out-green');
-         }
-      } else {
-         letterElement[i].classList.remove('correct');
-         letterElement[i].classList.add('incorrect');
-         if (!backspaceFlag) {
+        }
+        return data;
+    };
+    const [quote, setQuote] = useState('');
+    const quoteRef = useRef(null);
+    const quotableApiUrl = `https://api.quotable.io/quotes/random/`;
+
+    const fetchRandomQuote = async () => {
+        setIsLoading(true);
+        let minLength = 0;
+        let maxLength = 0;
+        if (quoteLength === 'small') {
+            minLength = 1;
+            maxLength = 100;
+        } else if (quoteLength === 'medium') {
+            minLength = 100;
+            maxLength = 250;
+        } else if (quoteLength === 'large') {
+            minLength = 250;
+            maxLength = 99999;
+        }
+        const url = minLength > 0 ? `${quotableApiUrl}?minLength=${minLength}&maxLength=${maxLength}` : quotableApiUrl;
+        const response = await fetchWithRetries(url);
+
+        setWordRefs([]);
+        setLetterRefs([]);
+        setLetterRects([]);
+        setQuote(response[0].content);
+        setIsLoading(false);
+        inputBoxRef.current.focus();
+        setIsCursorHidden(false);
+    }
+
+    const renderQuote = () => {
+        const words = quote.split(' ');
+        return (
+            words.map((word, wordIndex) => {
+                return (
+                    <div key={wordIndex} className="word">
+                        {word.split('').map((letter, letterIndex) => {
+                            return (
+                                <div key={letterIndex} className="letter">
+                                    {letter}
+                                </div>
+                            );
+                        })}
+                    </div>
+                );
+            })
+
+        );
+    };
+    const cursorRef = useRef(null);
+    useEffect(() => {
+        if (quoteRef.current) {
+            const quoteDiv = document.getElementById('quote'); // Replace 'myDiv' with the actual ID
+            if (quoteDiv) {
+                const children = Array.from(quoteDiv.children);
+                setLastWordIndex(children.length - 1);
+                setWordRefs(children);
+            }
+            const wordElements = quoteRef.current.querySelectorAll('.word');
+            wordElements.forEach((wordElement) => {
+                setTypedWords((prevTypedWords) => [...prevTypedWords, '']);
+                const letters = wordElement.querySelectorAll('.letter');
+                let newLetterRefs = [];
+                let newLetterRects = [];
+                letters.forEach((letterElement) => {
+                    const rect = letterElement.getBoundingClientRect();
+                    newLetterRefs.push(letterElement);
+                    newLetterRects.push(rect);
+                });
+                letterElements.push(newLetterRefs);
+                letterRects.push(newLetterRects);
+            });
+            if (letterRects[0]) {
+                setCursorStyle({ top: letterRects[0][0].top, left: letterRects[0][0].left });
+            }
+        }
+    }, [quote]);
+    const [seconds, setSeconds] = useState(0);
+    const [isTimerRunning, setIsTimerRunning] = useState(false);
+
+    useEffect(() => {
+        let interval;
+
+        if (isTimerRunning) {
+            interval = setInterval(() => {
+                setSeconds((prevSeconds) => prevSeconds + 0.5);
+            }, 500);
+        }
+
+        return () => {
+            clearInterval(interval);
+        };
+    }, [isTimerRunning]);
+
+    const handleReset = () => {
+        setSeconds(0);
+        setIsTimerRunning(false);
+    };
+    const handleQuoteLengthChange = (event) => {
+        setQuoteLength(event.target.value);
+        // console.log(event)
+    };
+
+    useEffect(() => {
+        handleRefreshButtonClick();
+    }, [quoteLength]);
+
+    const errorsDisplayRef = useRef(null);
+    const accuracyDisplayRef = useRef(null);
+    function flashErrorDisplays() {
+        errorsDisplayRef.current.classList.remove('flash-out-red');
+        accuracyDisplayRef.current.classList.remove('flash-out-red');
+        void accuracyDisplayRef.current.offsetWidth; // Trigger a reflow to restart the animation
+        void errorsDisplayRef.current.offsetWidth; // Trigger a reflow to restart the animation
+        errorsDisplayRef.current.classList.add('flash-out-red');
+        accuracyDisplayRef.current.classList.add('flash-out-red');
+    }
+
+    function checkInput(event) {
+        event = event.nativeEvent;
+        if (!isTimerRunning) {
+            setStartTime(new Date().getTime());
+            setIsTimerRunning(true);
+            isSmoothCursorOn ? cursorRef.current.style.transition = 'left 0.1s linear, top 0.25s ease-out' : cursorRef.current.style.transition = 'top 0.25s ease-out';
+        }
+        const letterElement = letterElements[currentWordIndex];
+        const letterElementLength = letterElement.length;
+        if (event.data === ' ') {
+            if (latestWord.length < letterElementLength || latestWord !== words[currentWordIndex].textContent) {
+                flashErrorDisplays();
+                setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
+                words[currentWordIndex].classList.add('underline-text');
+            } else if (!isMobile) {
+                inputBoxRef.current.value = '';
+            }
+            if (currentWordIndex === lastWordIndex) {
+                const endTime = new Date().getTime();
+                refreshButtonRef.current.focus();
+                endTest(endTime);
+                return;
+            }
+            setTypedWords((prevTypedWords) => {
+                const newTypedWords = [...prevTypedWords];
+                newTypedWords[currentWordIndex] = latestWord;
+                return newTypedWords;
+            });
+            if (isHighlightingEnabled) {
+                highlightWord();
+            }
+
+            setLatestWord('');
+            setTotalTyped((prevTotalTyped) => prevTotalTyped + 1);
+            setCurrentWordIndex((prevCurrentWordIndex) => prevCurrentWordIndex + 1);
+        } else if (event.inputType === 'deleteContentBackward') {
+            setBackspaceFlag(true);
+            setTotalTyped((prevTotalTyped) => prevTotalTyped - 1);
+            if (latestWord === '' && (words[currentWordIndex - 1].classList.contains('underline-text') || isMobile)) { // or inputBox.value.trim() !== ''
+                if (isHighlightingEnabled) {
+                    highlightWord(true);
+                }
+                setLatestWord(typedWords[currentWordIndex - 1]);
+                words[currentWordIndex - 1].classList.remove('underline-text');
+                setCurrentWordIndex((prevCurrentWordIndex) => Math.max(prevCurrentWordIndex - 1, 0));
+                return;
+            }
+            setLatestWord((prevLatestWord) => prevLatestWord.slice(0, -1));
+        } else if (event.inputType === 'deleteWordBackward') {
+            let letterElementLength = letterElements[currentWordIndex].length;
+            let letterElement = letterElements[currentWordIndex];
+            if (latestWord === '' && (words[currentWordIndex - 1].classList.contains('underline-text') || isMobile)) { // or inputBox.value.trim() !== ''
+                words[currentWordIndex - 1].classList.remove('underline-text');
+                setCurrentWordIndex((prevCurrentWordIndex) => Math.max(prevCurrentWordIndex - 1, 0));
+                if (isHighlightingEnabled) {
+                    highlightWord(true);
+                }
+                letterElement = letterElements[currentWordIndex - 1];
+                letterElementLength = letterElement.length;
+
+                if (letterElement[letterElementLength - 1].textContent.match(punctuationPattern) && typedWords[currentWordIndex - 1].match(punctuationPattern)) {
+                    const lastWord = inputBoxRef.current.value.trim().split(' ').pop();
+                    setTotalTyped((prevTotalTyped) => prevTotalTyped - latestWord.length + lastWord.length);
+                    setLatestWord(lastWord);
+                    const latestWordLength = lastWord.length;
+                    let index = letterElementLength - 1;
+                    while (index >= latestWordLength) {
+                        letterElement[index].classList.remove('correct');
+                        letterElement[index].classList.remove('incorrect');
+                        index--;
+                    }
+                    return;
+                }
+            } else if (latestWord.match(punctuationPattern)) {
+                const lastWord = inputBoxRef.current.value.trim().split(' ').pop();
+                setTotalTyped((prevTotalTyped) => prevTotalTyped - latestWord.length + lastWord.length);
+                setLatestWord(lastWord);
+                const latestWordLength = lastWord.length;
+                let index = letterElementLength - 1;
+                while (index >= latestWordLength) {
+                    letterElement[index].classList.remove('correct');
+                    letterElement[index].classList.remove('incorrect');
+                    index--;
+                }
+                if (latestWordLength >= letterElementLength) {
+                    lastLetterRect = letterRects[currentWordIndex - 1][letterElementLength - 1];
+                    // updateWord(latestWord, latestWordLength - 1, true);
+                } else {
+                    lastLetterRect = letterRects[currentWordIndex - 1][latestWordLength - 1];
+                }
+                return;
+            }
+            for (let i = 0; i < letterElementLength; i++) {
+                letterElement[i].classList.remove('correct');
+                letterElement[i].classList.remove('incorrect');
+                if (i < latestWord.length) {
+                    setTotalTyped((prevTotalTyped) => prevTotalTyped - 1);
+                }
+            }
+            setCursorStyle((prevCursorStyle) => ({
+                left: `${letterRects[currentWordIndex][0].left}px`,
+                top: `${letterRects[currentWordIndex][0].top}px`,
+            }));
+            setLatestWord('');
+
+            // setCurrentWordIndex((prevCurrentWordIndex) => Math.max(prevCurrentWordIndex - 1, 0));
+
+        } else {
+            setLatestWord((prevLatestWord) => prevLatestWord + event.data);
+            setTotalTyped((prevTotalTyped) => prevTotalTyped + 1);
+        }
+    }
+    useEffect(() => {
+        if (letterRects[currentWordIndex] === undefined || backspaceFlag) return;
+        if (latestWord === '') {
+            setCursorStyle((prevCursorStyle) => ({
+                left: `${letterRects[currentWordIndex][0].left}px`,
+                top: `${letterRects[currentWordIndex][0].top}px`,
+            }));
+        } else {
+            updateWord(latestWord, latestWord.length - 1, backspaceFlag);
+        }
+    }, [currentWordIndex]);
+
+    useEffect(() => {
+        if (latestWord === '' && !backspaceFlag) return;
+        updateWord(latestWord, latestWord.length - 1, backspaceFlag);
+        if (currentWordIndex === lastWordIndex) {
+            if (latestWord.length >= letterElements[currentWordIndex].length) {
+                const endTime = new Date().getTime();
+                const currentWord = words[currentWordIndex].textContent;
+                latestWord.trim()
+                if (latestWord.length < currentWord.length || latestWord !== currentWord) {
+                    setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
+                    flashErrorDisplays();
+                    words[currentWordIndex].classList.add('underline-text');
+                }
+                refreshButtonRef.current.focus();
+                endTest(endTime);
+                return;
+            }
+        }
+    }, [latestWord]);
+
+    const lastLetterRectRef = useRef(null);
+    function updateWord(latestWord, i, backspaceFlag = false) {
+        const letterElement = letterElements[currentWordIndex];
+        const letterElementLength = letterElement.length;
+        if (letterElement[i] === undefined && !backspaceFlag) {
+            letterElement[letterElementLength - 1].classList.remove('correct');
+            letterElement[letterElementLength - 1].classList.add('incorrect');
             setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
             flashErrorDisplays();
-         }
-      }
-      setBackspaceFlag(false);
-      if (latestWord === '' && backspaceFlag) {
-         setCursorStyle((prevCursorStyle) => ({
-            left: `${lastLetterRect.left}px`,
-            top: `${lastLetterRect.top}px`,
-         }));
-      } else {
-         setLastLetterRect(latestWord.length > letterElementLength - 1 ? letterRects[currentWordIndex][letterElementLength - 1] : letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)]);
-         if (latestWord.length === 1) {
-            if (!lastLetterRect) return;
+        } else if (backspaceFlag) {
+            if (i === letterElement.length - 1) {
+                if (letterElement[i].textContent === latestWord[i]) {
+                    letterElement[i].classList.add('correct');
+                    letterElement[i].classList.remove('incorrect');
+                } else {
+                    letterElement[i].classList.remove('correct');
+                    letterElement[i].classList.add('incorrect');
+                }
+            } else if (i < letterElement.length) {
+                letterElement[i + 1].classList.remove('correct');
+                letterElement[i + 1].classList.remove('incorrect');
+            }
+        } else if (latestWord[i] === letterElement[i].textContent) {
+            letterElement[i].classList.remove('incorrect');
+            letterElement[i].classList.add('correct');
+            if (!backspaceFlag) {
+                wpmDisplayRef.current.classList.remove('flash-out-green');
+                void wpmDisplayRef.current.offsetWidth;
+                wpmDisplayRef.current.classList.add('flash-out-green');
+            }
+        } else {
+            letterElement[i].classList.remove('correct');
+            letterElement[i].classList.add('incorrect');
+            if (!backspaceFlag) {
+                setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
+                flashErrorDisplays();
+            }
+        }
+
+        if (latestWord === '' && backspaceFlag) {
             setCursorStyle((prevCursorStyle) => ({
-               left: `${lastLetterRect.right}px`,
-               top: `${lastLetterRect.top}px`,
+                left: `${lastLetterRect.left}px`,
+                top: `${lastLetterRect.top}px`,
             }));
-         }
-      }
-   }
+        } else {
+            if (lastLetterRect != letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)]) {
+                setLastLetterRect(latestWord.length > letterElementLength - 1 ? letterRects[currentWordIndex][letterElementLength - 1] : letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)]);
+            } else {
+                setLastLetterRect(latestWord.length > letterElementLength - 1 ? letterRects[currentWordIndex][letterElementLength - 1] : letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)]);
+                lastLetterRectRef.current = letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)];
+            }
+            if (latestWord.length === 1) {
+                if (!lastLetterRect) {
+                    setBackspaceFlag(false);
+                    return;
+                }
+                setCursorStyle((prevCursorStyle) => ({
+                    left: `${lastLetterRect.right}px`,
+                    top: `${lastLetterRect.top}px`,
+                }));
+            }
+        }
+        setBackspaceFlag(false);
+    }
 
-   useEffect(() => {
-      if (!lastLetterRect) return;
-      setCursorStyle((prevCursorStyle) => ({
-         left: `${lastLetterRect.right}px`,
-         top: `${lastLetterRect.top}px`,
-      }));
-   }, [lastLetterRect]);
+    useEffect(() => {
+        if (!lastLetterRect) return;
+        setCursorStyle((prevCursorStyle) => ({
+            left: `${lastLetterRect.right}px`,
+            top: `${lastLetterRect.top}px`,
+        }));
+    }, [lastLetterRect, lastLetterRectRef.current]);
+    const [displayRunning, setDisplayRunning] = useState(false);
+    const [prefix, setPrefix] = useState('')
+    const [number, setNumber] = useState(0)
+    const [stars, setStars] = useState('')
+    useEffect(() => {
+        if (!displayRunning) return;
+        const duration = 3000; // Total duration for the animation in milliseconds
+        const startTime = Date.now();
+        const easingFactor = 3; // Lower values correspond to slower animation
 
-   const endTest = (endTime) => {
-      const minutes = timer / 60;
-      const grossWpm = Math.round(totalTyped / 5 / minutes);
-      const netWpm = Math.round(grossWpm - totalErrors / minutes);
-      const accuracy = calculateAccuracy(totalTyped, totalErrors);
-      setWpm(grossWpm);
-      setGrossWpm(grossWpm);
-      setNetWpm(netWpm);
-      setAccuracy(accuracy);
-      setErrors(totalErrors);
-      setIsInputDisabled(true);
-      // inputBoxRef.current.blur();
-      // refreshButtonRef.current.focus();
-      // if (isHighlightingEnabled) {
-      //    highlightWord();
-      // }
-   }
+        function easeOutExpo(t) {
+            return 1 - Math.pow(2, -easingFactor * t);
+        }
 
+        function updateDisplay() {
+            const currentTime = Date.now();
+            const elapsedTime = currentTime - startTime;
+            const progress = elapsedTime / duration;
+            const easedProgress = easeOutExpo(progress);
+            const currentValue = Math.round(easedProgress * number);
 
-   const handleCustomTextModalOpen = () => {
-      setIsCustomTextModalOpen(true);
-   };
+            if (currentValue > number) {
+                clearInterval(speedInterval);
+                return;
+            }
 
-   const handleCustomTextModalClose = () => {
-      setIsCustomTextModalOpen(false);
-   };
+            setCategory(`${prefix} ${currentValue}kph ${stars}`);
+        }
 
-   const handleRefreshButtonClick = () => {
-      setTimer(0);
-      setCurrentWordIndex(0);
-      inputBoxRef.current.value = '';
-      setWpm(0);
-      setGrossWpm(0);
-      setNetWpm(0);
-      setAccuracy(0);
-      setErrors(0);
-      fetchRandomQuote();
-      inputBoxRef.current.focus();
+        const speedInterval = setInterval(updateDisplay, 1000 / number);
 
-      for (let i = 0; i < words.length; i++) {
-         words[i].classList.remove('underline-text');
-         const letterElements = words[i].querySelectorAll('.letter');
-         for (let j = 0; j < letterElements.length; j++) {
-            letterElements[j].classList.remove('correct');
-            letterElements[j].classList.remove('incorrect');
-         }
-      }
-   };
-
-   // useEffect(() => {
-   //    if (wordRefs.length > 0) {
-   //       wordRefs[0].classList.add('underline-text');
-   //    }
-   // }, [wordRefs]);
+        return () => {
+            clearInterval(speedInterval);
+        };
+    }, [displayRunning]);
 
 
+    const endTest = (endTime) => {
+        setIsTimerRunning(false);
+        setTypedWords((prevTypedWords) => [...prevTypedWords, latestWord]);
+        setIsInputDisabled(true);
+        const netWPM = calculateNetWPM(endTime);
+        setWpm(calculateWPM(endTime));
+        setGrossWpm(calculateGrossWPM(endTime));
+        setNetWpm(calculateNetWPM(endTime));
+        setAccuracy(calculateAccuracy(totalTyped, totalErrors));
+        let level = levels[0];
+        for (let i = 0; i < levels.length; i++) {
+            if (netWPM >= levels[i].threshold) {
+                level = levels[i];
+            } else {
+                break;
+            }
+        }
+        setResultImgSrc(level.imgSrc.src);
+        document.body.style.backgroundColor = level.backgroundColor;
 
-   const handleClearButtonClick = () => {
-      // setInputValue('');
-      // inputBoxRef.current.focus();
-   };
+        resultImgParentRef.current.classList.remove('hidden');
+        resultImgParentRef.current.classList.add('slide-in');
+        setPrefix(level.title);
+        setNumber(level.speed);
+        setStars(level.stars);
+        setDisplayRunning(true);
+        netWpmDisplayRef.current.classList.add('highlight');
+        grossWpmDisplayRef.current.classList.add('highlight');
+        categoryDisplayRef.current.classList.add('highlight-category');
+    }
 
-   const countErrors = (inputValue, quote) => {
-      let errors = 0;
-      for (let i = 0; i < inputValue.length; i++) {
-         if (inputValue[i] !== quote[i]) {
-            errors++;
-         }
-      }
-      return errors;
-   };
 
-   const calculateAccuracy = (inputValue, quote) => {
-      let correctChars = 0;
-      for (let i = 0; i < inputValue.length; i++) {
-         if (inputValue[i] === quote[i]) {
-            correctChars++;
-         }
-      }
-      return (correctChars / quote.length) * 100;
-   };
+    const handleRefreshButtonClick = () => {
+        setSeconds(0);
+        setCurrentWordIndex(0);
+        setTypedWords([]);
+        setLatestWord('');
+        setResultImgSrc('');
+        resultImgParentRef.current.classList.add('hidden');
+        resultImgParentRef.current.classList.remove('slide-in');
+        netWpmDisplayRef.current.classList.remove('highlight');
+        grossWpmDisplayRef.current.classList.remove('highlight');
+        categoryDisplayRef.current.classList.remove('highlight-category');
+        setLastWordIndex(null);
+        setTotalTyped(0);
+        setTotalErrors(0);
+        setCategory('');
+        setDisplayRunning(false);
+        setIsInputDisabled(false);
+        inputBoxRef.current.value = '';
+        setWpm(0);
+        setGrossWpm(0);
+        setNetWpm(0);
+        setClearButton(false);
+        setAccuracy(0);
+        fetchRandomQuote();
+        document.body.classList.contains("dark") ? document.body.style.backgroundColor = '#18191A' : document.body.style.backgroundColor = '#E4E9F7';
 
-   const calculateGrossWpm = (inputValue, timer) => {
-      const words = inputValue.trim().split(/\s+/);
-      const minutes = timer / 60;
-      const wpm = words.length / minutes;
-      return Math.round(wpm);
-   };
+        for (let i = 0; i < words.length; i++) {
+            words[i].classList.remove('underline-text');
+            const letterElements = words[i].querySelectorAll('.letter');
+            for (let j = 0; j < letterElements.length; j++) {
+                letterElements[j].classList.remove('correct');
+                letterElements[j].classList.remove('incorrect');
+            }
+        }
+    };
 
-   const calculateNetWpm = (grossWpm, errors) => {
-      return Math.round(grossWpm - errors / 5);
-   };
+    function repeatTest() {
+        setSeconds(0);
+        setCurrentWordIndex(0);
+        setTypedWords([]);
+        setLatestWord('');
+        setResultImgSrc('');
+        resultImgParentRef.current.classList.add('hidden');
+        resultImgParentRef.current.classList.remove('slide-in');
+        netWpmDisplayRef.current.classList.remove('highlight');
+        grossWpmDisplayRef.current.classList.remove('highlight');
+        categoryDisplayRef.current.classList.remove('highlight-category');
+        setLastWordIndex(null);
+        setTotalTyped(0);
+        setTotalErrors(0);
+        setCategory('');
+        setDisplayRunning(false);
+        setIsInputDisabled(false);
+        inputBoxRef.current.value = '';
+        setWpm(0);
+        setGrossWpm(0);
+        setNetWpm(0);
+        setAccuracy(0);
+        document.body.classList.contains("dark") ? document.body.style.backgroundColor = '#18191A' : document.body.style.backgroundColor = '#E4E9F7';
+        setCursorStyle({ left: `${letterRects[0][0].left}px`, top: `${letterRects[0][0].top}px` });
+        for (let i = 0; i < words.length; i++) {
+            words[i].classList.remove('underline-text');
+            const letterElements = words[i].querySelectorAll('.letter');
+            for (let j = 0; j < letterElements.length; j++) {
+                letterElements[j].classList.remove('correct');
+                letterElements[j].classList.remove('incorrect');
+            }
+        }
+        inputBoxRef.current.focus();
+    }
+    function calculateWPM(endTime) {
+        const minutes = (endTime - startTime) / 60000;
+        const wpm = Math.round((currentWordIndex + 1) / minutes);
+        return wpm;
+    }
 
-   return (
-      // <div className="App">
-      <div className={`App body ${isDarkMode ? 'dark' : ''}`}>
-         <div className="container">
-            <h1 id="title"><span>Swift</span> <span>Type</span> ~ HauseMaster</h1>
-            <div className="hamburger-menu">
-               <div className="hamburger-icon">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-               </div>
-               <div className="dropdown-menu">
-                  <a href="#">
-                     Username
-                  </a>
-                  <a href="./login.html">Login/Signup</a>
-                  <a href="#">Account Settings</a>
-                  <a href="#">Public Profile View</a>
-               </div>
-            </div>
-            <div className="dark-light" onClick={handleModeToggle}>
-               <i className='bx bx-moon moon'></i>
-               <i className='bx bx-sun sun'></i>
-            </div>
-            <div className="github">
-               <a href="https://github.com/HauseMasterZ/swift-type" target="_blank">
-                  <i className='bx bxl-github'></i>
-               </a>
-            </div>
-            {isLoading ? <div className="spinner-border" style={{ position: 'absolute', justifyContent: 'center', alignItems: 'center', position: 'absolute' }} role="status"></div> : ''}
-            <p className="instruction">Type the following text:</p>
-            <span className={`cursor${isCursorHidden ? ' hidden' : ''}`} style={cursorStyle}></span>
-            <div id="quote" ref={quoteRef}>
-               {quote && renderQuote()}
-            </div>
-            <input type="text" id="inputBox" disabled={isInputDisabled} onInput={checkInput} ref={inputBoxRef} />
-            <div>
-               <button className="button" ref={refreshButtonRef} id="refreshButton" onClick={handleRefreshButtonClick}>Refresh</button>
-               <button className="button" id="repeatButton">Repeat</button>
-               <button className="button" id="customButton" onClick={handleCustomTextModalOpen}>Custom Text</button>
-               <button className="button" id="clearButton" onClick={handleClearButtonClick}>Clear Text</button>
-            </div>
-            <br />
-            <div id="timerDisplay"></div>
-            <div className="stats">
-               <div className="stat">
-                  <div ref={wpmDisplayRef} id="wpmDisplay">Current WPM: {wpm}</div>
-               </div>
-               <div className="stat">
-                  <div ref={accuracyDisplayRef} id="accuracyDisplay">Accuracy: {accuracy}%</div>
-               </div>
-               <div className="stat">
-                  <div ref={errorsDisplayRef} id="errorsDisplay">Errors: {errors}</div>
-               </div>
-            </div>
-            <div className="stats">
-               <div className="stat">
-                  <div id="grossWPMDisplay">Gross WPM: {grossWpm}</div>
-               </div>
-               <div className="stat">
-                  <div id="netWPMDisplay">Net WPM: {netWpm}</div>
-               </div>
-            </div>
-            <div className="stats">
-               <div className="stat" id="quote-label">
-                  <label>
-                     Quote Length:
-                  </label>
-               </div>
-               <div className="radio-container">
-                  <label>
-                     <input type="radio" name="quoteLength" value="random" checked={quoteLength === 'random'} onChange={handleQuoteLengthChange} />
-                     Random
-                  </label>
-                  <label>
-                     <input type="radio" name="quoteLength" value="small" checked={quoteLength === 'small'} onChange={handleQuoteLengthChange} />
-                     Small
-                  </label>
-                  <label>
-                     <input type="radio" name="quoteLength" value="medium" checked={quoteLength === 'medium'} onChange={handleQuoteLengthChange} />
-                     Medium
-                  </label>
-                  <label>
-                     <input type="radio" name="quoteLength" value="large" checked={quoteLength === 'large'} onChange={handleQuoteLengthChange} />
-                     Large
-                  </label>
-               </div>
-            </div>
-            <div className="stats">
-               <div className="stat">
-                  <div id="smoothCursor">
-                     Smooth Caret:{' '}
-                     <span className={isSmoothCursorOn ? 'correct' : 'incorrect'} onClick={handleSmoothCursorChange}>
-                        {isSmoothCursorOn ? 'ON' : 'OFF'}
-                     </span>
-                  </div>
-               </div>
-               <div className="stat">
-                  <div id="highlighted-words">
-                     Highlighting:{' '}
-                     <span className={isHighlightingOn ? 'correct' : 'incorrect'} onClick={handleHighlightingChange}>
-                        {isHighlightingOn ? 'ON' : 'OFF'}
-                     </span>
-                  </div>
-               </div>
-               <div className="stat">
-                  <div id="font-family">
-                     <label htmlFor="font-select" id="font-select-label">
-                        Font family:
-                     </label>
-                     <select id="font-select" value={selectedFont} onChange={handleFontChange}>
-                        <option value="Open Sans">Open Sans</option>
-                        <option value="Roboto">Roboto</option>
-                        <option value="Oswald">Oswald</option>
-                        <option value="Play">Play</option>
-                        <option value="Ubuntu">Ubuntu</option>
-                     </select>
-                  </div>
-               </div>
-            </div>
+    function calculateGrossWPM(endTime) {
+        let netTyped = 0;
+        letterElements.forEach((letters, index) => {
+            let errorCharCnt = 0;
+            letters.forEach((letter, i) => {
+                if (letter.classList.contains("incorrect") || !letter.classList.contains("correct")) {
+                    errorCharCnt++;
+                }
+            });
+            netTyped += (letters.length - errorCharCnt) / letters.length;
+        });
+        const minutes = (endTime - startTime) / 60000;
+        const netWPM = Math.round(netTyped / minutes);
+        return netWPM;
+    }
 
-            <div className="stats">
-               <div className="stat">
-                  <div id="categoryDisplay">{category}</div>
+    function calculateNetWPM(endTime) {
+        let errorWordCnt = 0;
+        words.forEach((word, index) => {
+            if (word.classList.contains("underline-text")) {
+                errorWordCnt++;
+            }
+        });
+        setTotalErrors(Math.max(errorWordCnt, totalErrors));
+        const netTyped = currentWordIndex - errorWordCnt + 1;
+        const minutes = (endTime - startTime) / 60000;
+        const netWPM = Math.round(netTyped / minutes);
+        return Math.max(netWPM, 0);
+    }
 
-                  {isCapsLockOn ? <div id="capslockWarning">Caps Lock is ON</div> : ''}
+    function calculateAccuracy(totalTyped, totalErrors) {
+        const accuracy = Math.round((totalTyped - totalErrors) / totalTyped * 100);
+        return Math.max(accuracy, 0);
+    }
 
-               </div>
-            </div>
-            <div className="stats">
-               <div className="stat">
+    async function loadImages() {
+        for (const level of levels) {
+            const img = new Image();
+            img.src = level.imgSrc[0];
+            try {
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = () => {
+                        img.src = level.imgSrc[1];
+                        img.onload = resolve;
+                        img.onerror = reject;
+                        console.warn(`Failed to load image from CDN. Using local image instead.`);
+                    };
+                });
+                level.imgSrc = img;
+            } catch (error) {
+                console.error(`Failed to load image for level ${level.title}: ${error}`);
+            }
+        }
+    }
+    const [windowDimensions, setWindowDimensions] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight,
+    });
 
-                  <div id="customTextModal" className="modal">
-                     <div className="modal-content">
-                        <label htmlFor="customTextInput">
-                           <h2>Enter Custom Text</h2>
 
-                           <input type="text" id="customTextInput"
-                              placeholder='Enter Custom Text'
-                              onKeyDown={(event) => {
-                                 if (event.key === 'Enter') {
-                                    // applyCustomText(event);
-                                 }
-                              }} />
+    useEffect(() => {
+        function handleResize() {
+            setWindowDimensions({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            });
+            updateCursorPosition();
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+
+    function updateCursorPosition() {
+        const newLetterRects = [];
+
+        const quoteDiv = document.getElementById('quote');
+        const wordElements = Array.from(quoteDiv.children);
+
+        wordElements.forEach((word) => {
+            const letterElements = Array.from(word.children);
+            const lettersRects = [];
+
+            letterElements.forEach((letter) => {
+                lettersRects.push(letter.getClientRects());
+            });
+
+            newLetterRects.push(lettersRects);
+        });
+        if (newLetterRects[currentWordIndex] === undefined) return;
+        setLetterRects(newLetterRects);
+        const letterRect = newLetterRects[currentWordIndex][0][0];
+
+        setCursorStyle({
+            left: `${latestWord ? letterRect.right : letterRect.left}px`,
+            top: `${letterRect.top}px`,
+        });
+    }
+    const handleClearButtonClick = () => {
+        setCustomText('');
+        setClearButton(false);
+        handleRefreshButtonClick();
+        inputBoxRef.current.focus();
+    };
+
+    const appRef = useRef(null);
+    const darkLightToggleElementRef = useRef(null);
+
+    function handleDarkLightToggleClick() {
+        darkLightToggleElementRef.current.classList.toggle("active");
+        document.body.classList.toggle("dark");
+        !isDarkMode ? document.body.style.backgroundColor = '#18191A' : document.body.style.backgroundColor = '#E4E9F7';
+        setIsDarkMode(!isDarkMode);
+        inputBoxRef.current.focus();
+    }
+
+    useEffect(() => {
+        document.body.classList.add("dark");
+        fetchRandomQuote();
+        setLevels(thresholds.thresholds);
+    }, []);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const [clearButton, setClearButton] = useState(false);
+    const handleApply = (inputValue) => {
+        if (inputValue.trim() === '') return;
+        setCustomText(inputValue);
+        setClearButton(true);
+    };
+
+    useEffect(() => {
+        if (customText === '') return;
+        setQuote(customText);
+        setWordRefs([]);
+        setLetterRefs([]);
+        setLetterRects([]);
+        setIsLoading(false);
+        inputBoxRef.current.focus();
+        setIsCursorHidden(false);
+        repeatTest();
+    }, [customText]);
+
+    useEffect(() => {
+        loadImages();
+    }, [levels]);
+
+    function highlightWord(reverse = false) {
+        if (reverse && currentWordIndex > 0) {
+            words[currentWordIndex + 1].classList.remove('active-word');
+            words[currentWordIndex + 2].classList.remove('subactive-word');
+            words[currentWordIndex + 1].classList.add('subactive-word');
+            words[currentWordIndex + 2].classList.add('inactive-word');
+        } else if (!reverse) {
+            words[currentWordIndex + 1].classList.remove('subactive-word');
+            words[currentWordIndex + 1].classList.add('active-word');
+            if (currentWordIndex < lastWordIndex - 1) {
+                words[currentWordIndex + 2].classList.remove('inactive-word');
+                words[currentWordIndex + 2].classList.add('subactive-word');
+            }
+        }
+    }
+
+    const [isDropDownMenuOpen, setisDropdownMenuOpen] = useState(false);
+    const dropdownMenuRef = useRef(null);
+    useEffect(() => {
+        dropdownMenuRef.current.classList.toggle("show");
+    }, [isDropDownMenuOpen]);
+
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    useEffect(() => {
+        if (words.length === 0) return;
+        for (let i = currentWordIndex; i <= lastWordIndex; i++) {
+            isHighlightingEnabled ? words[i].classList.add('inactive-word') : words[i].classList.remove('inactive-word', 'active-word', 'subactive-word');
+        }
+        if (isHighlightingEnabled && currentWordIndex < lastWordIndex) {
+            words[currentWordIndex].classList.remove('inactive-word');
+            words[currentWordIndex + 1].classList.remove('inactive-word');
+            words[currentWordIndex].classList.add('active-word');
+            words[currentWordIndex + 1].classList.add('subactive-word');
+        }
+        inputBoxRef.current.focus();
+    }, [isHighlightingEnabled]);
+
+    return (
+        <div className={`App`} ref={appRef}>
+            <div className="container">
+                <h1 id="title"><span>Swift</span> <span>Type</span> ~ HauseMaster</h1>
+                <div className="hamburger-menu">
+                    <div className="hamburger-icon" onClick={(e) => (setisDropdownMenuOpen(!isDropDownMenuOpen))}>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div className="dropdown-menu" ref={dropdownMenuRef}>
+                        {isLoggedIn ? (
+                            <>
+                                <a href="#">UserName</a>
+                                <a href="#">Account Settings</a>
+                                <a href="#">Public Profile View</a>
+                            </>
+                        ) : (
+                            <a href="#">Login/Signup</a>
+                        )}
+                    </div>
+                </div>
+                <div className="dark-light" onClick={handleDarkLightToggleClick} ref={darkLightToggleElementRef}>
+                    <i className='bx bx-sun sun'></i>
+                    <i className='bx bx-moon moon'></i>
+                </div>
+                <div className="github">
+                    <a href="https://github.com/HauseMasterZ/swift-type" target="_blank">
+                        <i className='bx bxl-github'></i>
+                    </a>
+                </div>
+                {isLoading ? <div className="spinner-border" style={{ position: 'absolute', justifyContent: 'center', alignItems: 'center', display: 'block' }} role="status"></div> : ''}
+                <p className="instruction">Type the following text:</p>
+                {isCursorHidden ? '' : <span className={`cursor`} ref={cursorRef} style={cursorStyle}></span>}
+                <div id="quote" ref={quoteRef}>
+                    {quote && renderQuote()}
+                </div>
+                <input type="text" id="inputBox" disabled={isInputDisabled} onInput={checkInput} ref={inputBoxRef} autoFocus />
+                <div>
+                    <button className="button" ref={refreshButtonRef} id="refreshButton" onClick={handleRefreshButtonClick}>Refresh</button>
+                    <button className="button" id="repeatButton" onClick={repeatTest}>Repeat</button>
+                    <button className="button" id="customButton" onClick={openModal}>Custom Text</button>
+                    {clearButton ? <button className="button" id="clearButton" onClick={handleClearButtonClick}>Clear Text</button> : ''}
+                </div>
+                <br />
+                <div id="timerDisplay">Time: {seconds.toFixed(1)}s</div>
+                <div className="stats">
+                    <div className="stat">
+                        <div ref={wpmDisplayRef} id="wpmDisplay">Current WPM: {wpm}</div>
+                    </div>
+                    <div className="stat">
+                        <div ref={accuracyDisplayRef} id="accuracyDisplay">Accuracy: {accuracy}%</div>
+                    </div>
+                    <div className="stat">
+                        <div ref={errorsDisplayRef} id="errorsDisplay">Errors: {totalErrors}</div>
+                    </div>
+                </div>
+                <div className="stats">
+                    <div className="stat">
+                        <div id="grossWPMDisplay" ref={grossWpmDisplayRef} >Gross WPM: {grossWpm}</div>
+                    </div>
+                    <div className="stat">
+                        <div id="netWPMDisplay" ref={netWpmDisplayRef} >Net WPM: {netWpm}</div>
+                    </div>
+                </div>
+                <div className="stats">
+                    <div className="stat" id="quote-label">
+                        <label>
+                            Quote Length:
                         </label>
-                        <button className="button" onClick={(event) => handleCustomTextModalClose(event)}>Apply</button>
-                        <button className="button" onClick={(event) => handleCustomTextModalClose(event)}>Cancel</button>
-                     </div>
-                  </div>
-               </div>
-            </div>
-            <div className="stats">
-               <div className="stat">
-                  <div id="resultImgParent">
-                     <img id="resultImg" className="hidden" src="" alt="Result Speed Image" srcSet="" />
-                  </div>
-               </div>
-            </div>
+                    </div>
+                    <div className="radio-container">
+                        <label>
+                            <input type="radio" name="quoteLength" value="random" checked={quoteLength === 'random'} onChange={handleQuoteLengthChange} />
+                            Random
+                        </label>
+                        <label>
+                            <input type="radio" name="quoteLength" value="small" checked={quoteLength === 'small'} onChange={handleQuoteLengthChange} />
+                            Small
+                        </label>
+                        <label>
+                            <input type="radio" name="quoteLength" value="medium" checked={quoteLength === 'medium'} onChange={handleQuoteLengthChange} />
+                            Medium
+                        </label>
+                        <label>
+                            <input type="radio" name="quoteLength" value="large" checked={quoteLength === 'large'} onChange={handleQuoteLengthChange} />
+                            Large
+                        </label>
+                    </div>
+                </div>
+                <div className="stats">
+                    <div className="stat">
+                        <div id="smoothCursor" onClick={handleSmoothCursorChange}>
+                            Smooth Caret:{' '}
+                            <span className={isSmoothCursorOn ? 'correct' : 'incorrect'} onClick={handleSmoothCursorChange}>
+                                {isSmoothCursorOn ? 'ON' : 'OFF'}
+                            </span>
+                        </div>
+                    </div>
+                    <div className="stat">
+                        <div id="highlighted-words" ref={highlightedWordsElementRef} onClick={handleHighlightingChange} >
+                            Highlighting:{' '}
+                            <span className={isHighlightingEnabled ? 'correct' : 'incorrect'} onClick={handleHighlightingChange}>
+                                {isHighlightingEnabled ? 'ON' : 'OFF'}
+                            </span>
+                        </div>
+                    </div>
+                    <div className="stat">
+                        <div id="font-family">
+                            <label htmlFor="font-select" id="font-select-label">
+                                Font family:
+                            </label>
+                            <select id="font-select" value={selectedFont} onChange={handleFontChange}>
+                                <option value="Open Sans">Open Sans</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Oswald">Oswald</option>
+                                <option value="Play">Play</option>
+                                <option value="Ubuntu">Ubuntu</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
-         </div>
-         {/* <script async src="scripts/script.js"></script> */}
-      </div >
-   );
+                <div className="stats">
+                    <div className="stat">
+                        <div id="categoryDisplay" ref={categoryDisplayRef}>{category}</div>
+
+                        {isCapsLockOn ? <div id="capslockWarning">Caps Lock is ON</div> : ''}
+
+                    </div>
+                </div>
+                <Modal isOpen={isModalOpen} onClose={closeModal} onApply={handleApply} />
+
+                <div className="stats">
+                    <div className="stat">
+                        <div id="resultImgParent">
+                            <img id="resultImg" className="hidden" src={resultImgSrc} alt="Result Speed Image" srcSet="" ref={resultImgParentRef} />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            {/* <script async src="scripts/script.js"></script> */}
+        </div >
+    );
 }
 
 export default App;

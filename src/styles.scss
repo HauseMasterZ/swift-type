@@ -36,6 +36,7 @@ body.dark {
     color: var(--text-color);
 }
 
+
 ::selection {
     background-color: var(--input-background-color);
 }
@@ -248,9 +249,9 @@ h1 {
     text-decoration: none;
 }
 
-.dropdown-menu a:hover {
-    background-color: var(--input-background-color);
-}
+// .dropdown-menu a:hover {
+//     background-color: var(--input-background-color);
+// }
 
 .show {
     display: block;
@@ -266,6 +267,7 @@ h1 {
     border: none;
     background-color: transparent;
     outline: none;
+    // transition: color 1s ease;
 }
 
 #font-select:focus {
@@ -317,7 +319,7 @@ option[value="Ubuntu"] {
     height: 1.5em;
     width: 2px;
     background-color: #4CAF50;
-    transition: left 0.1s linear, top 0.25s ease-out;
+    transition: top 0.25s ease-out;
     pointer-events: none;
     // animation: cursor-blink 1s infinite;
 }
@@ -369,10 +371,6 @@ option[value="Ubuntu"] {
 
 #timerDisplay {
     margin-bottom: 20px;
-}
-
-#clearButton {
-    display: none;
 }
 
 .shrink-animation {
@@ -491,6 +489,7 @@ option[value="Ubuntu"] {
     justify-content: space-between;
     margin-bottom: 20px;
     align-items: center;
+    // transition: color 1s ease;
 }
 
 .stat {
@@ -587,10 +586,20 @@ form>* {
     display: inline-block;
     overflow: hidden;
     padding: 10px min(2vw, 20px);
-    background-color: var(--input-background-color);
-    color: var(--text-color);
-    transition: background-color 1s ease;
+    border-radius: 0%;
+    box-shadow: 10px 10px rgba(0, 0, 0, .15);
+    // transition: border-radius 0.4s ease, box-shadow 0.4s ease, background-color 1s ease;
+    transition: all 0.4s ease;
+    // background-color: var(--input-background-color);
+    background-color: #a2d2ff;
+    // color: var(--text-color);
+    color: black;
     border: 1px solid var(--text-color);
+}
+
+.button:hover {
+    border-radius: 0% 0% 50% 50% / 0% 0% 10% 10%;
+    box-shadow: 5px 5px rgba(0, 0, 0, .25);
 }
 
 .button:focus {
@@ -647,7 +656,7 @@ form>* {
 }
 
 .modal {
-    display: none;
+    display: block;
     justify-content: center;
     align-items: center;
     z-index: 1;
