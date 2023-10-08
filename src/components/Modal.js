@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-const Modal = ({ isOpen, onClose, onApply }) => {
+import '../static/styles/styles.scss'
+
+const Modal = ({ isOpen, onClose, onApply, modalInputRef }) => {
     const [inputValue, setInputValue] = useState('');
 
     const handleApply = () => {
@@ -7,13 +9,11 @@ const Modal = ({ isOpen, onClose, onApply }) => {
         setInputValue('');
         onClose();
     };
-
     const handleCancel = () => {
         setInputValue('');
         onClose();
     };
     if (!isOpen) return null;
-
     return (
         <div className="stats">
             <div className="stat">
@@ -21,7 +21,7 @@ const Modal = ({ isOpen, onClose, onApply }) => {
                     <div className="modal-content">
                         <label>
                             <h2>Enter Custom Text</h2>
-                            <input type="text" id="customTextInput" placeholder="Enter Custom Text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
+                            <input type="text" id="customTextInput" ref={modalInputRef} placeholder="Enter Custom Text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
                         </label>
                         <button className="button" onClick={handleApply}>Apply</button>
                         <button className="button" onClick={handleCancel}>Cancel</button>
