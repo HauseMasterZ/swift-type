@@ -954,9 +954,6 @@ function Home() {
         inputBoxRef.current.focus();
     }, [isHighlightingEnabled]);
 
-    useEffect(() => {
-        document.body.classList.add("dark");
-    }, []);
 
     return (
         <div className={`App`} ref={appRef}>
