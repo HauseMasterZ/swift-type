@@ -9,6 +9,7 @@
 :root {
     --body-color: #E4E9F7;
     --text-color: black;
+    --text-color-rgb: 0, 0, 0;
     --input-background-color: #fff;
 }
 
@@ -32,6 +33,7 @@ body {
 body.dark {
     --body-color: #18191A;
     --text-color: white;
+    --text-color-rgb: 75, 75, 75;
     --input-background-color: #333333;
     color: var(--text-color);
 }
@@ -605,6 +607,8 @@ form input {
 form>* {
     margin-bottom: 10px;
 }
+$box-shadow-color: rgba(var(--text-color), 0.15);
+$box-shadow-offset: 10px;
 
 .button {
     position: relative;
@@ -612,13 +616,15 @@ form>* {
     overflow: hidden;
     padding: 10px min(2vw, 20px);
     border-radius: 0%;
-    box-shadow: 10px 10px rgba(0, 0, 0, .15);
+    // box-shadow: 10px 10px rgba(0, 0, 0, .15);
+    box-shadow: 10px 10px rgba(var(--text-color-rgb), 0.25);
+    
     // transition: border-radius 0.4s ease, box-shadow 0.4s ease, background-color 1s ease;
     transition: all 0.4s ease;
-    // background-color: var(--input-background-color);
-    background-color: #a2d2ff;
-    // color: var(--text-color);
-    color: black;
+    background-color: var(--input-background-color);
+    // background-color: #a2d2ff;
+    color: var(--text-color);
+    // color: black;
     border: 1px solid var(--text-color);
     cursor: pointer;
 }
@@ -630,8 +636,8 @@ form>* {
 }
 
 .button:hover {
-    border-radius: 0% 0% 50% 50% / 0% 0% 10% 10%;
-    box-shadow: 5px 5px rgba(0, 0, 0, .25);
+    // border-radius: 0% 0% 50% 50% / 0% 0% 10% 10%;
+    box-shadow: 5px 5px rgba(var(--text-color-rgb), 0.15);
 }
 
 .button:focus {

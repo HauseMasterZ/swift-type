@@ -74,11 +74,19 @@ function Profile() {
 
     const fileInputRef = useRef(null);
     function handleProfileAvatarClick() {
+        fileInputRef.current.accept = 'image/*'; // Only allow image files
         fileInputRef.current.click();
     }
+    const MAX_FILE_SIZE = 6 * 1024 * 1024; // 6MB in bytes
+
     const handleFileInputChange = async (event) => {
         setIsLoading(true);
         const file = event.target.files[0]; // Get the selected file
+        if (file.size > MAX_FILE_SIZE) {
+            console.error('File size exceeds the limit of 6MB');
+            setIsLoading(false);
+            return;
+          }
         const storageRef = ref(storage, `avatars/${file.name}`); // Create a reference to the storage location
 
         try {
