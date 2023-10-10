@@ -39,6 +39,8 @@ const cursorSpan = document.querySelector('.cursor');
 const customTextInput = document.getElementById("customTextInput");
 const inputBox = document.getElementById("inputBox");
 const container = document.querySelector(".container");
+const hamburgerIcon = document.querySelector('.hamburger-icon');
+const dropdownMenu = document.querySelector('.dropdown-menu');
 const loadingSpinner = document.querySelector(".spinner-border");
 const timerDisplay = document.getElementById("timerDisplay");
 const wpmDisplay = document.getElementById("wpmDisplay");
@@ -66,6 +68,7 @@ const quotableApiUrl = `https://api.quotable.io/quotes/random/`;
  * @param {MouseEvent} event - The click event.
  */
 function createRipple(event) {
+    console.log(event);
     const button = event.currentTarget;
     button.classList.remove("shrink-animation");
     void button.offsetWidth;
@@ -337,7 +340,7 @@ const fetchRandomQuote = async (fontSelect = null) => {
     fontSelect ? fontSelect.setAttribute("size", "1") : null;
     customTextModal.style.display === "block" ? customTextInput.focus() : inputBox.focus();
 };
-    
+
 /**
  * This function checks the user input and updates the UI accordingly.
  * @param {Event} event - The input event triggered by the user.
@@ -856,6 +859,9 @@ window.onload = async () => {
         if (event.target === customTextModal) {
             closeCustomTextModal(event);
         }
+        else if (dropdownMenu.classList.contains('show') && event.target !== hamburgerIcon && event.target.parentNode !== hamburgerIcon) {
+            dropdownMenu.classList.toggle('show');
+        }
     });
 
     // customTextInput.addEventListener('keydown', function (event) {
@@ -864,6 +870,10 @@ window.onload = async () => {
     //     }
     // });
 
+
+    hamburgerIcon.addEventListener('click', () => {
+        dropdownMenu.classList.toggle('show');
+    });
     container.addEventListener("click", handleClick);
     container.addEventListener("change", handleChange);
     cursorSpan.style.transition = 'left 0.1s linear, top 0.25s ease-out';
