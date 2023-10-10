@@ -125,7 +125,6 @@ function Home() {
       setLetterRects([]);
       setIsLoading(false);
       setIsCursorHidden(false);
-
       setQuote(data);
       setIsQuoteRenderReady(true);
       inputBoxRef.current.focus();
