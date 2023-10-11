@@ -582,8 +582,8 @@ form > * {
   border-radius: 0%;
   box-shadow: 10px 10px rgba(0, 0, 0, 0.15);
   transition: border-radius 0.4s ease, box-shadow 0.4s ease, background-color 1s ease;
-  background-color: #a2d2ff;
-  color: black;
+  background-color: var(--input-background-color);
+  color: var(--text-color);
   border: 1px solid var(--text-color);
 }
 

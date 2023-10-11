@@ -592,10 +592,10 @@ form>* {
     border-radius: 0%;
     box-shadow: 10px 10px rgba(0, 0, 0, .15);
     transition: border-radius 0.4s ease, box-shadow 0.4s ease, background-color 1s ease;
-    // background-color: var(--input-background-color);
-    background-color: #a2d2ff;
-    // color: var(--text-color);
-    color: black;
+    background-color: var(--input-background-color);
+    // background-color: #a2d2ff;
+    color: var(--text-color);
+    // color: black;
     border: 1px solid var(--text-color);
 }
 
