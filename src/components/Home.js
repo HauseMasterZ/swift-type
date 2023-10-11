@@ -680,9 +680,6 @@ function Home() {
       inputBoxRef.current.focus();
    }
 
-
-
-
    useEffect(() => {
       if (modalInputRef.current === null && isModalOpen) return;
       if (isModalOpen) {
@@ -692,7 +689,6 @@ function Home() {
          // onEnd();
       }
    }, [isModalOpen]);
-
 
    useEffect(() => {
       if (customText === '') return;

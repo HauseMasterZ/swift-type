@@ -38,7 +38,6 @@ body.dark {
     color: var(--text-color);
 }
 
-
 ::selection {
     background-color: var(--input-background-color);
 }
@@ -607,6 +606,7 @@ form input {
 form>* {
     margin-bottom: 10px;
 }
+
 $box-shadow-color: rgba(var(--text-color), 0.15);
 $box-shadow-offset: 10px;
 
@@ -618,7 +618,7 @@ $box-shadow-offset: 10px;
     border-radius: 0%;
     // box-shadow: 10px 10px rgba(0, 0, 0, .15);
     box-shadow: 10px 10px rgba(var(--text-color-rgb), 0.25);
-    
+
     // transition: border-radius 0.4s ease, box-shadow 0.4s ease, background-color 1s ease;
     transition: all 0.4s ease;
     background-color: var(--input-background-color);

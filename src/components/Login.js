@@ -1,13 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { initializeApp } from 'firebase/app';
-import { collection } from 'firebase/firestore';
 import { auth, db } from '../firebase';
-import { getFirestore, doc, setDoc, query, where, getDocs } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import '../static/styles/styles.scss'
-
-import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 function Login() {
     const [email, setEmail] = useState('');
