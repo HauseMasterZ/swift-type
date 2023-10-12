@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getAuth, applyActionCode } from 'firebase/auth';
-import { getFirestore, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { doc, deleteDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import '../static/styles/styles.scss'
@@ -11,6 +10,8 @@ function Settings() {
     const [isDarkMode, setIsDarkMode] = useState(true);
     const darkLightToggleElementRef = React.useRef(null);
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+    const [showModal, setShowModal] = useState(false);
 
     function handleDarkLightToggleClick() {
         darkLightToggleElementRef.current.classList.toggle('active');
@@ -18,18 +19,14 @@ function Settings() {
         !isDarkMode ? (document.body.style.backgroundColor = '#18191A') : (document.body.style.backgroundColor = '#E4E9F7');
         setIsDarkMode(!isDarkMode);
     }
-    const navigate = useNavigate();
 
     useEffect(() => {
         document.body.classList.add("dark");
     }, []);
 
-    const [showModal, setShowModal] = useState(false);
-
     const handleDeleteAccountClick = () => {
         setShowModal(true);
     };
-
 
     const handleYesClick = () => {
         setIsLoading(true);
@@ -54,8 +51,6 @@ function Settings() {
         setShowModal(false);
     };
 
-    const [otp, setOtp] = useState('');
-
     return (
         <div className={`container ${isDarkMode ? 'dark' : ''}`}>
             <Link to="/" className="no-style">
@@ -68,7 +63,7 @@ function Settings() {
                 <i className="bx bx-moon moon"></i>
             </div>
             <div className="github">
-                <a href="https://github.com/HauseMasterZ/swift-type" target="_blank">
+                <a href="https://github.com/HauseMasterZ/swift-type" target="_blank" rel='noreferrer'>
                     <i className='bx bxl-github'></i>
                 </a>
             </div>

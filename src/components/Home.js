@@ -3,6 +3,7 @@ import axios from 'axios';
 import thresholds from '../static/data/thresholds.json';
 import { Link } from 'react-router-dom';
 import Modal from './Modal.js';
+import Header from './Header';
 // import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
@@ -23,7 +24,6 @@ function Home() {
    const [customText, setCustomText] = useState('');
    const [isMobile, setIsMobile] = useState(false);
    const [backspaceFlag, setBackspaceFlag] = useState(false);
-   const [isDarkMode, setIsDarkMode] = useState(false);
    const [quoteLength, setQuoteLength] = useState('random');
    const [isCapsLockOn, setIsCapsLockOn] = useState(false);
    const [isLoading, setIsLoading] = useState(false);
@@ -47,10 +47,12 @@ function Home() {
    const cursorRef = useRef(null);
    const [isDropDownMenuOpen, setIsDropDownMenuOpen] = useState(false);
    const dropdownMenuRef = useRef(null);
+   const [quoteDivs, setQuoteDivs] = useState([]);
    const wpmDisplayRef = useRef(null);
    const refreshButtonRef = useRef(null);
    const [isHighlightingEnabled, setIsHighlightingEnabled] = useState(false);
    const [accuracy, setAccuracy] = useState(0);
+   const [imagesLoaded, setImagesLoaded] = useState(false);
    const [category, setCategory] = useState('');
    const categoryDisplayRef = useRef(null);
    const netWpmDisplayRef = useRef(null);
@@ -120,34 +122,55 @@ function Home() {
       const url = minLength > 0 ? `${quotableApiUrl}?minLength=${minLength}&maxLength=${maxLength}` : quotableApiUrl;
       const response = await fetchWithRetries(url);
       const data = await response[0].content;
-      setWordRefs([]);
-      setLetterRefs([]);
-      setLetterRects([]);
+      setIsQuoteRenderReady(true);
       setIsLoading(false);
       setIsCursorHidden(false);
       setQuote(data);
-      setIsQuoteRenderReady(true);
-      inputBoxRef.current.focus();
+      if (inputBoxRef.current) {
+         inputBoxRef.current.focus();
+      }
    }
 
-   const renderQuote = () => {
-      const words = quote.split(' ');
-      return (
-         words.map((word, wordIndex) => {
-            return (
-               <div key={wordIndex} className="word">
-                  {word.split('').map((letter, letterIndex) => {
-                     return (
-                        <div key={letterIndex} className="letter">
-                           {letter}
-                        </div>
-                     );
-                  })}
-               </div>
-            );
-         })
+   useEffect(() => {
+      if (!isQuoteRenderReady) return;
+      renderQuote();
+   }, [isQuoteRenderReady]);
 
-      );
+   // const renderQuote = () => {
+   //    const words = quote.split(' ');
+   //    return (
+   //       words.map((word, wordIndex) => {
+   //          return (
+   //             <div key={wordIndex} className="word">
+   //                {word.split('').map((letter, letterIndex) => {
+   //                   return (
+   //                      <div key={letterIndex} className="letter">
+   //                         {letter}
+   //                      </div>
+   //                   );
+   //                })}
+   //             </div>
+   //          );
+   //       })
+   //    );
+   // };
+
+   const renderQuote = () => {
+      const words = quote.split(" ");
+      const divs = words.map((word, wordIndex) => {
+         return (
+            <div key={wordIndex} className="word">
+               {word.split("").map((letter, letterIndex) => {
+                  return (
+                     <div key={letterIndex} className="letter">
+                        {letter}
+                     </div>
+                  );
+               })}
+            </div>
+         );
+      });
+      setQuoteDivs(divs);
    };
 
    const handleQuoteLengthChange = (event) => {
@@ -287,12 +310,9 @@ function Home() {
       setIsHighlightingEnabled(!isHighlightingEnabled);
    };
 
-
-
    const handleFontChange = event => {
       setSelectedFont(event.target.value);
    };
-
 
    const lastLetterRectRef = useRef(null);
    function updateWord(latestWord, i, backspaceFlag = false) {
@@ -388,7 +408,7 @@ function Home() {
       netWpmDisplayRef.current.classList.add('highlight');
       grossWpmDisplayRef.current.classList.add('highlight');
       categoryDisplayRef.current.classList.add('highlight-category');
-      if (customText !== '') return;
+      if (customText !== '' || !user) return;
 
       const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
       const increment = totalRacesTaken + 1;
@@ -399,9 +419,6 @@ function Home() {
          [process.env.REACT_APP_TOTAL_AVG_ACCURACY_KEY]: newAccuracy,
          [process.env.REACT_APP_TOTAL_AVG_WPM_KEY]: newWpm
       })
-         .then(() => {
-            console.log('Database res vals');
-         })
          .catch((error) => {
             console.error('Error updating database values:', error);
          });
@@ -409,6 +426,7 @@ function Home() {
       setTotalAverageWpm(newWpm);
       setTotalAvgAccuracy(newAccuracy);
    }
+
    const calculateLocalAccuracy = (newAccuracy, totalRacesTaken, totalAvgAccuracy) => {
       // Calculate the new average accuracy
       const newTotalAccuracy = (totalAvgAccuracy * totalRacesTaken) + newAccuracy;
@@ -422,6 +440,7 @@ function Home() {
       const newAvgWpm = newTotalWpm / (totalRacesTaken + 1);
       return newAvgWpm;
    };
+
    function createRipple(event) {
       const button = event.currentTarget;
       button.classList.remove("shrink-animation");
@@ -443,13 +462,12 @@ function Home() {
       });
    }
 
-
-
    const handleRefreshButtonClick = (event) => {
       if (event !== undefined) {
          createRipple(event);
       }
       setSeconds(0);
+      setIsTimerRunning(false);
       setCurrentWordIndex(0);
       setTypedWords([]);
       setLatestWord('');
@@ -462,6 +480,9 @@ function Home() {
       setLastWordIndex(null);
       setTotalTyped(0);
       setTotalErrors(0);
+      setWordRefs([]);
+      setLetterRefs([]);
+      setLetterRects([]);
       setCategory('');
       setDisplayRunning(false);
       setIsInputDisabled(false);
@@ -579,6 +600,7 @@ function Home() {
             console.error(`Failed to load image for level ${level.title}: ${error}`);
          }
       }
+      setImagesLoaded(true);
    }
    const navigate = useNavigate();
 
@@ -670,15 +692,6 @@ function Home() {
    };
 
    const appRef = useRef(null);
-   const darkLightToggleElementRef = useRef(null);
-
-   function handleDarkLightToggleClick() {
-      darkLightToggleElementRef.current.classList.toggle("active");
-      document.body.classList.toggle("dark");
-      !isDarkMode ? document.body.style.backgroundColor = '#18191A' : document.body.style.backgroundColor = '#E4E9F7';
-      setIsDarkMode(!isDarkMode);
-      inputBoxRef.current.focus();
-   }
 
    useEffect(() => {
       if (modalInputRef.current === null && isModalOpen) return;
@@ -703,7 +716,9 @@ function Home() {
    }, [customText]);
 
    useEffect(() => {
-      loadImages();
+      if (!imagesLoaded) {
+         loadImages();
+      }
    }, [levels]);
 
    // useEffect(() => {
@@ -738,13 +753,16 @@ function Home() {
                newLetterRects.push(rect);
             });
             letterElements.push(newLetterRefs);
+            // setLetterRefs(newLetterRefs);
             letterRects.push(newLetterRects);
+            // setLetterRects(newLetterRects);
          });
          if (letterRects[0]) {
             setCursorStyle({ top: letterRects[0][0].top, left: letterRects[0][0].left });
          }
+
       }
-   }, [quote]);
+   }, [quoteDivs]);
 
 
    useEffect(() => {
@@ -802,9 +820,9 @@ function Home() {
       };
    }, [displayRunning]);
 
-   // useEffect(() => {
-   //    handleRefreshButtonClick();
-   // }, [quoteLength]);
+   useEffect(() => {
+      handleRefreshButtonClick();
+   }, [quoteLength]);
 
    useEffect(() => {
       if (words.length === 0) return;
@@ -819,8 +837,6 @@ function Home() {
       }
       inputBoxRef.current.focus();
    }, [isHighlightingEnabled]);
-
-
 
    useEffect(() => {
       document.body.style.fontFamily = selectedFont;
@@ -896,7 +912,6 @@ function Home() {
          }
       });
 
-      // loadImages();
       function handleResize() {
          setWindowDimensions({
             width: window.innerWidth,
@@ -906,6 +921,7 @@ function Home() {
       }
 
       window.addEventListener('resize', handleResize);
+      setImagesLoaded(false);
       setLevels(thresholds.thresholds);
       document.body.addEventListener('keydown', handleKeyDown);
       const buttons = document.querySelectorAll('button');
@@ -914,7 +930,6 @@ function Home() {
       });
 
       fetchRandomQuote();
-
       return () => {
          buttons.forEach((button) => {
             button.removeEventListener('click', createRipple);
@@ -928,11 +943,7 @@ function Home() {
    return (
       <div className={`App`} ref={appRef}>
          <div className="container">
-            <Link to="/" className="no-style">
-               <h1 id="title">
-                  <span>Swift</span> <span>Type</span> ~ HauseMaster
-               </h1>
-            </Link>
+            <Header />
             <div className="hamburger-menu">
                <div className="hamburger-icon" onClick={(e) => (setIsDropDownMenuOpen(!isDropDownMenuOpen))}>
                   <span></span>
@@ -960,20 +971,11 @@ function Home() {
                </div>) : null}
 
             </div>
-            <div className="dark-light" onClick={handleDarkLightToggleClick} ref={darkLightToggleElementRef}>
-               <i className='bx bx-sun sun'></i>
-               <i className='bx bx-moon moon'></i>
-            </div>
-            <div className="github">
-               <a href="https://github.com/HauseMasterZ/swift-type" target="_blank">
-                  <i className='bx bxl-github'></i>
-               </a>
-            </div>
             {isLoading ? <div className="spinner-border" style={{ position: 'absolute', justifyContent: 'center', alignItems: 'center', display: 'block' }} role="status"></div> : ''}
             <p className="instruction">Type the following text:</p>
             {isCursorHidden ? '' : <span className={`cursor`} ref={cursorRef} style={cursorStyle}></span>}
             <div id="quote" ref={quoteRef}>
-               {quote && renderQuote()}
+               {quoteDivs}
             </div>
             <input type="text" id="inputBox" disabled={isInputDisabled} onInput={checkInput} ref={inputBoxRef} autoFocus />
             <div>

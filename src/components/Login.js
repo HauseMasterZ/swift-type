@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { auth, db } from '../firebase';
+import { auth } from '../firebase';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
@@ -9,31 +9,15 @@ function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
+    const darkLightToggleElementRef = useRef(null);
+    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isDropDownMenuOpen, setisDropdownMenuOpen] = useState(false);
+    const dropdownMenuRef = useRef(null);
 
     const handleUsernameChange = (event) => {
         setEmail(event.target.value);
     };
-    const darkLightToggleElementRef = useRef(null);
-    const [isDarkMode, setIsDarkMode] = useState(true);
-
-    useEffect(() => {
-        // Set up an observer to listen for authentication state changes
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
-                // User is signed in.
-                navigate('/');
-                return;
-            } else {
-                // User is signed out.
-                return;
-
-            }
-        });
-
-        // Clean up the observer when the component unmounts
-        return () => unsubscribe();
-    }, []);
-
 
     function handleDarkLightToggleClick() {
         darkLightToggleElementRef.current.classList.toggle("active");
@@ -45,17 +29,15 @@ function Login() {
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
     };
-    const [isLoading, setIsLoading] = useState(false);
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsLoading(true);
 
         try {
-            // Sign in the user with email and password
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // Check if the user's email is verified
             if (!user.emailVerified) {
                 alert('Please verify your email before logging in');
                 await signOut(auth);
@@ -63,7 +45,6 @@ function Login() {
                 return;
             }
 
-            // Redirect the user to the home page
             setIsLoading(false);
             navigate('/');
         } catch (error) {
@@ -72,14 +53,26 @@ function Login() {
             setIsLoading(false);
         }
     };
-    const [isDropDownMenuOpen, setisDropdownMenuOpen] = useState(false);
-    const dropdownMenuRef = useRef(null);
+
+    useEffect(() => {
+        setIsDarkMode(document.body.classList.contains("dark"));
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                navigate('/');
+                return;
+            } else {
+                return;
+
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+
     useEffect(() => {
         dropdownMenuRef.current.classList.toggle("show");
     }, [isDropDownMenuOpen]);
-    useEffect(() => {
-        document.body.classList.add("dark");
-    }, []);
 
     return (
         <div className={`container ${isDarkMode ? 'dark' : ''}`}>
@@ -88,12 +81,12 @@ function Login() {
                     <span>Swift</span> <span>Type</span> ~ HauseMaster
                 </h1>
             </Link>
-            <div className="dark-light" onClick={handleDarkLightToggleClick} ref={darkLightToggleElementRef}>
+            <div className={`dark-light ${isDarkMode ? 'active' : ''}`} onClick={handleDarkLightToggleClick} ref={darkLightToggleElementRef}>
                 <i className='bx bx-sun sun'></i>
                 <i className='bx bx-moon moon'></i>
             </div>
             <div className="github">
-                <a href="https://github.com/HauseMasterZ/swift-type" target="_blank">
+                <a href="https://github.com/HauseMasterZ/swift-type" target="_blank" rel='noreferrer'>
                     <i className="bx bxl-github"></i>
                 </a>
             </div>

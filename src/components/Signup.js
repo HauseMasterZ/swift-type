@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
-import { initializeApp } from 'firebase/app';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { Link } from 'react-router-dom';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import Header from './Header';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import { onEnd } from '../static/scripts/flying-focus';
@@ -10,52 +10,15 @@ import { collection, query, where, limit, getDocs } from 'firebase/firestore';
 import '../static/styles/styles.scss'
 
 function Signup() {
-
-    const navigate = useNavigate();
-    useEffect(() => {
-        // Set up an observer to listen for authentication state changes
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
-                // User is signed in.
-                navigate('/');
-                return;
-            } else {
-                // User is signed out.
-                return;
-
-            }
-        });
-
-        // Clean up the observer when the component unmounts
-        return () => unsubscribe();
-    }, []);
-
-    const [isDarkMode, setIsDarkMode] = useState(true);
-    const darkLightToggleElementRef = React.useRef(null);
-    function handleDarkLightToggleClick() {
-        darkLightToggleElementRef.current.classList.toggle("active");
-        document.body.classList.toggle("dark");
-        !isDarkMode ? document.body.style.backgroundColor = '#18191A' : document.body.style.backgroundColor = '#E4E9F7';
-        setIsDarkMode(!isDarkMode);
-    }
-    useEffect(() => {
-        document.body.classList.add("dark");
-    }, []);
-
-    const [isDropDownMenuOpen, setisDropdownMenuOpen] = useState(false);
-    const dropdownMenuRef = useRef(null);
-    useEffect(() => {
-        dropdownMenuRef.current.classList.toggle("show");
-    }, [isDropDownMenuOpen]);
-    useEffect(() => {
-        document.body.classList.add("dark");
-    }, []);
     const [isLoading, setIsLoading] = useState(false);
-
     const usernameRef = useRef();
     const emailRef = useRef();
     const passwordRef = useRef();
     const confirmPasswordRef = useRef();
+    const navigate = useNavigate();
+    const [isDropDownMenuOpen, setisDropdownMenuOpen] = useState(false);
+    const dropdownMenuRef = useRef(null);
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -71,7 +34,6 @@ function Signup() {
         }
 
         try {
-            // Check if the username or email already exists in Firestore
             const usernameDocRef = query(collection(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME), where(process.env.REACT_APP_USERNAME_KEY, '==', username), limit(1));
             const emailDocRef = query(collection(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME), where(process.env.REACT_APP_EMAIL_KEY, '==', email), limit(1));
             const [usernameDoc, emailDoc] = await Promise.all([getDocs(usernameDocRef), getDocs(emailDocRef)]);
@@ -85,7 +47,6 @@ function Signup() {
                 return;
             }
 
-            // Create a new user with email and password
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             const userDocRef = doc(db, 'users', user.uid);
@@ -108,22 +69,27 @@ function Signup() {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                navigate('/');
+                return;
+            } else {
+                return;
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        dropdownMenuRef.current.classList.toggle("show");
+    }, [isDropDownMenuOpen]);
+
     return (
-        <div className={`container ${isDarkMode ? 'dark' : ''}`}>
-            <Link to="/" className="no-style">
-                <h1 id="title">
-                    <span>Swift</span> <span>Type</span> ~ HauseMaster
-                </h1>
-            </Link>
-            <div className="dark-light" onClick={handleDarkLightToggleClick} ref={darkLightToggleElementRef}>
-                <i className='bx bx-sun sun'></i>
-                <i className='bx bx-moon moon'></i>
-            </div>
-            <div className="github">
-                <a href="https://github.com/HauseMasterZ/swift-type" target="_blank">
-                    <i className="bx bxl-github"></i>
-                </a>
-            </div>
+        <div className={`container`}>
+            <Header />
             <div className="hamburger-menu">
                 <div className="hamburger-icon" onClick={(e) => (setisDropdownMenuOpen(!isDropDownMenuOpen))}>
                     <span></span>

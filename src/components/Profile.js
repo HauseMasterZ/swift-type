@@ -1,9 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { auth, db, storage } from '../firebase';
-import { getFirestore, doc, setDoc, query, where, getDoc, updateDoc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
 import '../static/styles/styles.scss'
 
@@ -86,7 +85,7 @@ function Profile() {
             console.error('File size exceeds the limit of 6MB');
             setIsLoading(false);
             return;
-          }
+        }
         const storageRef = ref(storage, `avatars/${file.name}`); // Create a reference to the storage location
 
         try {
@@ -139,7 +138,7 @@ function Profile() {
                 <i className="bx bx-moon moon"></i>
             </div>
             <div className="github">
-                <a href="https://github.com/HauseMasterZ/swift-type" target="_blank">
+                <a href="https://github.com/HauseMasterZ/swift-type" target="_blank" rel='noreferrer'>
                     <i className="bx bxl-github"></i>
                 </a>
             </div>
