@@ -33,18 +33,15 @@ function Login() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsLoading(true);
-
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-
             if (!user.emailVerified) {
                 alert('Please verify your email before logging in');
                 await signOut(auth);
                 setIsLoading(false);
                 return;
             }
-
             setIsLoading(false);
             navigate('/');
         } catch (error) {
@@ -55,27 +52,23 @@ function Login() {
     };
 
     useEffect(() => {
-        setIsDarkMode(document.body.classList.contains("dark"));
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
                 navigate('/');
                 return;
             } else {
                 return;
-
             }
         });
-
         return () => unsubscribe();
     }, []);
-
 
     useEffect(() => {
         dropdownMenuRef.current.classList.toggle("show");
     }, [isDropDownMenuOpen]);
 
     return (
-        <div className={`container ${isDarkMode ? 'dark' : ''}`}>
+        <div className={`container`}>
             <Link to="/" className="no-style">
                 <h1 id="title">
                     <span>Swift</span> <span>Type</span> ~ HauseMaster

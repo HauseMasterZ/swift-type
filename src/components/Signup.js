@@ -19,7 +19,6 @@ function Signup() {
     const [isDropDownMenuOpen, setisDropdownMenuOpen] = useState(false);
     const dropdownMenuRef = useRef(null);
 
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsLoading(true);
