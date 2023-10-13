@@ -11,6 +11,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.5.1",
     "babel-preset-react-app": "^10.0.1",
+    "css-select": "^5.1.0",
     "firebase": "^10.4.0",
     "postcss": "^8.4.31",
     "react": "^18.2.0",
