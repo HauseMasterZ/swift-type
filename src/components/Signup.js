@@ -40,7 +40,7 @@ function Signup() {
                 alert('Username already exists');
                 return;
             }
-
+            
             if (emailDoc.size > 0) {
                 alert('Email already exists');
                 return;
@@ -48,7 +48,7 @@ function Signup() {
 
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-            const userDocRef = doc(db, 'users', user.uid);
+            const userDocRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
             await setDoc(userDocRef, {
                 [process.env.REACT_APP_CREATED_AT_KEY]: new Date(),
                 [process.env.REACT_APP_PROFILE_PHOTO_URL_KEY]: process.env.REACT_APP_DEFAULT_PROFILE_PHOTO_URL,

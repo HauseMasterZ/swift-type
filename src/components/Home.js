@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import thresholds from '../static/data/thresholds.json';
 import { Link } from 'react-router-dom';
-import Modal from './Modal.js';
-import Header from './Header';
-// import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import '../static/styles/styles.scss'
 import { onEnd } from '../static/scripts/flying-focus.js';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+// import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import '../static/styles/styles.scss'
+import Modal from './Modal.js';
+import Header from './Header';
 
 function Home() {
    const [startTime, setStartTime] = useState(0);
@@ -50,6 +50,7 @@ function Home() {
    const cursorRef = useRef(null);
    const [isDropDownMenuOpen, setIsDropDownMenuOpen] = useState(false);
    const dropdownMenuRef = useRef(null);
+   const hamburgerMenuRef = useRef(null);
    const [quoteDivs, setQuoteDivs] = useState([]);
    const wpmDisplayRef = useRef(null);
    const refreshButtonRef = useRef(null);
@@ -319,6 +320,7 @@ function Home() {
    };
 
    const lastLetterRectRef = useRef(null);
+
    function updateWord(latestWord, i, backspaceFlag = false) {
       const letterElement = letterElements[currentWordIndex];
       const letterElementLength = letterElement.length;
@@ -750,18 +752,6 @@ function Home() {
       loadImages();
    }, [levels]);
 
-   // useEffect(() => {
-   //     const handleBodyClick = (event) => {
-   //         if (!dropdownMenuRef.current.contains(event.target)) {
-   //             setisDropdownMenuOpen(false);
-   //         }
-   //     };
-   //     document.body.addEventListener('click', handleBodyClick);
-   //     return () => {
-   //         document.body.removeEventListener('click', handleBodyClick);
-   //     };
-   // }, []);
-
    useEffect(() => {
       if (quoteRef.current) {
          const quoteDiv = document.getElementById('quote');
@@ -792,7 +782,6 @@ function Home() {
 
       }
    }, [quoteDivs]);
-
 
    useEffect(() => {
       let interval;
@@ -950,6 +939,14 @@ function Home() {
          });
          updateCursorPosition();
       }
+
+      const handleClickOutside = (event) => {
+         if (dropdownMenuRef.current && !dropdownMenuRef.current.contains(event.target) && !hamburgerMenuRef.current.contains(event.target)) {
+            setIsDropDownMenuOpen(false);
+         }
+      };
+
+      document.addEventListener('click', handleClickOutside);
       const userAgent = navigator.userAgent.toLowerCase();
       setIsMobile(userAgent.includes("mobile"));
       window.addEventListener('resize', handleResize);
@@ -975,17 +972,16 @@ function Home() {
       <div className={`App`}>
          <div className="container">
             <Header />
-            <div className="hamburger-menu">
+            <div className="hamburger-menu" ref={hamburgerMenuRef}>
                <div className="hamburger-icon" onClick={(e) => (setIsDropDownMenuOpen(!isDropDownMenuOpen))}>
                   <span></span>
                   <span></span>
                   <span></span>
                </div>
                {isDropDownMenuOpen ? (<div className="dropdown-menu show" ref={dropdownMenuRef}>
-
                   {user ? (
                      <>
-                        <Link href="#" to="/profile">
+                        <Link href="#" to="/profile" style={{ 'display': 'inline-block' }}>
                            <img src={profilePhotoUrl} alt="picture" className='dropdown-avatar' />
                            {username}
                         </Link>
@@ -996,7 +992,6 @@ function Home() {
                      <>
                         <Link to="/login">Login</Link>
                         <Link to="/signup">Signup</Link>
-
                      </>
                   )}
                </div>) : null}
@@ -1111,8 +1106,7 @@ function Home() {
             </div>
 
          </div>
-         {/* <script async src="scripts/script.js"></script> */}
-      </div >
+      </div>
    );
 }
 

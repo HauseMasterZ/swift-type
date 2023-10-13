@@ -45,6 +45,8 @@ function Settings() {
             })
             .catch((error) => {
                 console.error('Error deleting user data:', error);
+                setIsLoading(false);
+                alert('Error deleting user data please try again later');
             });
     };
     const handleNoClick = () => {

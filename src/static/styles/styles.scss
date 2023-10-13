@@ -223,7 +223,7 @@ h1 {
     position: absolute;
     top: 100%;
     right: 0;
-    padding: 8px;
+    padding-left: 5px;
     user-select: none;
     border-color: var(--input-background-color);
     background-color: var(--body-color);
@@ -251,9 +251,9 @@ h1 {
     text-decoration: none;
 }
 
-// .dropdown-menu a:hover {
-//     background-color: var(--input-background-color);
-// }
+.dropdown-menu a:hover {
+    background-color: rgba(var(--text-color-rgb), 0.1);
+}
 
 .show {
     display: block;
@@ -556,7 +556,6 @@ option[value="Ubuntu"] {
     width: 30px;
     height: 30px;
     margin-right: 10px;
-    border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
     border-radius: 50%;

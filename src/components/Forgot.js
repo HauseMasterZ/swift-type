@@ -18,10 +18,9 @@ function Forgot() {
         event.preventDefault();
         setIsLoading(true);
         setError(null);
-
         try {
-            const usernameQuery = query(collection(db, 'users'), where('username', '==', email));
-            const emailQuery = query(collection(db, 'users'), where('email', '==', email));
+            const usernameQuery = query(collection(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME), where(process.env.REACT_APP_USERNAME_KEY, '==', email));
+            const emailQuery = query(collection(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME), where(process.env.REACT_APP_EMAIL_KEY, '==', email));
             const [usernameDoc, emailDoc] = await Promise.all([getDocs(usernameQuery), getDocs(emailQuery)]);
 
             if (emailDoc.size === 0) {

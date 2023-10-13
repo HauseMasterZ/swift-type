@@ -6,13 +6,13 @@
   "author": "HauseMaster",
   "dependencies": {
     "@chase439/flying-focus": "^1.6.0",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.5.1",
     "axios": "^1.5.1",
     "babel-preset-react-app": "^10.0.1",
     "css-select": "^5.1.0",
-    "firebase": "^10.4.0",
+    "firebase": "^10.5.0",
     "nth-check": "^2.1.1",
     "postcss": "^8.4.31",
     "react": "^18.2.0",
@@ -20,9 +20,9 @@
     "react-router-dom": "^6.16.0",
     "react-scripts": "^5.0.1",
     "resolve-url-loader": "^5.0.0",
-    "sass": "^1.68.0",
+    "sass": "^1.69.3",
     "uuid": "^9.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^3.5.0"
   },
   "scripts": {
     "start": "react-scripts start",
