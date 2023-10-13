@@ -16,6 +16,9 @@ function Home() {
    const [levels, setLevels] = useState([]);
    const [currentWordIndex, setCurrentWordIndex] = useState(0);
    const [typedWords, setTypedWords] = useState([]);
+   const [clearButton, setClearButton] = useState(false);
+   const [isModalOpen, setIsModalOpen] = useState(false);
+   const modalInputRef = useRef(null);
    const [lastLetterRect, setLastLetterRect] = useState(null);
    const [latestWord, setLatestWord] = useState("");
    const [lastWordIndex, setLastWordIndex] = useState(null);
@@ -52,7 +55,6 @@ function Home() {
    const refreshButtonRef = useRef(null);
    const [isHighlightingEnabled, setIsHighlightingEnabled] = useState(false);
    const [accuracy, setAccuracy] = useState(0);
-   const [imagesLoaded, setImagesLoaded] = useState(false);
    const [category, setCategory] = useState('');
    const categoryDisplayRef = useRef(null);
    const netWpmDisplayRef = useRef(null);
@@ -61,10 +63,13 @@ function Home() {
    const [user, setUser] = useState(null);
    const [username, setUsername] = useState('');
    const [totalRacesTaken, setTotalRacesTaken] = useState(0);
+   const navigate = useNavigate();
    const [totalAvgAccuracy, setTotalAvgAccuracy] = useState(0);
    const [email, setEmail] = useState('');
    const [profilePhotoUrl, setProfilePhotoUrl] = useState('');
    const [totalAverageWpm, setTotalAverageWpm] = useState(0);
+   const errorsDisplayRef = useRef(null);
+   const accuracyDisplayRef = useRef(null);
    const [words, setWordRefs] = useState([]);
    const [letterElements, setLetterRefs] = useState([]);
    const [letterRects, setLetterRects] = useState([]);
@@ -176,8 +181,7 @@ function Home() {
    const handleQuoteLengthChange = (event) => {
       setQuoteLength(event.target.value);
    };
-   const errorsDisplayRef = useRef(null);
-   const accuracyDisplayRef = useRef(null);
+
    function flashErrorDisplays() {
       errorsDisplayRef.current.classList.remove('flash-out-red');
       accuracyDisplayRef.current.classList.remove('flash-out-red');
@@ -359,7 +363,7 @@ function Home() {
             top: `${lastLetterRect.top}px`,
          }));
       } else {
-         if (lastLetterRect != letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)]) {
+         if (lastLetterRect !== letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)]) {
             setLastLetterRect(latestWord.length > letterElementLength - 1 ? letterRects[currentWordIndex][letterElementLength - 1] : letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)]);
          } else {
             setLastLetterRect(latestWord.length > letterElementLength - 1 ? letterRects[currentWordIndex][letterElementLength - 1] : letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)]);
@@ -397,12 +401,13 @@ function Home() {
             break;
          }
       }
-      setResultImgSrc(level.imgSrc.src);
+      setResultImgSrc(level.imgSrc);
       document.body.style.backgroundColor = level.backgroundColor;
       resultImgParentRef.current.classList.remove('hidden');
       resultImgParentRef.current.classList.add('slide-in');
       setPrefix(level.title);
-      setNumber(level.speed);
+      const randomNumber = new Function(`return ${level.speed}`)();
+      setNumber(Math.round(randomNumber));
       setStars(level.stars);
       setDisplayRunning(true);
       netWpmDisplayRef.current.classList.add('highlight');
@@ -581,28 +586,58 @@ function Home() {
       return Math.max(accuracy, 0);
    }
 
-   async function loadImages() {
-      for (const level of levels) {
-         const img = new Image();
-         img.src = level.imgSrc[0];
-         try {
-            await new Promise((resolve, reject) => {
-               img.onload = resolve;
-               img.onerror = () => {
-                  img.src = level.imgSrc[1];
-                  img.onload = resolve;
-                  img.onerror = reject;
-                  console.warn(`Failed to load image from CDN. Using local image instead.`);
+   // async function loadImages() {
+   //    for (const level of levels) {
+   //       const img = new Image();
+   //       img.src = level.imgSrc[0];
+   //       try {
+   //          await new Promise((resolve, reject) => {
+   //             img.onload = resolve;
+   //             img.onerror = () => {
+   //                img.src = level.imgSrc[1];
+   //                img.onload = resolve;
+   //                img.onerror = reject;
+   //                console.warn(`Failed to load image from CDN. Using local image instead.`);
+   //             };
+   //          });
+   //          level.imgSrc = img;
+   //       } catch (error) {
+   //          console.error(`Failed to load image for level ${level.title}: ${error}`);
+   //       }
+   //    }
+   // }
+
+   const loadImages = () => {
+      // Check if images are cached
+
+      if (localStorage.getItem('cachedImages') !== 'true') {
+         // Cache the images in localStorage
+         levels.forEach((image) => {
+            if (!Array.isArray(image.imgSrc)) return;
+            const img = new Image();
+            img.src = image.imgSrc[0][0];
+            const src = img.src;
+            try {
+               img.onload = () => {
+                  localStorage.setItem(src.split('/').pop(), img.src);
                };
-            });
-            level.imgSrc = img;
-         } catch (error) {
-            console.error(`Failed to load image for level ${level.title}: ${error}`);
-         }
+               img.onerror = () => {
+                  img.src = image.imgSrc[1][1];
+                  img.onload = () => {
+                     localStorage.setItem(src.split('/').pop(), img.src);
+                  };
+               };
+               image.imgSrc = localStorage.getItem(src.split('/').pop());
+            } catch (error) {
+               console.error(`Failed to load image for level ${image.title}: ${error}`);
+            }
+            // img.onload = () => {
+            //    localStorage.setItem(image, img.src);
+            // };
+         });
+         localStorage.setItem('cachedImages', "true");
       }
-      setImagesLoaded(true);
-   }
-   const navigate = useNavigate();
+   };
 
    function handleLogoutClick() {
       auth.signOut().then(() => {
@@ -644,15 +679,12 @@ function Home() {
       setIsModalOpen(false);
    };
 
-   const [clearButton, setClearButton] = useState(false);
    const handleApply = (inputValue) => {
       if (inputValue.trim() === '') return;
       setCustomText(inputValue);
       setClearButton(true);
    };
 
-   const [isModalOpen, setIsModalOpen] = useState(false);
-   const modalInputRef = useRef(null);
    const openModal = () => {
       setIsModalOpen(true);
    };
@@ -691,15 +723,13 @@ function Home() {
       inputBoxRef.current.focus();
    };
 
-   const appRef = useRef(null);
-
    useEffect(() => {
       if (modalInputRef.current === null && isModalOpen) return;
       if (isModalOpen) {
          modalInputRef.current.focus();
       } else {
          inputBoxRef.current.focus();
-         // onEnd();
+         onEnd();
       }
    }, [isModalOpen]);
 
@@ -716,9 +746,8 @@ function Home() {
    }, [customText]);
 
    useEffect(() => {
-      if (!imagesLoaded) {
-         loadImages();
-      }
+      if (levels.length === 0) return;
+      loadImages();
    }, [levels]);
 
    // useEffect(() => {
@@ -735,7 +764,7 @@ function Home() {
 
    useEffect(() => {
       if (quoteRef.current) {
-         const quoteDiv = document.getElementById('quote'); // Replace 'myDiv' with the actual ID
+         const quoteDiv = document.getElementById('quote');
          if (quoteDiv) {
             const children = Array.from(quoteDiv.children);
             setLastWordIndex(children.length - 1);
@@ -879,6 +908,8 @@ function Home() {
 
    useEffect(() => {
       // Set up an observer to listen for authentication state changes
+      localStorage.setItem('cachedImages', "false");
+
       const unsubscribe = auth.onAuthStateChanged((user) => {
          if (user) {
             // User is signed in.
@@ -919,9 +950,9 @@ function Home() {
          });
          updateCursorPosition();
       }
-
+      const userAgent = navigator.userAgent.toLowerCase();
+      setIsMobile(userAgent.includes("mobile"));
       window.addEventListener('resize', handleResize);
-      setImagesLoaded(false);
       setLevels(thresholds.thresholds);
       document.body.addEventListener('keydown', handleKeyDown);
       const buttons = document.querySelectorAll('button');
@@ -941,7 +972,7 @@ function Home() {
    }, []);
 
    return (
-      <div className={`App`} ref={appRef}>
+      <div className={`App`}>
          <div className="container">
             <Header />
             <div className="hamburger-menu">

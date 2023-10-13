@@ -4,7 +4,7 @@ import { doc, deleteDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import '../static/styles/styles.scss'
-
+import Header from './Header';
 
 function Settings() {
     const [isDarkMode, setIsDarkMode] = useState(true);
@@ -52,21 +52,8 @@ function Settings() {
     };
 
     return (
-        <div className={`container ${isDarkMode ? 'dark' : ''}`}>
-            <Link to="/" className="no-style">
-                <h1 id="title">
-                    <span>Swift</span> <span>Type</span> ~ HauseMaster
-                </h1>
-            </Link>
-            <div className="dark-light" onClick={handleDarkLightToggleClick} ref={darkLightToggleElementRef}>
-                <i className="bx bx-sun sun"></i>
-                <i className="bx bx-moon moon"></i>
-            </div>
-            <div className="github">
-                <a href="https://github.com/HauseMasterZ/swift-type" target="_blank" rel='noreferrer'>
-                    <i className='bx bxl-github'></i>
-                </a>
-            </div>
+        <div className={`container`}>
+            <Header />
             {isLoading ? <div className="spinner-border" style={{ position: 'absolute', justifyContent: 'center', alignItems: 'center', display: 'block' }} role="status"></div> : ''}
             <div className="stat">
                 <button type="button" className="button danger" onClick={handleDeleteAccountClick}>

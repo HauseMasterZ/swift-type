@@ -1,7 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { getAuth } from 'firebase/auth';
-import { auth, db } from '../firebase';
+import { auth } from '../firebase';
 
 
 function ProtectedRoute({ component: Component, ...rest }) {

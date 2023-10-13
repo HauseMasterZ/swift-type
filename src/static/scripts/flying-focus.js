@@ -1,6 +1,5 @@
-"use strict";
 const DURATION = 500;
-const win = window;
+// const win = window;
 const doc = document;
 const docElem = doc.documentElement;
 let ringElem = null;

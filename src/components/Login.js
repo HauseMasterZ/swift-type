@@ -3,28 +3,21 @@ import { auth } from '../firebase';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import Header from './Header';
 import '../static/styles/styles.scss'
-
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
-    const darkLightToggleElementRef = useRef(null);
-    const [isDarkMode, setIsDarkMode] = useState(false);
     const [isDropDownMenuOpen, setisDropdownMenuOpen] = useState(false);
     const dropdownMenuRef = useRef(null);
+    const navigate = useNavigate();
 
     const handleUsernameChange = (event) => {
         setEmail(event.target.value);
     };
 
-    function handleDarkLightToggleClick() {
-        darkLightToggleElementRef.current.classList.toggle("active");
-        document.body.classList.toggle("dark");
-        !isDarkMode ? document.body.style.backgroundColor = '#18191A' : document.body.style.backgroundColor = '#E4E9F7';
-        setIsDarkMode(!isDarkMode);
-    }
+
 
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
@@ -69,20 +62,7 @@ function Login() {
 
     return (
         <div className={`container`}>
-            <Link to="/" className="no-style">
-                <h1 id="title">
-                    <span>Swift</span> <span>Type</span> ~ HauseMaster
-                </h1>
-            </Link>
-            <div className={`dark-light ${isDarkMode ? 'active' : ''}`} onClick={handleDarkLightToggleClick} ref={darkLightToggleElementRef}>
-                <i className='bx bx-sun sun'></i>
-                <i className='bx bx-moon moon'></i>
-            </div>
-            <div className="github">
-                <a href="https://github.com/HauseMasterZ/swift-type" target="_blank" rel='noreferrer'>
-                    <i className="bx bxl-github"></i>
-                </a>
-            </div>
+            <Header />
             <div className="hamburger-menu">
                 <div className="hamburger-icon" onClick={(e) => (setisDropdownMenuOpen(!isDropDownMenuOpen))}>
                     <span></span>

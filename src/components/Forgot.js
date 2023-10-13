@@ -1,56 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import { initializeApp } from 'firebase/app';
+import { Link } from 'react-router-dom';
 import { collection } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
-import { getFirestore, doc, setDoc, query, where, getDocs } from 'firebase/firestore';
-import { onEnd } from '../static/scripts/flying-focus';
-import { getAuth, fetchSignInMethodsForEmail, sendPasswordResetEmail } from 'firebase/auth';
+import { query, where, getDocs } from 'firebase/firestore';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import '../static/styles/styles.scss'
-
+import Header from './Header';
 function Forgot() {
-    const [isDarkMode, setIsDarkMode] = useState(true);
-    const darkLightToggleElementRef = React.useRef(null);
     const navigate = useNavigate();
+    const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isSent, setIsSent] = useState(false);
     const [email, setEmail] = useState('');
 
-    useEffect(() => {
-        // Set up an observer to listen for authentication state changes
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
-                // User is signed in.
-                navigate('/');
-            } else {
-                // User is signed out.
-                return;
-
-            }
-        });
-
-        // Clean up the observer when the component unmounts
-        return () => unsubscribe();
-    }, []);
-
-
-    function handleDarkLightToggleClick() {
-        darkLightToggleElementRef.current.classList.toggle('active');
-        document.body.classList.toggle('dark');
-        !isDarkMode
-            ? (document.body.style.backgroundColor = '#18191A')
-            : (document.body.style.backgroundColor = '#E4E9F7');
-        setIsDarkMode(!isDarkMode);
-    }
-    const [error, setError] = useState(null);
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsLoading(true);
         setError(null);
 
         try {
-
             const usernameQuery = query(collection(db, 'users'), where('username', '==', email));
             const emailQuery = query(collection(db, 'users'), where('email', '==', email));
             const [usernameDoc, emailDoc] = await Promise.all([getDocs(usernameQuery), getDocs(emailQuery)]);
@@ -71,24 +40,20 @@ function Forgot() {
     };
 
     useEffect(() => {
-        document.body.classList.add("dark");
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                navigate('/');
+            } else {
+                return;
+            }
+        });
+
+        return () => unsubscribe();
     }, []);
+
     return (
-        <div className={`container ${isDarkMode ? 'dark' : ''}`}>
-            <Link to="/" className="no-style">
-                <h1 id="title">
-                    <span>Swift</span> <span>Type</span> ~ HauseMaster
-                </h1>
-            </Link>
-            <div className="dark-light" onClick={handleDarkLightToggleClick} ref={darkLightToggleElementRef}>
-                <i className="bx bx-sun sun"></i>
-                <i className="bx bx-moon moon"></i>
-            </div>
-            <div className="github">
-                <a href="https://github.com/HauseMasterZ/swift-type" target="_blank">
-                    <i className="bx bxl-github"></i>
-                </a>
-            </div>
+        <div className={`container`}>
+            <Header />
             {isLoading ? <div className="spinner-border" style={{ position: 'absolute', justifyContent: 'center', alignItems: 'center', display: 'block' }} role="status"></div> : ''}
 
             {!isSent ? <div className="form-container">
