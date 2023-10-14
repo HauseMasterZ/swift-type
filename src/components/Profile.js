@@ -35,15 +35,11 @@ function Profile() {
         const storageRef = ref(storage, `avatars/${file.name}`); // Create a reference to the storage location
 
         try {
-            // Upload the file to Firebase Storage
             await uploadBytes(storageRef, file);
 
-            // Get the download URL for the uploaded file
             const downloadURL = await getDownloadURL(storageRef);
             setProfilePhotoUrl(downloadURL);
 
-            // console.log('File uploaded');
-            // You can now use the downloadURL to display or save the uploaded photo.
         } catch (error) {
             console.error('Error uploading file:', error);
             setIsLoading(false);
@@ -55,12 +51,8 @@ function Profile() {
             return;
         }
         if (profilePhotoUrl !== '' && profilePhotoUrl !== process.env.REACT_APP_DEFAULT_PROFILE_PHOTO_URL) {
-            // Update the database with the new profile photo URL
             const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
             updateDoc(userRef, { [process.env.REACT_APP_PROFILE_PHOTO_URL_KEY]: profilePhotoUrl })
-                .then(() => {
-                    // console.log('Profile photo URL updated in the database');
-                })
                 .catch((error) => {
                     console.error('Error updating profile photo URL in the database:', error);
                 });
@@ -69,14 +61,11 @@ function Profile() {
     }, [profilePhotoUrl]);
 
     useEffect(() => {
-        // Set up an observer to listen for authentication state changes
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
-                // User is signed in.
                 setUser(user);
                 setEmail(user.email);
 
-                // Fetch additional user information from your database
                 const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
                 getDoc(userRef).then((doc) => {
                     if (doc.exists()) {
@@ -93,7 +82,6 @@ function Profile() {
                     console.log('Error getting document:', error);
                 });
             } else {
-                // User is signed out.
                 setUser(null);
                 setUsername('');
                 setEmail('');

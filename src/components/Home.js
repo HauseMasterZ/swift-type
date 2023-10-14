@@ -995,7 +995,6 @@ function Home() {
                      </>
                   )}
                </div>) : null}
-
             </div>
             {isLoading ? <div className="spinner-border" style={{ position: 'absolute', justifyContent: 'center', alignItems: 'center', display: 'block' }} role="status"></div> : ''}
             <p className="instruction">Type the following text:</p>
