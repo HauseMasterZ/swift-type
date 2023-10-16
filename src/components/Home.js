@@ -6,7 +6,6 @@ import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { onEnd } from '../static/scripts/flying-focus.js';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-// import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import '../static/styles/styles.scss'
 import Modal from './Modal.js';
 import Header from './Header';

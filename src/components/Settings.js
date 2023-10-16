@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
@@ -7,25 +6,16 @@ import '../static/styles/styles.scss'
 import Header from './Header';
 
 function Settings() {
-    const [isDarkMode, setIsDarkMode] = useState(true);
-    const darkLightToggleElementRef = React.useRef(null);
     const [isLoading, setIsLoading] = useState(false);
-    const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
-
-    function handleDarkLightToggleClick() {
-        darkLightToggleElementRef.current.classList.toggle('active');
-        document.body.classList.toggle('dark');
-        !isDarkMode ? (document.body.style.backgroundColor = '#18191A') : (document.body.style.backgroundColor = '#E4E9F7');
-        setIsDarkMode(!isDarkMode);
-    }
-
-    useEffect(() => {
-        document.body.classList.add("dark");
-    }, []);
+    const navigate = useNavigate();
 
     const handleDeleteAccountClick = () => {
         setShowModal(true);
+    };
+
+    const handleNoClick = () => {
+        setShowModal(false);
     };
 
     const handleYesClick = () => {
@@ -48,9 +38,6 @@ function Settings() {
                 setIsLoading(false);
                 alert('Error deleting user data please try again later');
             });
-    };
-    const handleNoClick = () => {
-        setShowModal(false);
     };
 
     return (

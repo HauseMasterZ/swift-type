@@ -1,4 +1,3 @@
-
 <p align="center">
   <a name="banner" href="#banner"><img src="./gh/images/swift-type-logo.jpg" alt="banner"></a>
 </p>
