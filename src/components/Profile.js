@@ -5,7 +5,8 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
 import '../static/styles/styles.scss'
 import Header from './Header';
-
+import HamburgerMenu from './Hamburger';
+import LoadingSpinner from './LoadingSpinner';
 function Profile() {
     const [user, setUser] = useState(null);
     const [username, setUsername] = useState('');
@@ -100,7 +101,8 @@ function Profile() {
     return (
         <div className={`container`}>
             <Header />
-            {isLoading ? <div className="spinner-border" style={{ position: 'absolute', justifyContent: 'center', alignItems: 'center', display: 'block' }} role="status"></div> : ''}
+            <HamburgerMenu home="Home"/>
+            {isLoading ? <LoadingSpinner /> : ''}
             <div className="profile">
                 <div className="profile-avatar-container">
                     <img src={profilePhotoUrl} onClick={handleProfileAvatarClick} className='profile-avatar' alt="Profile" />

@@ -8,7 +8,8 @@ import { auth, db } from '../firebase';
 import { onEnd } from '../static/scripts/flying-focus';
 import { collection, query, where, limit, getDocs } from 'firebase/firestore';
 import '../static/styles/styles.scss'
-
+import HamburgerMenu from './Hamburger';
+import LoadingSpinner from './LoadingSpinner';
 function Signup() {
     const [isLoading, setIsLoading] = useState(false);
     const usernameRef = useRef();
@@ -16,8 +17,6 @@ function Signup() {
     const passwordRef = useRef();
     const confirmPasswordRef = useRef();
     const navigate = useNavigate();
-    const [isDropDownMenuOpen, setisDropdownMenuOpen] = useState(false);
-    const dropdownMenuRef = useRef(null);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -82,25 +81,12 @@ function Signup() {
         return () => unsubscribe();
     }, []);
 
-    useEffect(() => {
-        dropdownMenuRef.current.classList.toggle("show");
-    }, [isDropDownMenuOpen]);
-
     return (
         <div className={`container`}>
             <Header />
-            <div className="hamburger-menu">
-                <div className="hamburger-icon" onClick={(e) => (setisDropdownMenuOpen(!isDropDownMenuOpen))}>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                <div className="dropdown-menu" ref={dropdownMenuRef}>
-                    <Link to="/">Home</Link>
-                    <Link to="/login">Login</Link>
-                </div>
-            </div>
-            {isLoading ? <div className="spinner-border" style={{ position: 'absolute', justifyContent: 'center', alignItems: 'center', display: 'block' }} role="status"></div> : ''}
+            <HamburgerMenu home="Home" login="Login" />
+            {isLoading ? <LoadingSpinner /> : ''}
+
             <div className="form-container">
                 <form>
                     <h2>Signup</h2>

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
-import '../static/styles/styles.scss'
 import Header from './Header';
-
+import '../static/styles/styles.scss'
+import HamburgerMenu from './Hamburger';
+import LoadingSpinner from './LoadingSpinner';
 function Settings() {
     const [isLoading, setIsLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -43,7 +44,8 @@ function Settings() {
     return (
         <div className={`container`}>
             <Header />
-            {isLoading ? <div className="spinner-border" style={{ position: 'absolute', justifyContent: 'center', alignItems: 'center', display: 'block' }} role="status"></div> : ''}
+            <HamburgerMenu home="Home" />
+            {isLoading ? <LoadingSpinner /> : ''}
             <div className="stat">
                 <button type="button" className="button danger" onClick={handleDeleteAccountClick}>
                     Delete Account

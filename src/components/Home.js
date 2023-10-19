@@ -9,7 +9,8 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import '../static/styles/styles.scss'
 import Modal from './Modal.js';
 import Header from './Header';
-
+import HamburgerMenu from './Hamburger';
+import LoadingSpinner from './LoadingSpinner';
 function Home() {
    const [startTime, setStartTime] = useState(0);
    const [levels, setLevels] = useState([]);
@@ -938,24 +939,15 @@ function Home() {
          });
          updateCursorPosition();
       }
-
-      const handleClickOutside = (event) => {
-         if (dropdownMenuRef.current && !dropdownMenuRef.current.contains(event.target) && !hamburgerMenuRef.current.contains(event.target)) {
-            setIsDropDownMenuOpen(false);
-         }
-      };
-
-      document.addEventListener('click', handleClickOutside);
-      const userAgent = navigator.userAgent.toLowerCase();
-      setIsMobile(userAgent.includes("mobile"));
-      window.addEventListener('resize', handleResize);
-      setLevels(thresholds.thresholds);
-      document.body.addEventListener('keydown', handleKeyDown);
       const buttons = document.querySelectorAll('button');
+      window.addEventListener('resize', handleResize);
+      document.body.addEventListener('keydown', handleKeyDown);
       buttons.forEach((button) => {
          button.addEventListener('click', createRipple);
       });
 
+      setIsMobile(navigator.userAgent.toLowerCase().includes("mobile"));
+      setLevels(thresholds.thresholds);
       fetchRandomQuote();
       return () => {
          buttons.forEach((button) => {
@@ -971,31 +963,8 @@ function Home() {
       <div className={`App`}>
          <div className="container">
             <Header />
-            <div className="hamburger-menu" ref={hamburgerMenuRef}>
-               <div className="hamburger-icon" onClick={(e) => (setIsDropDownMenuOpen(!isDropDownMenuOpen))}>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-               </div>
-               {isDropDownMenuOpen ? (<div className="dropdown-menu show" ref={dropdownMenuRef}>
-                  {user ? (
-                     <>
-                        <Link href="#" to="/profile" style={{ 'display': 'inline-block' }}>
-                           <img src={profilePhotoUrl} alt="picture" className='dropdown-avatar' />
-                           {username}
-                        </Link>
-                        <Link href="#" to="/settings" >Account Settings</Link>
-                        <Link href="#" onClick={handleLogoutClick}>Logout</Link>
-                     </>
-                  ) : (
-                     <>
-                        <Link to="/login">Login</Link>
-                        <Link to="/signup">Signup</Link>
-                     </>
-                  )}
-               </div>) : null}
-            </div>
-            {isLoading ? <div className="spinner-border" style={{ position: 'absolute', justifyContent: 'center', alignItems: 'center', display: 'block' }} role="status"></div> : ''}
+            <HamburgerMenu user={user} handleLogoutClick={handleLogoutClick} login="Login" signup="Signup" />
+            {isLoading ? <LoadingSpinner /> : ''}
             <p className="instruction">Type the following text:</p>
             {isCursorHidden ? '' : <span className={`cursor`} ref={cursorRef} style={cursorStyle}></span>}
             <div id="quote" ref={quoteRef}>

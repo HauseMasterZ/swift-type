@@ -5,8 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import { query, where, getDocs } from 'firebase/firestore';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import '../static/styles/styles.scss'
 import Header from './Header';
+import '../static/styles/styles.scss'
+import HamburgerMenu from './Hamburger';
+import LoadingSpinner from './LoadingSpinner';
 function Forgot() {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
@@ -53,8 +55,8 @@ function Forgot() {
     return (
         <div className={`container`}>
             <Header />
-            {isLoading ? <div className="spinner-border" style={{ position: 'absolute', justifyContent: 'center', alignItems: 'center', display: 'block' }} role="status"></div> : ''}
-
+            <HamburgerMenu home="Home" />
+            {isLoading ? <LoadingSpinner /> : ''}
             {!isSent ? <div className="form-container">
                 <form onSubmit={handleSubmit}>
                     <h2>Forgot Password</h2>

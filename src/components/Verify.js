@@ -1,19 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import '../static/styles/styles.scss'
 import Header from './Header';
+import '../static/styles/styles.scss'
 
 function Verify() {
-    const [isDarkMode, setIsDarkMode] = useState(true);
-    const darkLightToggleElementRef = React.useRef(null);
-
-    function handleDarkLightToggleClick() {
-        darkLightToggleElementRef.current.classList.toggle('active');
-        document.body.classList.toggle('dark');
-        !isDarkMode ? (document.body.style.backgroundColor = '#18191A') : (document.body.style.backgroundColor = '#E4E9F7');
-        setIsDarkMode(!isDarkMode);
-    }
-
     return (
         <div className={`container`}>
             <Header />

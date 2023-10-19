@@ -3,21 +3,20 @@ import { auth } from '../firebase';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import Header from './Header';
 import '../static/styles/styles.scss'
+import Header from './Header';
+import HamburgerMenu from './Hamburger';
+import LoadingSpinner from './LoadingSpinner';
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [isDropDownMenuOpen, setisDropdownMenuOpen] = useState(false);
     const dropdownMenuRef = useRef(null);
     const navigate = useNavigate();
 
     const handleUsernameChange = (event) => {
         setEmail(event.target.value);
     };
-
-
 
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
@@ -56,25 +55,11 @@ function Login() {
         return () => unsubscribe();
     }, []);
 
-    useEffect(() => {
-        dropdownMenuRef.current.classList.toggle("show");
-    }, [isDropDownMenuOpen]);
-
     return (
         <div className={`container`}>
             <Header />
-            <div className="hamburger-menu">
-                <div className="hamburger-icon" onClick={(e) => (setisDropdownMenuOpen(!isDropDownMenuOpen))}>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                <div className="dropdown-menu" ref={dropdownMenuRef}>
-                    <Link to="/">Home</Link>
-                    <Link to="/signup">Signup</Link>
-                </div>
-            </div>
-            {isLoading ? <div className="spinner-border" style={{ position: 'absolute', justifyContent: 'center', alignItems: 'center', display: 'block' }} role="status"></div> : ''}
+            <HamburgerMenu home="Home" signup="Signup" />
+            {isLoading ? <LoadingSpinner /> : ''}
             <div className="form-container">
                 <form onSubmit={handleSubmit}>
                     <h2>Login</h2>

@@ -36,7 +36,7 @@ function Header() {
 
     return (
         <div className={`header ${isDarkMode ? 'dark' : ''}`}>
-            <Link to="/" className="no-style">
+            <Link to="/home" className="no-style">
                 <h1 id="title">
                     <span>Swift</span> <span>Type</span> ~ HauseMaster
                 </h1>

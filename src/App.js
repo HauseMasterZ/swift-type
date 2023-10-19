@@ -19,8 +19,8 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/forgot" element={<Forgot />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/home" element={<Home />} />
             <Route path="*" element={<NotFound />} />
-            <Route path="/" element={<Home />} />
         </Routes>
     );
 }
