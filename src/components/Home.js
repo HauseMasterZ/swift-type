@@ -48,9 +48,6 @@ function Home() {
    const [seconds, setSeconds] = useState(0);
    const [isTimerRunning, setIsTimerRunning] = useState(false);
    const cursorRef = useRef(null);
-   const [isDropDownMenuOpen, setIsDropDownMenuOpen] = useState(false);
-   const dropdownMenuRef = useRef(null);
-   const hamburgerMenuRef = useRef(null);
    const [quoteDivs, setQuoteDivs] = useState([]);
    const wpmDisplayRef = useRef(null);
    const refreshButtonRef = useRef(null);
@@ -62,6 +59,7 @@ function Home() {
    const grossWpmDisplayRef = useRef(null);
    const inputBoxRef = useRef(null);
    const [user, setUser] = useState(null);
+   const [isQuoteRenderReady, setIsQuoteRenderReady] = useState(false);
    const [username, setUsername] = useState('');
    const [totalRacesTaken, setTotalRacesTaken] = useState(0);
    const navigate = useNavigate();
@@ -107,12 +105,10 @@ function Home() {
       return data;
    };
 
-   const [isQuoteRenderReady, setIsQuoteRenderReady] = useState(false);
-
    const fetchRandomQuote = async () => {
       setIsLoading(true);
-      setIsCursorHidden(true);
       setIsQuoteRenderReady(false);
+      setIsCursorHidden(true);
       let minLength = 0;
       let maxLength = 0;
       if (quoteLength === 'small') {
@@ -128,19 +124,14 @@ function Home() {
       const url = minLength > 0 ? `${quotableApiUrl}?minLength=${minLength}&maxLength=${maxLength}` : quotableApiUrl;
       const response = await fetchWithRetries(url);
       const data = await response[0].content;
-      setIsQuoteRenderReady(true);
       setIsLoading(false);
       setIsCursorHidden(false);
       setQuote(data);
       if (inputBoxRef.current) {
          inputBoxRef.current.focus();
       }
+      setIsQuoteRenderReady(true);
    }
-
-   useEffect(() => {
-      if (!isQuoteRenderReady) return;
-      renderQuote();
-   }, [isQuoteRenderReady]);
 
    // const renderQuote = () => {
    //    const words = quote.split(' ');
@@ -497,10 +488,16 @@ function Home() {
       setWpm(0);
       setGrossWpm(0);
       setNetWpm(0);
-      setClearButton(false);
       setAccuracy(0);
-      fetchRandomQuote();
-      onEnd();
+      // setClearButton(false);
+      // fetchRandomQuote();
+      if (clearButton || customText === '') {
+         setClearButton(false);
+         setCustomText('');
+         fetchRandomQuote();
+      } else {
+         setIsQuoteRenderReady(true);
+      }
       document.body.classList.contains("dark") ? document.body.style.backgroundColor = '#18191A' : document.body.style.backgroundColor = '#E4E9F7';
 
       for (let i = 0; i < words.length; i++) {
@@ -511,9 +508,12 @@ function Home() {
             letterElements[j].classList.remove('incorrect');
          }
       }
+      onEnd();
+
    };
 
    function repeatTest() {
+      setIsInputDisabled(false);
       setSeconds(0);
       setCurrentWordIndex(0);
       setTypedWords([]);
@@ -524,12 +524,10 @@ function Home() {
       netWpmDisplayRef.current.classList.remove('highlight');
       grossWpmDisplayRef.current.classList.remove('highlight');
       categoryDisplayRef.current.classList.remove('highlight-category');
-      setLastWordIndex(null);
       setTotalTyped(0);
       setTotalErrors(0);
       setCategory('');
       setDisplayRunning(false);
-      setIsInputDisabled(false);
       inputBoxRef.current.value = '';
       setWpm(0);
       setGrossWpm(0);
@@ -546,7 +544,9 @@ function Home() {
          }
       }
       inputBoxRef.current.focus();
+      onEnd();
    }
+
    function calculateWPM(endTime) {
       const minutes = (endTime - startTime) / 60000;
       const wpm = Math.round((currentWordIndex + 1) / minutes);
@@ -684,7 +684,6 @@ function Home() {
    const handleApply = (inputValue) => {
       if (inputValue.trim() === '') return;
       setCustomText(inputValue);
-      setClearButton(true);
    };
 
    const openModal = () => {
@@ -720,9 +719,9 @@ function Home() {
    const handleClearButtonClick = () => {
       setCustomText('');
       setClearButton(false);
-      handleRefreshButtonClick();
       onEnd();
       inputBoxRef.current.focus();
+      handleRefreshButtonClick()
    };
 
    useEffect(() => {
@@ -738,19 +737,31 @@ function Home() {
    useEffect(() => {
       if (customText === '') return;
       setQuote(customText);
+      handleRefreshButtonClick();
+      setClearButton(true);
       setWordRefs([]);
       setLetterRefs([]);
       setLetterRects([]);
       setIsLoading(false);
       inputBoxRef.current.focus();
       setIsCursorHidden(false);
-      repeatTest();
    }, [customText]);
+   
+   useEffect(() => {
+      if (customText === '') return;
+      setIsQuoteRenderReady(false);
+      renderQuote();
+   } , [quote]);
 
    useEffect(() => {
       if (levels.length === 0) return;
       loadImages();
    }, [levels]);
+
+   useEffect(() => {
+      if (!isQuoteRenderReady) return;
+      renderQuote();
+   }, [isQuoteRenderReady]);
 
    useEffect(() => {
       if (quoteRef.current) {

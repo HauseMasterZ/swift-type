@@ -4,7 +4,7 @@ import Home from './components/Home';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Forgot from './components/Forgot';
-import NotFound from './components/NotFound';
+import NotFound from './components/404';
 import Verify from './components/Verify';
 import ProtectedRoute from './components/ProtectedRoute';
 import Profile from './components/Profile';
@@ -20,6 +20,7 @@ function App() {
             <Route path="/forgot" element={<Forgot />} />
             <Route path="/login" element={<Login />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/" element={<Home />} />
             <Route path="*" element={<NotFound />} />
         </Routes>
     );
