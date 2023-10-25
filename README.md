@@ -30,7 +30,7 @@
 <p align="center">
   <p align="center">
 <picture>
-  <img src="https://readme-typing-svg.demolab.com?font=Open+Sans&pause=500&color=60D0FA&center=true&vCenter=true&width=290&height=25&lines=Swift+Type+~+HauseMaster;Responsive+Typing+Test." alt="Typing Animation">
+  <img src="https://readme-typing-svg.demolab.com?font=Open+Sans&pause=500&color=A26af0&center=true&vCenter=true&width=290&height=25&lines=Swift+Type+~+HauseMaster;Responsive+Typing+Test." alt="Typing Animation">
 </picture>
   </p>
 </p>
