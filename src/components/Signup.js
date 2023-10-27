@@ -28,6 +28,7 @@ function Signup() {
 
         if (password !== confirmPassword) {
             alert('Passwords do not match');
+            setIsLoading(false);
             return;
         }
 
@@ -39,7 +40,7 @@ function Signup() {
                 alert('Username already exists');
                 return;
             }
-            
+
             if (emailDoc.size > 0) {
                 alert('Email already exists');
                 return;
@@ -69,16 +70,24 @@ function Signup() {
     };
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
-                navigate('/');
-                return;
-            } else {
-                return;
-            }
-        });
+        let unsubscribe = null;
+        try {
 
-        return () => unsubscribe();
+            unsubscribe = auth.onAuthStateChanged((user) => {
+                if (user) {
+                    navigate('/');
+                    return;
+                } else {
+                    return;
+                }
+            });
+        } catch (error) {
+            console.error(error);
+        }
+
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
     }, []);
 
     return (

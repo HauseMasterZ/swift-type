@@ -44,15 +44,22 @@ function Login() {
     };
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
-                navigate('/');
-                return;
-            } else {
-                return;
-            }
-        });
-        return () => unsubscribe();
+        let unsubscribe = null;
+        try {
+            unsubscribe = auth.onAuthStateChanged((user) => {
+                if (user) {
+                    navigate('/');
+                    return;
+                } else {
+                    return;
+                }
+            });
+        } catch (error) {
+            console.error(error);
+        }
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
     }, []);
 
     return (

@@ -410,8 +410,7 @@ function Home() {
       netWpmDisplayRef.current.classList.add('highlight');
       grossWpmDisplayRef.current.classList.add('highlight');
       categoryDisplayRef.current.classList.add('highlight-category');
-      if (customText !== '' || !user) return;
-
+      if (customText !== '' || !user || !db) return;
       const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
       const increment = totalRacesTaken + 1;
       const newAccuracy = calculateLocalAccuracy(accuracy, totalRacesTaken, totalAvgAccuracy);
@@ -915,40 +914,45 @@ function Home() {
 
    useEffect(() => {
       // Set up an observer to listen for authentication state changes
+      let unsubscribe = null;
       setLevels(thresholds.thresholds);
-
-      const unsubscribe = auth.onAuthStateChanged((user) => {
-         if (user) {
-            // User is signed in.
-            setUser(user);
-            setEmail(user.email);
-
-            // Fetch additional user information from your database
-            const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
-            getDoc(userRef).then((doc) => {
-               if (doc.exists()) {
-                  const data = doc.data();
-                  setUsername(data[process.env.REACT_APP_USERNAME_KEY]);
-                  setProfilePhotoUrl(data[process.env.REACT_APP_PROFILE_PHOTO_URL_KEY]);
-                  setTotalRacesTaken(data[process.env.REACT_APP_TOTAL_RACES_TAKEN_KEY]);
-                  setTotalAvgAccuracy(data[process.env.REACT_APP_TOTAL_AVG_ACCURACY_KEY]);
-                  setTotalAverageWpm(data[process.env.REACT_APP_TOTAL_AVG_WPM_KEY]);
-               } else {
-                  console.log('No such document!');
-               }
-            }).catch((error) => {
-               console.log('Error getting document:', error);
-            });
-         } else {
-            // User is signed out.
-            setUser(null);
-            setUsername('');
-            setEmail('');
-            setProfilePhotoUrl('');
-            setTotalRacesTaken(0);
-            setTotalAvgAccuracy(0);
-         }
-      });
+      try {
+         
+         unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+               // User is signed in.
+               setUser(user);
+               setEmail(user.email);
+   
+               // Fetch additional user information from your database
+               const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
+               getDoc(userRef).then((doc) => {
+                  if (doc.exists()) {
+                     const data = doc.data();
+                     setUsername(data[process.env.REACT_APP_USERNAME_KEY]);
+                     setProfilePhotoUrl(data[process.env.REACT_APP_PROFILE_PHOTO_URL_KEY]);
+                     setTotalRacesTaken(data[process.env.REACT_APP_TOTAL_RACES_TAKEN_KEY]);
+                     setTotalAvgAccuracy(data[process.env.REACT_APP_TOTAL_AVG_ACCURACY_KEY]);
+                     setTotalAverageWpm(data[process.env.REACT_APP_TOTAL_AVG_WPM_KEY]);
+                  } else {
+                     console.log('No such document!');
+                  }
+               }).catch((error) => {
+                  console.log('Error getting document:', error);
+               });
+            } else {
+               // User is signed out.
+               setUser(null);
+               setUsername('');
+               setEmail('');
+               setProfilePhotoUrl('');
+               setTotalRacesTaken(0);
+               setTotalAvgAccuracy(0);
+            }
+         });
+      } catch (error) {
+         console.error(error);
+      }
 
       function handleResize() {
          setWindowDimensions({
@@ -972,7 +976,7 @@ function Home() {
             window.removeEventListener('resize', handleResize);
             document.body.removeEventListener('keydown', handleKeyDown);
          });
-         unsubscribe();
+         if (unsubscribe) unsubscribe();
       };
    }, []);
 
