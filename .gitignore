@@ -14,7 +14,7 @@ coverage/
 # misc
 .DS_Store
 .firebase
-,firebaserc
+.firebaserc
 .env
 .env.local
 .env.development.local
