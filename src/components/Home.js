@@ -29,6 +29,10 @@ function Home() {
    const [backspaceFlag, setBackspaceFlag] = useState(false);
    const [quoteLength, setQuoteLength] = useState('random');
    const [isCapsLockOn, setIsCapsLockOn] = useState(false);
+   const [windowDimensions, setWindowDimensions] = useState({
+      width: window.innerWidth,
+      height: window.innerHeight,
+   });
    const [isLoading, setIsLoading] = useState(false);
    const [isCursorHidden, setIsCursorHidden] = useState(true);
    const [isInputDisabled, setIsInputDisabled] = useState(false);
@@ -588,6 +592,19 @@ function Home() {
       return Math.max(accuracy, 0);
    }
 
+   // function calculateLiveAccuracy() {
+   //    const accuracy = Math.round((totalTyped - totalErrors) / totalTyped * 100);
+   //    setAccuracy(accuracy);
+   //    return Math.max(accuracy, 0);
+   // }
+
+   // function calculateLiveWPM() {
+   //    const minutes = new Date().getTime() - startTime / 60000;
+   //    const wpm = Math.round((currentWordIndex + 1) / minutes);
+      
+   //    return wpm;
+   // }
+
    // async function loadImages() {
    //    for (const level of levels) {
    //       const img = new Image();
@@ -610,35 +627,22 @@ function Home() {
    // }
 
    const loadImages = () => {
-      // Check if images are cached
-
-      if (localStorage.getItem('cachedImages') !== 'true') {
-         // Cache the images in localStorage
-         levels.forEach((image) => {
-            if (!Array.isArray(image.imgSrc)) return;
-            const img = new Image();
-            img.src = image.imgSrc[0][0];
-            const src = img.src;
-            try {
-               img.onload = () => {
-                  localStorage.setItem(src.split('/').pop(), img.src);
-               };
-               img.onerror = () => {
-                  img.src = image.imgSrc[1][1];
-                  img.onload = () => {
-                     localStorage.setItem(src.split('/').pop(), img.src);
-                  };
-               };
-               image.imgSrc = localStorage.getItem(src.split('/').pop());
-            } catch (error) {
-               console.error(`Failed to load image for level ${image.title}: ${error}`);
-            }
-            // img.onload = () => {
-            //    localStorage.setItem(image, img.src);
-            // };
-         });
-         localStorage.setItem('cachedImages', "true");
-      }
+      levels.forEach((image) => {
+         if (!Array.isArray(image.imgSrc)) {
+            return;
+         }
+         const img = new Image();
+         img.src = image.imgSrc[0][0];
+         const src = img.src;
+         try {
+            img.onerror = () => {
+               img.src = image.imgSrc[1][1];
+            };
+            image.imgSrc = img.src;
+         } catch (error) {
+            console.error(`Failed to load image for level ${image.title}: ${error}`);
+         }
+      });
    };
 
    function handleLogoutClick() {
@@ -671,11 +675,6 @@ function Home() {
    function handleKeyDown(event) {
       setIsCapsLockOn(event.getModifierState && event.getModifierState("CapsLock"));
    }
-
-   const [windowDimensions, setWindowDimensions] = useState({
-      width: window.innerWidth,
-      height: window.innerHeight,
-   });
 
    const closeModal = () => {
       setIsModalOpen(false);
@@ -746,17 +745,12 @@ function Home() {
       inputBoxRef.current.focus();
       setIsCursorHidden(false);
    }, [customText]);
-   
+
    useEffect(() => {
       if (customText === '') return;
       setIsQuoteRenderReady(false);
       renderQuote();
-   } , [quote]);
-
-   useEffect(() => {
-      if (levels.length === 0) return;
-      loadImages();
-   }, [levels]);
+   }, [quote]);
 
    useEffect(() => {
       if (!isQuoteRenderReady) return;
@@ -794,19 +788,28 @@ function Home() {
       }
    }, [quoteDivs]);
 
-   useEffect(() => {
+   function timer () {
       let interval;
-
       if (isTimerRunning) {
          interval = setInterval(() => {
             setSeconds((prevSeconds) => prevSeconds + 0.5);
+            setAccuracy(calculateAccuracy(totalTyped, totalErrors));
+            setWpm(calculateWPM(new Date().getTime()));
          }, 500);
       }
-
       return () => {
          clearInterval(interval);
+      }
+   }
+
+   useEffect(() => {
+      let stopTimer = timer();
+
+      return () => {
+         stopTimer();
       };
    }, [isTimerRunning]);
+
 
    useEffect(() => {
       if (!lastLetterRect) return;
@@ -907,8 +910,12 @@ function Home() {
    }, [latestWord]);
 
    useEffect(() => {
+      loadImages();
+   }, [levels]);
+
+   useEffect(() => {
       // Set up an observer to listen for authentication state changes
-      localStorage.setItem('cachedImages', "false");
+      setLevels(thresholds.thresholds);
 
       const unsubscribe = auth.onAuthStateChanged((user) => {
          if (user) {
@@ -958,7 +965,6 @@ function Home() {
       });
 
       setIsMobile(navigator.userAgent.toLowerCase().includes("mobile"));
-      setLevels(thresholds.thresholds);
       fetchRandomQuote();
       return () => {
          buttons.forEach((button) => {
