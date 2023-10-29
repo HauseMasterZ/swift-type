@@ -65,7 +65,7 @@ To build and test the site locally, follow these steps:
 3. (Optional) Run the command `git submodule update --init --recursive` to update the submodule.
 4. (Optional) Run the command `git pull` to pull the latest changes.
 5. Install the necessary dependencies by running `npm install`
-6. Create a new file in the root directory of the project called `.envlocal`
+6. Create a new file in the root directory of the project called `.env.local`
 7. Add the necessary environment variables to the file in the format `VARIABLE_NAME=value`
 8. Save the file.
 9. To build the project, run the command `npm run build`.

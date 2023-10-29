@@ -21,8 +21,7 @@ function Forgot() {
         try {
             const usernameQuery = query(collection(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME), where(process.env.REACT_APP_USERNAME_KEY, '==', email));
             const emailQuery = query(collection(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME), where(process.env.REACT_APP_EMAIL_KEY, '==', email));
-            const [usernameDoc, emailDoc] = await Promise.all([getDocs(usernameQuery), getDocs(emailQuery)]);
-            usernameDoc = usernameDoc.docs;
+            const [, emailDoc] = await Promise.all([getDocs(usernameQuery), getDocs(emailQuery)]);
             if (emailDoc.size === 0) {
                 alert('Email doesnt exist');
                 return;
