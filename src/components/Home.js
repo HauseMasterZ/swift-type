@@ -626,7 +626,7 @@ function Home() {
          }
          const img = new Image();
          img.src = image.imgSrc[0][0];
-         const src = img.src;
+         // const src = img.src;
          try {
             img.onerror = () => {
                img.src = image.imgSrc[1][1];
@@ -737,7 +737,7 @@ function Home() {
       setIsLoading(false);
       inputBoxRef.current.focus();
       setIsCursorHidden(false);
-   }, [customText]);
+   }, [customText, handleRefreshButtonClick]);
 
    useEffect(() => {
       if (customText === '') return;
