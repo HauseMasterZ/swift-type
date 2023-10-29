@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import thresholds from '../static/data/thresholds.json';
-import { Link } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { onEnd } from '../static/scripts/flying-focus.js';
@@ -29,10 +28,6 @@ function Home() {
    const [backspaceFlag, setBackspaceFlag] = useState(false);
    const [quoteLength, setQuoteLength] = useState('random');
    const [isCapsLockOn, setIsCapsLockOn] = useState(false);
-   const [windowDimensions, setWindowDimensions] = useState({
-      width: window.innerWidth,
-      height: window.innerHeight,
-   });
    const [isLoading, setIsLoading] = useState(false);
    const [isCursorHidden, setIsCursorHidden] = useState(true);
    const [isInputDisabled, setIsInputDisabled] = useState(false);
@@ -64,12 +59,9 @@ function Home() {
    const inputBoxRef = useRef(null);
    const [user, setUser] = useState(null);
    const [isQuoteRenderReady, setIsQuoteRenderReady] = useState(false);
-   const [username, setUsername] = useState('');
    const [totalRacesTaken, setTotalRacesTaken] = useState(0);
    const navigate = useNavigate();
    const [totalAvgAccuracy, setTotalAvgAccuracy] = useState(0);
-   const [email, setEmail] = useState('');
-   const [profilePhotoUrl, setProfilePhotoUrl] = useState('');
    const [totalAverageWpm, setTotalAverageWpm] = useState(0);
    const errorsDisplayRef = useRef(null);
    const accuracyDisplayRef = useRef(null);
@@ -272,10 +264,12 @@ function Home() {
                index--;
             }
             if (latestWordLength >= letterElementLength) {
-               lastLetterRect = letterRects[currentWordIndex - 1][letterElementLength - 1];
+               // lastLetterRect = letterRects[currentWordIndex - 1][letterElementLength - 1];
+               setLastLetterRect(letterRects[currentWordIndex - 1][letterElementLength - 1]);
                // updateWord(latestWord, latestWordLength - 1, true);
             } else {
-               lastLetterRect = letterRects[currentWordIndex - 1][latestWordLength - 1];
+               // lastLetterRect = letterRects[currentWordIndex - 1][latestWordLength - 1];
+               setLastLetterRect(letterRects[currentWordIndex - 1][latestWordLength - 1]);
             }
             return;
          }
@@ -907,6 +901,7 @@ function Home() {
          }
       }
    }, [latestWord]);
+   const [profileData, setProfileData] = useState(null);
 
    useEffect(() => {
       loadImages();
@@ -922,18 +917,26 @@ function Home() {
             if (user) {
                // User is signed in.
                setUser(user);
-               setEmail(user.email);
+               // setEmail(user.email);
    
                // Fetch additional user information from your database
                const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
                getDoc(userRef).then((doc) => {
                   if (doc.exists()) {
                      const data = doc.data();
-                     setUsername(data[process.env.REACT_APP_USERNAME_KEY]);
-                     setProfilePhotoUrl(data[process.env.REACT_APP_PROFILE_PHOTO_URL_KEY]);
-                     setTotalRacesTaken(data[process.env.REACT_APP_TOTAL_RACES_TAKEN_KEY]);
-                     setTotalAvgAccuracy(data[process.env.REACT_APP_TOTAL_AVG_ACCURACY_KEY]);
-                     setTotalAverageWpm(data[process.env.REACT_APP_TOTAL_AVG_WPM_KEY]);
+                     setProfileData({
+                        username: data[process.env.REACT_APP_USERNAME_KEY],
+                        profilePhotoUrl: data[process.env.REACT_APP_PROFILE_PHOTO_URL_KEY],
+                        totalRacesTaken: data[process.env.REACT_APP_TOTAL_RACES_TAKEN_KEY],
+                        totalAvgAccuracy: data[process.env.REACT_APP_TOTAL_AVG_ACCURACY_KEY],
+                        totalAverageWpm: data[process.env.REACT_APP_TOTAL_AVG_WPM_KEY],
+                        email: data[process.env.REACT_APP_EMAIL_KEY]
+                      });
+                     // setUsername(data[process.env.REACT_APP_USERNAME_KEY]);
+                     // setProfilePhotoUrl(data[process.env.REACT_APP_PROFILE_PHOTO_URL_KEY]);
+                     // setTotalRacesTaken(data[process.env.REACT_APP_TOTAL_RACES_TAKEN_KEY]);
+                     // setTotalAvgAccuracy(data[process.env.REACT_APP_TOTAL_AVG_ACCURACY_KEY]);
+                     // setTotalAverageWpm(data[process.env.REACT_APP_TOTAL_AVG_WPM_KEY]);
                   } else {
                      console.log('No such document!');
                   }
@@ -942,12 +945,13 @@ function Home() {
                });
             } else {
                // User is signed out.
-               setUser(null);
-               setUsername('');
-               setEmail('');
-               setProfilePhotoUrl('');
-               setTotalRacesTaken(0);
-               setTotalAvgAccuracy(0);
+               // setUser(null);
+               // setUsername('');
+               // setEmail('');
+               // setProfilePhotoUrl('');
+               // setTotalRacesTaken(0);
+               setProfileData(null);
+               // setTotalAvgAccuracy(0);
             }
          });
       } catch (error) {
@@ -955,10 +959,6 @@ function Home() {
       }
 
       function handleResize() {
-         setWindowDimensions({
-            width: window.innerWidth,
-            height: window.innerHeight,
-         });
          updateCursorPosition();
       }
       const buttons = document.querySelectorAll('button');
@@ -984,7 +984,7 @@ function Home() {
       <div className={`App`}>
          <div className="container">
             <Header />
-            <HamburgerMenu user={user} handleLogoutClick={handleLogoutClick} login="Login" signup="Signup" />
+            <HamburgerMenu user={user} handleLogoutClick={handleLogoutClick} login="Login" signup="Signup" profileData={profileData} />
             {isLoading ? <LoadingSpinner /> : ''}
             <p className="instruction">Type the following text:</p>
             {isCursorHidden ? '' : <span className={`cursor`} ref={cursorRef} style={cursorStyle}></span>}

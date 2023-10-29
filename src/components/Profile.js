@@ -2,23 +2,71 @@ import { useEffect, useState, useRef } from 'react';
 import { auth, db, storage } from '../firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import '../static/styles/styles.scss'
 import Header from './Header';
 import HamburgerMenu from './Hamburger';
 import LoadingSpinner from './LoadingSpinner';
-function Profile() {
+function Profile() {   
     const [user, setUser] = useState(null);
-    const [username, setUsername] = useState('');
-    const [totalRacesTaken, setTotalRacesTaken] = useState(0);
     const MAX_FILE_SIZE = 6 * 1024 * 1024; // 6MB 
     const [isLoading, setIsLoading] = useState(false);
     const fileInputRef = useRef(null);
-    const [totalAvgAccuracy, setTotalAvgAccuracy] = useState(0);
     const [email, setEmail] = useState('');
-    const [profilePhotoUrl, setProfilePhotoUrl] = useState('');
-    const [totalAverageWpm, setTotalAverageWpm] = useState(0);
     const navigate = useNavigate();
+    const location = useLocation();
+    const { profileData } = location.state? location.state : ''; 
+    // console.log(profileData) // undefined need to fix
+    const [username, setUsername] = useState('');
+    const [profilePhotoUrl, setProfilePhotoUrl] = useState('');
+    const [totalRacesTaken, setTotalRacesTaken] = useState(0);
+    const [totalAvgAccuracy, setTotalAvgAccuracy] = useState(0);
+    const [totalAverageWpm, setTotalAverageWpm] = useState(0);
+
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+            setUser(user);
+            setEmail(user.email);
+
+            const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
+            getDoc(userRef).then((doc) => {
+                if (doc.exists()) {
+                    const data = doc.data();
+                    setUsername(data[process.env.REACT_APP_USERNAME_KEY]);
+                    setProfilePhotoUrl(data[process.env.REACT_APP_PROFILE_PHOTO_URL_KEY]);
+                    setTotalRacesTaken(data[process.env.REACT_APP_TOTAL_RACES_TAKEN_KEY]);
+                    setTotalAvgAccuracy(data[process.env.REACT_APP_TOTAL_AVG_ACCURACY_KEY]);
+                    setTotalAverageWpm(data[process.env.REACT_APP_TOTAL_AVG_WPM_KEY]);
+                } else {
+                    console.log('No such document!');
+                }
+            }).catch((error) => {
+                console.log('Error getting document:', error);
+            });
+        } else {
+            setUser(null);
+            setUsername('');
+            setEmail('');
+            setProfilePhotoUrl('');
+            setTotalRacesTaken(0);
+            setTotalAvgAccuracy(0);
+            navigate('/');
+            return;
+        }
+    });
+
+    useEffect(() => {
+        if (profileData) {
+            setUsername(profileData.username);
+            setProfilePhotoUrl(profileData.profilePhotoUrl);
+            setTotalRacesTaken(profileData.totalRacesTaken);
+            setTotalAvgAccuracy(profileData.totalAvgAccuracy);
+            setTotalAverageWpm(profileData.totalAverageWpm);
+        } else {
+            unsubscribe();
+        }
+    }, [profileData]);
 
     function handleProfileAvatarClick() {
         fileInputRef.current.accept = 'image/*'; // Only allow image files
@@ -61,52 +109,53 @@ function Profile() {
         }
     }, [profilePhotoUrl]);
 
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
-                setUser(user);
-                setEmail(user.email);
+    // useEffect(() => {
+    //     const unsubscribe = auth.onAuthStateChanged((user) => {
+    //         if (user) {
+    //             setUser(user);
+    //             setEmail(user.email);
 
-                const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
-                getDoc(userRef).then((doc) => {
-                    if (doc.exists()) {
-                        const data = doc.data();
-                        setUsername(data[process.env.REACT_APP_USERNAME_KEY]);
-                        setProfilePhotoUrl(data[process.env.REACT_APP_PROFILE_PHOTO_URL_KEY]);
-                        setTotalRacesTaken(data[process.env.REACT_APP_TOTAL_RACES_TAKEN_KEY]);
-                        setTotalAvgAccuracy(data[process.env.REACT_APP_TOTAL_AVG_ACCURACY_KEY]);
-                        setTotalAverageWpm(data[process.env.REACT_APP_TOTAL_AVG_WPM_KEY]);
-                    } else {
-                        console.log('No such document!');
-                    }
-                }).catch((error) => {
-                    console.log('Error getting document:', error);
-                });
-            } else {
-                setUser(null);
-                setUsername('');
-                setEmail('');
-                setProfilePhotoUrl('');
-                setTotalRacesTaken(0);
-                setTotalAvgAccuracy(0);
-                navigate('/');
-                return;
-            }
-        });
+    //             const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
+    //             getDoc(userRef).then((doc) => {
+    //                 if (doc.exists()) {
+    //                     const data = doc.data();
+    //                     setUsername(data[process.env.REACT_APP_USERNAME_KEY]);
+    //                     setProfilePhotoUrl(data[process.env.REACT_APP_PROFILE_PHOTO_URL_KEY]);
+    //                     setTotalRacesTaken(data[process.env.REACT_APP_TOTAL_RACES_TAKEN_KEY]);
+    //                     setTotalAvgAccuracy(data[process.env.REACT_APP_TOTAL_AVG_ACCURACY_KEY]);
+    //                     setTotalAverageWpm(data[process.env.REACT_APP_TOTAL_AVG_WPM_KEY]);
+    //                 } else {
+    //                     console.log('No such document!');
+    //                 }
+    //             }).catch((error) => {
+    //                 console.log('Error getting document:', error);
+    //             });
+    //         } else {
+    //             setUser(null);
+    //             setUsername('');
+    //             setEmail('');
+    //             setProfilePhotoUrl('');
+    //             setTotalRacesTaken(0);
+    //             setTotalAvgAccuracy(0);
+    //             navigate('/');
+    //             return;
+    //         }
+    //     });
 
-        // Clean up the observer when the component unmounts
-        return () => unsubscribe();
-    }, []);
+    //     // Clean up the observer when the component unmounts
+    //     return () => unsubscribe();
+    // }, []);
 
     return (
         <div className={`container`}>
             <Header />
-            <HamburgerMenu home="Home"/>
+            <HamburgerMenu home="Home" />
             {isLoading ? <LoadingSpinner /> : ''}
             <div className="profile">
                 <div className="profile-avatar-container">
                     <img src={profilePhotoUrl} onClick={handleProfileAvatarClick} className='profile-avatar' alt="Profile" />
                     <h1 className='profile-username'>{username}</h1>
+                    <h1 className='profile-email'>{email}</h1>
                 </div>
                 <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileInputChange} />
             </div>

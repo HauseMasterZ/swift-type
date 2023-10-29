@@ -7,9 +7,9 @@ const HamburgerMenu = ({ user, handleLogoutClick, ...props }) => {
     const hamburgerMenuRef = useRef(null);
     useEffect(() => {
         const handleClickOutside = (event) => {
-         if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !hamburgerMenuRef.current.contains(event.target)) {
-            setIsDropDownMenuOpen(false);
-         }
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !hamburgerMenuRef.current.contains(event.target)) {
+                setIsDropDownMenuOpen(false);
+            }
         };
 
         window.addEventListener('click', handleClickOutside);
@@ -18,21 +18,20 @@ const HamburgerMenu = ({ user, handleLogoutClick, ...props }) => {
             window.removeEventListener('click', handleClickOutside);
         };
     }, [dropdownRef]);
-
     return (
         <div className="hamburger-menu">
-            <div className="hamburger-icon" onClick={(e) => {setIsDropDownMenuOpen(!isDropDownMenuOpen)}} ref={hamburgerMenuRef}>
+            <div className="hamburger-icon" onClick={(e) => { setIsDropDownMenuOpen(!isDropDownMenuOpen) }} ref={hamburgerMenuRef}>
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
             {isDropDownMenuOpen ? (
                 <div className="dropdown-menu show" ref={dropdownRef}>
-                    {user ? (
+                    {user && props.profileData ? (
                         <>
-                            <Link href="#" to="/profile" style={{ 'display': 'inline-block' }}>
-                                <img src={props.profilePhotoUrl} alt="picture" className='dropdown-avatar' />
-                                {props.username}
+                            <Link to={{ pathname: '/profile', state: { profileData: props.profileData } }} style={{ 'display': 'block' }}>
+                                <img src={props.profileData.profilePhotoUrl} alt="profile-photo" className='dropdown-avatar' />
+                                {props.profileData.username}
                             </Link>
                             <Link href="#" to="/settings" >Account Settings</Link>
                             <Link href="#" onClick={handleLogoutClick}>Logout</Link>
@@ -40,7 +39,7 @@ const HamburgerMenu = ({ user, handleLogoutClick, ...props }) => {
                     ) : (
                         <>
                             {Object.keys(props).map((key) => (
-                                <Link key={key} to={`/${key}`}>{props[key]}</Link>
+                                props[key] && <Link key={key} to={`/${key}`}>{props[key]}</Link>
                             ))}
                         </>
                     )}
