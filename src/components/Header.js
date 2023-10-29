@@ -50,7 +50,7 @@ function Header() {
                 <i className="bx bx-moon moon"></i>
             </div>
             <div className="github">
-                <a href="https://github.com/HauseMasterZ/swift-type" target="_blank">
+                <a href="https://github.com/HauseMasterZ/swift-type" target="_blank" rel='noopener'>
                     <i className="bx bxl-github"></i>
                 </a>
             </div>

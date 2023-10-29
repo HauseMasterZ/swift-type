@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { collection } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,6 @@ import HamburgerMenu from './Hamburger';
 import LoadingSpinner from './LoadingSpinner';
 function Forgot() {
     const navigate = useNavigate();
-    const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isSent, setIsSent] = useState(false);
     const [email, setEmail] = useState('');
@@ -19,12 +18,11 @@ function Forgot() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsLoading(true);
-        setError(null);
         try {
             const usernameQuery = query(collection(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME), where(process.env.REACT_APP_USERNAME_KEY, '==', email));
             const emailQuery = query(collection(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME), where(process.env.REACT_APP_EMAIL_KEY, '==', email));
             const [usernameDoc, emailDoc] = await Promise.all([getDocs(usernameQuery), getDocs(emailQuery)]);
-
+            usernameDoc = usernameDoc.docs;
             if (emailDoc.size === 0) {
                 alert('Email doesnt exist');
                 return;
@@ -34,7 +32,6 @@ function Forgot() {
             setIsSent(true);
         } catch (error) {
             console.error(error);
-            setError(error.message);
         } finally {
             setIsLoading(false);
         }
@@ -50,7 +47,7 @@ function Forgot() {
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [navigate]);
 
     return (
         <div className={`container`}>

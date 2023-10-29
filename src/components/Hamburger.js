@@ -31,7 +31,7 @@ const HamburgerMenu = ({ user, handleLogoutClick, ...props }) => {
                     {user ? (
                         <>
                             <Link href="#" to="/profile" style={{ 'display': 'inline-block' }}>
-                                <img src={props.profilePhotoUrl} alt="picture" className='dropdown-avatar' />
+                                <img src={props.profilePhotoUrl} className='dropdown-avatar' />
                                 {props.username}
                             </Link>
                             <Link href="#" to="/settings" >Account Settings</Link>
