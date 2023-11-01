@@ -129,25 +129,6 @@ function Home() {
       setIsQuoteRenderReady(true);
    }
 
-   // const renderQuote = () => {
-   //    const words = quote.split(' ');
-   //    return (
-   //       words.map((word, wordIndex) => {
-   //          return (
-   //             <div key={wordIndex} className="word">
-   //                {word.split('').map((letter, letterIndex) => {
-   //                   return (
-   //                      <div key={letterIndex} className="letter">
-   //                         {letter}
-   //                      </div>
-   //                   );
-   //                })}
-   //             </div>
-   //          );
-   //       })
-   //    );
-   // };
-
    const renderQuote = () => {
       const words = quote.split(" ");
       const divs = words.map((word, wordIndex) => {
@@ -264,11 +245,8 @@ function Home() {
                index--;
             }
             if (latestWordLength >= letterElementLength) {
-               // lastLetterRect = letterRects[currentWordIndex - 1][letterElementLength - 1];
                setLastLetterRect(letterRects[currentWordIndex - 1][letterElementLength - 1]);
-               // updateWord(latestWord, latestWordLength - 1, true);
             } else {
-               // lastLetterRect = letterRects[currentWordIndex - 1][latestWordLength - 1];
                setLastLetterRect(letterRects[currentWordIndex - 1][latestWordLength - 1]);
             }
             return;
@@ -285,9 +263,6 @@ function Home() {
             top: `${letterRects[currentWordIndex][0].top}px`,
          }));
          setLatestWord('');
-
-         // setCurrentWordIndex((prevCurrentWordIndex) => Math.max(prevCurrentWordIndex - 1, 0));
-
       } else {
          setLatestWord((prevLatestWord) => prevLatestWord + event.data);
          setTotalTyped((prevTotalTyped) => prevTotalTyped + 1);
@@ -349,10 +324,10 @@ function Home() {
       }
 
       if (latestWord === '' && backspaceFlag) {
-         setCursorStyle((prevCursorStyle) => ({
+         setCursorStyle({
             left: `${lastLetterRect.left}px`,
             top: `${lastLetterRect.top}px`,
-         }));
+         });
       } else {
          if (lastLetterRect !== letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)]) {
             setLastLetterRect(latestWord.length > letterElementLength - 1 ? letterRects[currentWordIndex][letterElementLength - 1] : letterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)]);
@@ -594,7 +569,7 @@ function Home() {
    // function calculateLiveWPM() {
    //    const minutes = new Date().getTime() - startTime / 60000;
    //    const wpm = Math.round((currentWordIndex + 1) / minutes);
-      
+
    //    return wpm;
    // }
 
@@ -640,11 +615,9 @@ function Home() {
 
    function handleLogoutClick() {
       auth.signOut().then(() => {
-         // Sign-out successful.
          setUser(null);
          navigate('/');
       }).catch((error) => {
-         // An error happened.
          console.log(error);
       });
    }
@@ -781,13 +754,11 @@ function Home() {
       }
    }, [quoteDivs]);
 
-   function timer () {
+   function timer() {
       let interval;
       if (isTimerRunning) {
          interval = setInterval(() => {
             setSeconds((prevSeconds) => prevSeconds + 0.5);
-            setAccuracy(calculateAccuracy(totalTyped, totalErrors));
-            setWpm(calculateWPM(new Date().getTime()));
          }, 500);
       }
       return () => {
@@ -803,6 +774,12 @@ function Home() {
       };
    }, [isTimerRunning]);
 
+   useEffect(() => {
+      const accuracy = calculateAccuracy(totalTyped, totalErrors);
+      const netWpm = calculateNetWPM(new Date().getTime());
+      if (accuracy) setAccuracy(accuracy); 
+      if (netWpm) setNetWpm(netWpm);
+   }, [totalTyped, totalErrors]);
 
    useEffect(() => {
       if (!lastLetterRect) return;
@@ -912,13 +889,13 @@ function Home() {
       let unsubscribe = null;
       setLevels(thresholds.thresholds);
       try {
-         
+
          unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
                // User is signed in.
                setUser(user);
                // setEmail(user.email);
-   
+
                // Fetch additional user information from your database
                const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
                getDoc(userRef).then((doc) => {
@@ -931,7 +908,7 @@ function Home() {
                         totalAvgAccuracy: data[process.env.REACT_APP_TOTAL_AVG_ACCURACY_KEY],
                         totalAverageWpm: data[process.env.REACT_APP_TOTAL_AVG_WPM_KEY],
                         email: data[process.env.REACT_APP_EMAIL_KEY]
-                      });
+                     });
                      // setUsername(data[process.env.REACT_APP_USERNAME_KEY]);
                      // setProfilePhotoUrl(data[process.env.REACT_APP_PROFILE_PHOTO_URL_KEY]);
                      // setTotalRacesTaken(data[process.env.REACT_APP_TOTAL_RACES_TAKEN_KEY]);
