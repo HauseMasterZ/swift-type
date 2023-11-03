@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import thresholds from '../static/data/thresholds.json';
 import { auth, db } from '../firebase';
@@ -431,8 +431,7 @@ function Home() {
          ripple.remove();
       });
    }
-
-   const handleRefreshButtonClick = (event) => {
+   const handleRefreshButtonClick = useCallback((event) => {
       if (event !== undefined) {
          createRipple(event);
       }
@@ -481,8 +480,11 @@ function Home() {
          }
       }
       onEnd();
+   }, [createRipple, setSeconds, setIsTimerRunning, setCurrentWordIndex, setTypedWords, setLatestWord, setResultImgSrc, resultImgParentRef, netWpmDisplayRef, grossWpmDisplayRef, categoryDisplayRef, setLastWordIndex, setTotalTyped, setTotalErrors, setWordRefs, setLetterRefs, setLetterRects, setCategory, setDisplayRunning, setIsInputDisabled, inputBoxRef, setWpm, setGrossWpm, setNetWpm, setAccuracy, clearButton, customText, setClearButton, setCustomText, fetchRandomQuote, setIsQuoteRenderReady, words, onEnd]);
 
-   };
+   // const handleRefreshButtonClick = (event) => {
+
+   // };
 
    function repeatTest() {
       setIsInputDisabled(false);
@@ -710,13 +712,13 @@ function Home() {
       setIsLoading(false);
       inputBoxRef.current.focus();
       setIsCursorHidden(false);
-   }, [customText, handleRefreshButtonClick]);
+   }, [customText]);
 
    useEffect(() => {
       if (customText === '') return;
       setIsQuoteRenderReady(false);
       renderQuote();
-   }, [quote]);
+   }, [quote, customText, setIsQuoteRenderReady, renderQuote]);
 
    useEffect(() => {
       if (!isQuoteRenderReady) return;
@@ -777,7 +779,7 @@ function Home() {
    useEffect(() => {
       const accuracy = calculateAccuracy(totalTyped, totalErrors);
       const netWpm = calculateNetWPM(new Date().getTime());
-      if (accuracy) setAccuracy(accuracy); 
+      if (accuracy) setAccuracy(accuracy);
       if (netWpm) setNetWpm(netWpm);
    }, [totalTyped, totalErrors]);
 
