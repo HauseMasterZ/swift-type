@@ -668,15 +668,14 @@ function Home() {
          const lettersRects = [];
 
          letterElements.forEach((letter) => {
-            lettersRects.push(letter.getClientRects());
+            lettersRects.push(letter.getClientRects()[0]);
          });
-
          newLetterRects.push(lettersRects);
       });
       if (newLetterRects[currentWordIndex] === undefined) return;
       setLetterRects(newLetterRects);
-      const letterRect = newLetterRects[currentWordIndex][0][0];
-
+      const letterRect = newLetterRects[currentWordIndex][latestWord.length - 1];
+      setLastLetterRect(letterRect);
       setCursorStyle({
          left: `${latestWord ? letterRect.right : letterRect.left}px`,
          top: `${letterRect.top}px`,
@@ -785,6 +784,7 @@ function Home() {
 
    useEffect(() => {
       if (!lastLetterRect) return;
+      // console.log(lastLetterRect)
       setCursorStyle((prevCursorStyle) => ({
          left: `${lastLetterRect.right}px`,
          top: `${lastLetterRect.top}px`,
@@ -846,7 +846,6 @@ function Home() {
       document.body.style.fontFamily = selectedFont;
       inputBoxRef.current.focus();
       updateCursorPosition();
-
    }, [selectedFont]);
 
    useEffect(() => {
@@ -887,18 +886,13 @@ function Home() {
    }, [levels]);
 
    useEffect(() => {
-      // Set up an observer to listen for authentication state changes
       let unsubscribe = null;
       setLevels(thresholds.thresholds);
       try {
 
          unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
-               // User is signed in.
                setUser(user);
-               // setEmail(user.email);
-
-               // Fetch additional user information from your database
                const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
                getDoc(userRef).then((doc) => {
                   if (doc.exists()) {
@@ -911,11 +905,6 @@ function Home() {
                         totalAverageWpm: data[process.env.REACT_APP_TOTAL_AVG_WPM_KEY],
                         email: data[process.env.REACT_APP_EMAIL_KEY]
                      });
-                     // setUsername(data[process.env.REACT_APP_USERNAME_KEY]);
-                     // setProfilePhotoUrl(data[process.env.REACT_APP_PROFILE_PHOTO_URL_KEY]);
-                     // setTotalRacesTaken(data[process.env.REACT_APP_TOTAL_RACES_TAKEN_KEY]);
-                     // setTotalAvgAccuracy(data[process.env.REACT_APP_TOTAL_AVG_ACCURACY_KEY]);
-                     // setTotalAverageWpm(data[process.env.REACT_APP_TOTAL_AVG_WPM_KEY]);
                   } else {
                      console.log('No such document!');
                   }
@@ -923,14 +912,7 @@ function Home() {
                   console.log('Error getting document:', error);
                });
             } else {
-               // User is signed out.
-               // setUser(null);
-               // setUsername('');
-               // setEmail('');
-               // setProfilePhotoUrl('');
-               // setTotalRacesTaken(0);
                setProfileData(null);
-               // setTotalAvgAccuracy(0);
             }
          });
       } catch (error) {
