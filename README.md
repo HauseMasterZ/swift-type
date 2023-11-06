@@ -36,7 +36,7 @@
 </p>
 
 ## About
-Visit the site here: <a href="https://swift-type-7007d.web.app/ " target="_blank">SwiftType</a>.
+Visit the site here: <a href="https://swift-type-7007d.web.app/ ">SwiftType</a>.
 
 
 SwiftType is a minimalistic typing test site that allows you to test your typing speed and accuracy. It features a simple and minimal interface, with the ability to toggle dark and light theme. Uses [Quotable API](https://github.com/lukePeavey/quotable) to fetch random quotes.
