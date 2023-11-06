@@ -1051,6 +1051,16 @@ function Home() {
                         <option value="Oswald">Oswald</option>
                         <option value="Play">Play</option>
                         <option value="Ubuntu">Ubuntu</option>
+                        <option value="Anton">Anton</option>
+                        <option value="Arimo">Arimo</option>
+                        <option value="Assistant">Assistant</option>
+                        <option value="Dancing Script">Dancing Script</option>
+                        <option value="EB Garamond">EB Garamond</option>
+                        <option value="Lato">Lato</option>
+                        <option value="Nunito">Nunito</option>
+                        <option value="Montserrat">Montserrat</option>
+                        <option value="Pacifico">Pacifico</option>
+                        <option value="Poppins">Poppins</option>                                                  
                      </select>
                   </div>
                </div>

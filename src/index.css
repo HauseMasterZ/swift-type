@@ -1,8 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Arimo&family=Assistant&family=Dancing+Script&family=EB+Garamond&family=Lato&family=Montserrat&family=Nunito:ital@1&family=Pacifico&family=Poppins&display=swap");
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', "Anton",
+    "Arimo", "Assistant", "Dancing Script", "EB Garamond", "Lato", "Nunito",
+    "Montserrat", "Pacifico", "Poppins",sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
