@@ -12,6 +12,23 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: npm ci && npm run build
+        env:
+          REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
+          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }}
+          REACT_APP_FIREBASE_PROJECT_ID: ${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }}
+          REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.REACT_APP_FIREBASE_STORAGE_BUCKET }}
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.REACT_APP_FIREBASE_MESSAGING_SENDER_ID }}
+          REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
+          REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.REACT_APP_FIREBASE_MEASUREMENT_ID }}
+          REACT_APP_FIREBASE_COLLECTION_NAME: ${{ secrets.REACT_APP_FIREBASE_COLLECTION_NAME }}
+          REACT_APP_USERNAME_KEY: ${{ secrets.REACT_APP_USERNAME_KEY }}
+          REACT_APP_PROFILE_PHOTO_URL_KEY: ${{ secrets.REACT_APP_PROFILE_PHOTO_URL_KEY }}
+          REACT_APP_TOTAL_RACES_TAKEN_KEY: ${{ secrets.REACT_APP_TOTAL_RACES_TAKEN_KEY }}
+          REACT_APP_TOTAL_AVG_ACCURACY_KEY: ${{ secrets.REACT_APP_TOTAL_AVG_ACCURACY_KEY }}
+          REACT_APP_TOTAL_AVG_WPM_KEY: ${{ secrets.REACT_APP_TOTAL_AVG_WPM_KEY }}
+          REACT_APP_EMAIL_KEY: ${{ secrets.REACT_APP_EMAIL_KEY }}
+          REACT_APP_CREATED_AT_KEY: ${{ secrets.REACT_APP_CREATED_AT_KEY }}
+          REACT_APP_DEFAULT_PROFILE_PHOTO_URL: ${{ secrets.REACT_APP_DEFAULT_PROFILE_PHOTO_URL }}
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
