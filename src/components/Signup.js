@@ -33,22 +33,24 @@ function Signup() {
         }
 
         try {
-            const usernameDocRef = query(collection(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME), where(process.env.REACT_APP_USERNAME_KEY, '==', username), limit(1));
-            const emailDocRef = query(collection(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME), where(process.env.REACT_APP_EMAIL_KEY, '==', email), limit(1));
-            const [usernameDoc, emailDoc] = await Promise.all([getDocs(usernameDocRef), getDocs(emailDocRef)]);
-            if (usernameDoc.size > 0) {
-                alert('Username already exists');
-                return;
-            }
+            // const usernameDocRef = query(collection(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME), where(process.env.REACT_APP_USERNAME_KEY, '==', username), limit(1));
+            // const emailDocRef = query(collection(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME), where(process.env.REACT_APP_EMAIL_KEY, '==', email), limit(1));
+            // const [usernameDoc, emailDoc] = await Promise.all([getDocs(usernameDocRef), getDocs(emailDocRef)]);
+            // console.log(emailDocRef)
+            // if (usernameDoc.size > 0) {
+            //     alert('Username already exists');
+            //     return;
+            // }
 
-            if (emailDoc.size > 0) {
-                alert('Email already exists');
-                return;
-            }
+            // if (emailDoc.size > 0) {
+            //     alert('Email already exists');
+            //     return;
+            // }
 
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             const userDocRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
+            await setDoc(userDocRef, {});
             await setDoc(userDocRef, {
                 [process.env.REACT_APP_CREATED_AT_KEY]: new Date(),
                 [process.env.REACT_APP_PROFILE_PHOTO_URL_KEY]: process.env.REACT_APP_DEFAULT_PROFILE_PHOTO_URL,
@@ -59,8 +61,8 @@ function Signup() {
                 [process.env.REACT_APP_EMAIL_KEY]: email,
             });
             onEnd();
-            navigate('/verify');
             await sendEmailVerification(user);
+            navigate('/verify');
             setIsLoading(false);
         } catch (error) {
             console.error(error);
@@ -99,14 +101,14 @@ function Signup() {
             <div className="form-container">
                 <form>
                     <h2>Signup</h2>
-                    <label htmlFor="new-username">Username:</label>
-                    <input type="text" id="username" name="username" required placeholder="Username" ref={usernameRef} />
+                    <label htmlFor="username">Username:</label>
+                    <input type="text" id="username" name="username" required placeholder="Username" ref={usernameRef} autoComplete="name" />
                     <label htmlFor="email">Email:</label>
-                    <input type="email" id="email" name="email" required placeholder="Email" ref={emailRef} />
+                    <input type="email" id="email" name="email" required placeholder="Email" ref={emailRef} autoComplete="email" />
                     <label htmlFor="new-password">Password:</label>
-                    <input type="password" id="new-password" name="new-password" required placeholder="Password" ref={passwordRef} />
+                    <input type="password" id="new-password" name="new-password" required placeholder="Password" ref={passwordRef} autoComplete='new-password' />
                     <label htmlFor="confirm-password">Confirm Password:</label>
-                    <input type="password" id="confirm-password" name="confirm-password" required placeholder="Confirm Password" ref={confirmPasswordRef} />
+                    <input type="password" id="confirm-password" name="confirm-password" required placeholder="Confirm Password" ref={confirmPasswordRef} autoComplete='new-password' />
                     <button type="submit" className="button" onClick={handleSubmit}>
                         Signup
                     </button>

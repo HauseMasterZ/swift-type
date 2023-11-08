@@ -119,6 +119,7 @@ function Home() {
       }
       const url = minLength > 0 ? `${quotableApiUrl}?minLength=${minLength}&maxLength=${maxLength}` : quotableApiUrl;
       const response = await fetchWithRetries(url);
+      if (!response) return;
       const data = await response[0].content;
       setIsLoading(false);
       setIsCursorHidden(false);
