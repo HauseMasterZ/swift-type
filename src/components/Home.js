@@ -674,7 +674,7 @@ function Home() {
       });
       if (newLetterRects[currentWordIndex] === undefined) return;
       setLetterRects(newLetterRects);
-      const letterRect = newLetterRects[currentWordIndex][latestWord.length - 1];
+      const letterRect = newLetterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)];
       setLastLetterRect(letterRect);
       setCursorStyle({
          left: `${latestWord ? letterRect.right : letterRect.left}px`,
@@ -783,8 +783,7 @@ function Home() {
    }, [totalTyped, totalErrors]);
 
    useEffect(() => {
-      if (!lastLetterRect) return;
-      // console.log(lastLetterRect)
+      if (!lastLetterRect || !latestWord) return;
       setCursorStyle((prevCursorStyle) => ({
          left: `${lastLetterRect.right}px`,
          top: `${lastLetterRect.top}px`,
