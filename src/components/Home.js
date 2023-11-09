@@ -21,7 +21,7 @@ function Home() {
    const [lastLetterRect, setLastLetterRect] = useState(null);
    const [latestWord, setLatestWord] = useState("");
    const [lastWordIndex, setLastWordIndex] = useState(null);
-   const [totalTyped, setTotalTyped] = useState(0);
+   const [totalTyped, setTotalTyped] = useState(0);   
    const [totalErrors, setTotalErrors] = useState(0);
    const [customText, setCustomText] = useState('');
    const [isMobile, setIsMobile] = useState(false);
@@ -676,7 +676,6 @@ function Home() {
       if (newLetterRects[currentWordIndex] === undefined) return;
       setLetterRects(newLetterRects);
       const letterRect = newLetterRects[currentWordIndex][Math.max(latestWord.length - 1, 0)];
-      setLastLetterRect(letterRect);
       setCursorStyle({
          left: `${latestWord ? letterRect.right : letterRect.left}px`,
          top: `${letterRect.top}px`,
