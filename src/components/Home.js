@@ -779,7 +779,7 @@ function Home() {
       const accuracy = calculateAccuracy(totalTyped, totalErrors);
       const netWpm = calculateNetWPM(new Date().getTime());
       if (accuracy) setAccuracy(accuracy);
-      if (netWpm) setNetWpm(netWpm);
+      if (netWpm) setWpm(netWpm);
    }, [totalTyped, totalErrors]);
 
    useEffect(() => {
