@@ -449,6 +449,7 @@ function Home() {
       categoryDisplayRef.current.classList.remove('highlight-category');
       setLastWordIndex(null);
       setTotalTyped(0);
+      setWpm(0);
       setTotalErrors(0);
       setWordRefs([]);
       setLetterRefs([]);
@@ -562,40 +563,6 @@ function Home() {
       const accuracy = Math.round((totalTyped - totalErrors) / totalTyped * 100);
       return Math.max(accuracy, 0);
    }
-
-   // function calculateLiveAccuracy() {
-   //    const accuracy = Math.round((totalTyped - totalErrors) / totalTyped * 100);
-   //    setAccuracy(accuracy);
-   //    return Math.max(accuracy, 0);
-   // }
-
-   // function calculateLiveWPM() {
-   //    const minutes = new Date().getTime() - startTime / 60000;
-   //    const wpm = Math.round((currentWordIndex + 1) / minutes);
-
-   //    return wpm;
-   // }
-
-   // async function loadImages() {
-   //    for (const level of levels) {
-   //       const img = new Image();
-   //       img.src = level.imgSrc[0];
-   //       try {
-   //          await new Promise((resolve, reject) => {
-   //             img.onload = resolve;
-   //             img.onerror = () => {
-   //                img.src = level.imgSrc[1];
-   //                img.onload = resolve;
-   //                img.onerror = reject;
-   //                console.warn(`Failed to load image from CDN. Using local image instead.`);
-   //             };
-   //          });
-   //          level.imgSrc = img;
-   //       } catch (error) {
-   //          console.error(`Failed to load image for level ${level.title}: ${error}`);
-   //       }
-   //    }
-   // }
 
    const loadImages = () => {
       levels.forEach((image) => {
