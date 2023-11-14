@@ -449,7 +449,6 @@ function Home() {
       categoryDisplayRef.current.classList.remove('highlight-category');
       setLastWordIndex(null);
       setTotalTyped(0);
-      setWpm(0);
       setTotalErrors(0);
       setWordRefs([]);
       setLetterRefs([]);
@@ -743,11 +742,12 @@ function Home() {
    }, [isTimerRunning]);
 
    useEffect(() => {
+      if (latestWord === '') return;
       const accuracy = calculateAccuracy(totalTyped, totalErrors);
       const netWpm = calculateNetWPM(new Date().getTime());
       if (accuracy) setAccuracy(accuracy);
       if (netWpm) setWpm(netWpm);
-   }, [totalTyped, totalErrors]);
+   }, [totalTyped, totalErrors, latestWord]);
 
    useEffect(() => {
       if (!lastLetterRect || !latestWord) return;
