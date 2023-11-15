@@ -78,14 +78,6 @@ function Home() {
       let retries = 0;
       while (!data && retries < 3) {
          try {
-            // const response = await Promise.race([
-            //     fetch(url),
-            //     new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
-            // ]);
-            // if (!response.ok) {
-            //     throw new Error('Network response was not OK');
-            // }
-            // data = await response.json();
             const response = await axios.get(url, { timeout: 5000 });
             if (!response.status === 200) {
                throw new Error('Network response was not OK');
@@ -259,10 +251,10 @@ function Home() {
                setTotalTyped((prevTotalTyped) => prevTotalTyped - 1);
             }
          }
-         setCursorStyle((prevCursorStyle) => ({
+         setCursorStyle({
             left: `${letterRects[currentWordIndex][0].left}px`,
             top: `${letterRects[currentWordIndex][0].top}px`,
-         }));
+         });
          setLatestWord('');
       } else {
          setLatestWord((prevLatestWord) => prevLatestWord + event.data);
@@ -341,10 +333,10 @@ function Home() {
                setBackspaceFlag(false);
                return;
             }
-            setCursorStyle((prevCursorStyle) => ({
+            setCursorStyle({
                left: `${lastLetterRect.right}px`,
                top: `${lastLetterRect.top}px`,
-            }));
+            });
          }
       }
       setBackspaceFlag(false);
@@ -751,10 +743,10 @@ function Home() {
 
    useEffect(() => {
       if (!lastLetterRect || !latestWord) return;
-      setCursorStyle((prevCursorStyle) => ({
+      setCursorStyle({
          left: `${lastLetterRect.right}px`,
          top: `${lastLetterRect.top}px`,
-      }));
+      });
    }, [lastLetterRect, lastLetterRectRef.current]);
 
 
@@ -817,10 +809,10 @@ function Home() {
    useEffect(() => {
       if (letterRects[currentWordIndex] === undefined || backspaceFlag) return;
       if (latestWord === '') {
-         setCursorStyle((prevCursorStyle) => ({
+         setCursorStyle({
             left: `${letterRects[currentWordIndex][0].left}px`,
             top: `${letterRects[currentWordIndex][0].top}px`,
-         }));
+         });
       } else {
          updateWord(latestWord, latestWord.length - 1, backspaceFlag);
       }
