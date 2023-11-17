@@ -62,6 +62,7 @@ function Home() {
    const [totalRacesTaken, setTotalRacesTaken] = useState(0);
    const navigate = useNavigate();
    const [totalAvgAccuracy, setTotalAvgAccuracy] = useState(0);
+   const [profileData, setProfileData] = useState(null);
    const [totalAverageWpm, setTotalAverageWpm] = useState(0);
    const errorsDisplayRef = useRef(null);
    const accuracyDisplayRef = useRef(null);
@@ -391,14 +392,12 @@ function Home() {
    }
 
    const calculateLocalAccuracy = (newAccuracy, totalRacesTaken, totalAvgAccuracy) => {
-      // Calculate the new average accuracy
       const newTotalAccuracy = (totalAvgAccuracy * totalRacesTaken) + newAccuracy;
       const newAvgAccuracy = newTotalAccuracy / (totalRacesTaken + 1);
       return newAvgAccuracy;
    };
 
    const calculateLocalWpm = (newWpm, totalRacesTaken, totalAvgWpm) => {
-      // Calculate the new average WPM
       const newTotalWpm = (totalAvgWpm * totalRacesTaken) + newWpm;
       const newAvgWpm = newTotalWpm / (totalRacesTaken + 1);
       return newAvgWpm;
@@ -424,6 +423,7 @@ function Home() {
          ripple.remove();
       });
    }
+
    const handleRefreshButtonClick = useCallback((event) => {
       if (event !== undefined) {
          createRipple(event);
@@ -453,8 +453,6 @@ function Home() {
       setGrossWpm(0);
       setNetWpm(0);
       setAccuracy(0);
-      // setClearButton(false);
-      // fetchRandomQuote();
       if (clearButton || customText === '') {
          setClearButton(false);
          setCustomText('');
@@ -473,11 +471,7 @@ function Home() {
          }
       }
       onEnd();
-   }, [createRipple, setSeconds, setIsTimerRunning, setCurrentWordIndex, setTypedWords, setLatestWord, setResultImgSrc, resultImgParentRef, netWpmDisplayRef, grossWpmDisplayRef, categoryDisplayRef, setLastWordIndex, setTotalTyped, setTotalErrors, setWordRefs, setLetterRefs, setLetterRects, setCategory, setDisplayRunning, setIsInputDisabled, inputBoxRef, setWpm, setGrossWpm, setNetWpm, setAccuracy, clearButton, customText, setClearButton, setCustomText, fetchRandomQuote, setIsQuoteRenderReady, words, onEnd]);
-
-   // const handleRefreshButtonClick = (event) => {
-
-   // };
+      }, [createRipple, clearButton, customText, fetchRandomQuote, setIsQuoteRenderReady, words, onEnd]);
 
    function repeatTest() {
       setIsInputDisabled(false);
@@ -562,7 +556,6 @@ function Home() {
          }
          const img = new Image();
          img.src = image.imgSrc[0][0];
-         // const src = img.src;
          try {
             img.onerror = () => {
                img.src = image.imgSrc[1][1];
@@ -618,7 +611,6 @@ function Home() {
 
    function updateCursorPosition() {
       const newLetterRects = [];
-
       const quoteDiv = document.getElementById('quote');
       const wordElements = Array.from(quoteDiv.children);
 
@@ -675,7 +667,7 @@ function Home() {
       if (customText === '') return;
       setIsQuoteRenderReady(false);
       renderQuote();
-   }, [quote, customText, setIsQuoteRenderReady, renderQuote]);
+   }, [customText, setIsQuoteRenderReady, renderQuote]);
 
    useEffect(() => {
       if (!isQuoteRenderReady) return;
@@ -837,7 +829,6 @@ function Home() {
          }
       }
    }, [latestWord]);
-   const [profileData, setProfileData] = useState(null);
 
    useEffect(() => {
       loadImages();
