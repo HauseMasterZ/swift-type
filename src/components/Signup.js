@@ -33,20 +33,6 @@ function Signup() {
         }
 
         try {
-            // const usernameDocRef = query(collection(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME), where(process.env.REACT_APP_USERNAME_KEY, '==', username), limit(1));
-            // const emailDocRef = query(collection(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME), where(process.env.REACT_APP_EMAIL_KEY, '==', email), limit(1));
-            // const [usernameDoc, emailDoc] = await Promise.all([getDocs(usernameDocRef), getDocs(emailDocRef)]);
-            // console.log(emailDocRef)
-            // if (usernameDoc.size > 0) {
-            //     alert('Username already exists');
-            //     return;
-            // }
-
-            // if (emailDoc.size > 0) {
-            //     alert('Email already exists');
-            //     return;
-            // }
-
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             const userDocRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
