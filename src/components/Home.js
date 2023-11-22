@@ -701,7 +701,6 @@ function Home() {
          if (letterRects[0]) {
             setCursorStyle({ top: letterRects[0][0].top, left: letterRects[0][0].left });
          }
-
       }
    }, [quoteDivs]);
 
@@ -923,10 +922,10 @@ function Home() {
             </div>
             <div className="stats">
                <div className="stat">
-                  <div id="grossWPMDisplay" ref={grossWpmDisplayRef} >Gross WPM: {grossWpm}</div>
+                  <div id="netWPMDisplay" ref={netWpmDisplayRef} >Net WPM: {netWpm}</div>
                </div>
                <div className="stat">
-                  <div id="netWPMDisplay" ref={netWpmDisplayRef} >Net WPM: {netWpm}</div>
+                  <div id="grossWPMDisplay" ref={grossWpmDisplayRef} >Gross WPM: {grossWpm}</div>
                </div>
             </div>
             <div className="stats">

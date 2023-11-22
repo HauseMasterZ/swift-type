@@ -20,7 +20,7 @@ function Signup() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        setIsLoading(true);
+        setIsLoading(true); 
         const username = usernameRef.current.value;
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
