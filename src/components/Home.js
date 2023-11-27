@@ -21,7 +21,7 @@ function Home() {
    const [lastLetterRect, setLastLetterRect] = useState(null);
    const [latestWord, setLatestWord] = useState("");
    const [lastWordIndex, setLastWordIndex] = useState(null);
-   const [totalTyped, setTotalTyped] = useState(0);   
+   const [totalTyped, setTotalTyped] = useState(0);
    const [totalErrors, setTotalErrors] = useState(0);
    const [customText, setCustomText] = useState('');
    const [isMobile, setIsMobile] = useState(false);
@@ -471,7 +471,7 @@ function Home() {
          }
       }
       onEnd();
-      }, [createRipple, clearButton, customText, fetchRandomQuote, setIsQuoteRenderReady, words, onEnd]);
+   }, [createRipple, clearButton, customText, fetchRandomQuote, setIsQuoteRenderReady, words, onEnd]);
 
    function repeatTest() {
       setIsInputDisabled(false);
@@ -990,7 +990,7 @@ function Home() {
                         <option value="Nunito">Nunito</option>
                         <option value="Montserrat">Montserrat</option>
                         <option value="Pacifico">Pacifico</option>
-                        <option value="Poppins">Poppins</option>                                                  
+                        <option value="Poppins">Poppins</option>
                      </select>
                   </div>
                </div>

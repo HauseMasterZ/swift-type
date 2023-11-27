@@ -6,7 +6,6 @@ import Header from './Header';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import { onEnd } from '../static/scripts/flying-focus';
-import { collection, query, where, limit, getDocs } from 'firebase/firestore';
 import '../static/styles/styles.scss'
 import HamburgerMenu from './Hamburger';
 import LoadingSpinner from './LoadingSpinner';
@@ -20,7 +19,7 @@ function Signup() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        setIsLoading(true); 
+        setIsLoading(true);
         const username = usernameRef.current.value;
         const email = emailRef.current.value;
         const password = passwordRef.current.value;

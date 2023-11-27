@@ -95,18 +95,19 @@ h1 {
 }
 
 .dark-light i.sun {
+    opacity: 1;
+}
+
+.dark-light i.moon {
     opacity: 0;
-    pointer-events: none;
 }
 
 .dark-light.active i.sun {
-    opacity: 1;
-    pointer-events: auto;
+    opacity: 0;
 }
 
 .dark-light.active i.moon {
-    opacity: 0;
-    pointer-events: none;
+    opacity: 1;
 }
 
 .github {
