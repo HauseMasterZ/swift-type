@@ -47,8 +47,8 @@ function Signup() {
             });
             onEnd();
             await sendEmailVerification(user);
-            navigate('/verify');
             setIsLoading(false);
+            navigate('/verify');
         } catch (error) {
             console.error(error);
             alert(error.message);
@@ -56,30 +56,9 @@ function Signup() {
         }
     };
 
-    useEffect(() => {
-        let unsubscribe = null;
-        try {
-
-            unsubscribe = auth.onAuthStateChanged((user) => {
-                if (user) {
-                    navigate('/');
-                    return;
-                } else {
-                    return;
-                }
-            });
-        } catch (error) {
-            console.error(error);
-        }
-
-        return () => {
-            if (unsubscribe) unsubscribe();
-        };
-    }, []);
-
     return (
         <div className={`container`}>
-            <Header />
+            <Header toBeFocusedRef={usernameRef} />
             <HamburgerMenu home="Home" login="Login" />
             {isLoading ? <LoadingSpinner /> : ''}
 

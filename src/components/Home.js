@@ -5,6 +5,7 @@ import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { onEnd } from '../static/scripts/flying-focus.js';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { ToastContainer } from 'react-toastify';
 import '../static/styles/styles.scss'
 import Modal from './Modal.js';
 import Header from './Header';
@@ -17,7 +18,6 @@ function Home() {
    const [typedWords, setTypedWords] = useState([]);
    const [clearButton, setClearButton] = useState(false);
    const [isModalOpen, setIsModalOpen] = useState(false);
-   const modalInputRef = useRef(null);
    const [lastLetterRect, setLastLetterRect] = useState(null);
    const [latestWord, setLatestWord] = useState("");
    const [lastWordIndex, setLastWordIndex] = useState(null);
@@ -59,17 +59,15 @@ function Home() {
    const inputBoxRef = useRef(null);
    const [user, setUser] = useState(null);
    const [isQuoteRenderReady, setIsQuoteRenderReady] = useState(false);
-   const [totalRacesTaken, setTotalRacesTaken] = useState(0);
    const navigate = useNavigate();
-   const [totalAvgAccuracy, setTotalAvgAccuracy] = useState(0);
    const [profileData, setProfileData] = useState(null);
-   const [totalAverageWpm, setTotalAverageWpm] = useState(0);
    const errorsDisplayRef = useRef(null);
    const accuracyDisplayRef = useRef(null);
    const [words, setWordRefs] = useState([]);
    const [letterElements, setLetterRefs] = useState([]);
    const [letterRects, setLetterRects] = useState([]);
    const [quote, setQuote] = useState(null);
+   const modalInputRef = useRef(null);
    const quoteRef = useRef(null);
    const quotableApiUrl = `https://api.quotable.io/quotes/random/`;
    const punctuationPattern = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
@@ -375,32 +373,38 @@ function Home() {
       categoryDisplayRef.current.classList.add('highlight-category');
       if (customText !== '' || !user || !db) return;
       const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
-      const increment = totalRacesTaken + 1;
-      const newAccuracy = calculateLocalAccuracy(accuracy, totalRacesTaken, totalAvgAccuracy);
-      const newWpm = calculateLocalWpm(netWPM, totalRacesTaken, totalAverageWpm);
-      updateDoc(userRef, {
-         [process.env.REACT_APP_TOTAL_RACES_TAKEN_KEY]: increment,
-         [process.env.REACT_APP_TOTAL_AVG_ACCURACY_KEY]: newAccuracy,
-         [process.env.REACT_APP_TOTAL_AVG_WPM_KEY]: newWpm
-      })
-         .catch((error) => {
-            console.error('Error updating database values:', error);
-         });
-      setTotalRacesTaken(increment);
-      setTotalAverageWpm(newWpm);
-      setTotalAvgAccuracy(newAccuracy);
+      const newTotalRacesTaken = profileData.totalRacesTaken + 1;
+      const newAccuracy = calculateLocalAccuracy(accuracy, newTotalRacesTaken, profileData.totalAvgAccuracy);
+      const newWpm = calculateLocalWpm(netWPM, newTotalRacesTaken, profileData.totalAvgWpm);
+      try {
+         updateDoc(userRef, {
+            [process.env.REACT_APP_TOTAL_RACES_TAKEN_KEY]: newTotalRacesTaken,
+            [process.env.REACT_APP_TOTAL_AVG_ACCURACY_KEY]: newAccuracy,
+            [process.env.REACT_APP_TOTAL_AVG_WPM_KEY]: newWpm
+         })
+         setProfileData(prevProfileData => ({
+            ...prevProfileData,
+            totalRacesTaken: newTotalRacesTaken,
+            totalAvgAccuracy: newAccuracy,
+            totalAvgWpm: newWpm
+         }));
+      } catch (error) {
+         console.error('Error updating database values:', error);
+      }
    }
 
    const calculateLocalAccuracy = (newAccuracy, totalRacesTaken, totalAvgAccuracy) => {
-      const newTotalAccuracy = (totalAvgAccuracy * totalRacesTaken) + newAccuracy;
-      const newAvgAccuracy = newTotalAccuracy / (totalRacesTaken + 1);
-      return newAvgAccuracy;
+      const totalAccuracySoFar = totalAvgAccuracy * (totalRacesTaken - 1);
+      const newTotalAccuracy = totalAccuracySoFar + newAccuracy;
+      const newAvgAccuracy = newTotalAccuracy / totalRacesTaken;
+      return newAvgAccuracy.toFixed(2);
    };
 
    const calculateLocalWpm = (newWpm, totalRacesTaken, totalAvgWpm) => {
-      const newTotalWpm = (totalAvgWpm * totalRacesTaken) + newWpm;
-      const newAvgWpm = newTotalWpm / (totalRacesTaken + 1);
-      return newAvgWpm;
+      const totalWpmSoFar = totalAvgWpm * (totalRacesTaken - 1);
+      const newTotalWpm = totalWpmSoFar + newWpm;
+      const newAvgWpm = newTotalWpm / totalRacesTaken;
+      return newAvgWpm.toFixed(2);
    };
 
    function createRipple(event) {
@@ -837,9 +841,8 @@ function Home() {
       let unsubscribe = null;
       setLevels(thresholds.thresholds);
       try {
-
          unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
+            if (user && user.emailVerified) {
                setUser(user);
                const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, user.uid);
                getDoc(userRef).then((doc) => {
@@ -850,7 +853,7 @@ function Home() {
                         profilePhotoUrl: data[process.env.REACT_APP_PROFILE_PHOTO_URL_KEY],
                         totalRacesTaken: data[process.env.REACT_APP_TOTAL_RACES_TAKEN_KEY],
                         totalAvgAccuracy: data[process.env.REACT_APP_TOTAL_AVG_ACCURACY_KEY],
-                        totalAverageWpm: data[process.env.REACT_APP_TOTAL_AVG_WPM_KEY],
+                        totalAvgWpm: data[process.env.REACT_APP_TOTAL_AVG_WPM_KEY],
                         email: data[process.env.REACT_APP_EMAIL_KEY]
                      });
                   } else {
@@ -892,7 +895,19 @@ function Home() {
    return (
       <div className={`App`}>
          <div className="container">
-            <Header />
+            <Header toBeFocusedRef={inputBoxRef} />
+            <ToastContainer
+               position="bottom-right"
+               autoClose={3000}
+               hideProgressBar={false}
+               newestOnTop={false}
+               closeOnClick
+               rtl={false}
+               pauseOnFocusLoss
+               draggable
+               pauseOnHover
+               theme="colored"
+            />
             <HamburgerMenu user={user} handleLogoutClick={handleLogoutClick} login="Login" signup="Signup" profileData={profileData} />
             {isLoading ? <LoadingSpinner /> : ''}
             <p className="instruction">Type the following text:</p>

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header from './Header';
 import '../static/styles/styles.scss'
 import HamburgerMenu from './Hamburger';
@@ -19,26 +21,28 @@ function Settings() {
         setShowModal(false);
     };
 
-    const handleYesClick = () => {
+    const handleYesClick = async () => {
         setIsLoading(true);
         const user = auth.currentUser;
         const userId = user.uid;
         const userRef = doc(db, process.env.REACT_APP_FIREBASE_COLLECTION_NAME, userId);
-        deleteDoc(userRef)
-            .then(() => {
-                console.log('User data deleted successfully');
-                user.delete().then(() => {
-                    setIsLoading(false);
-                    navigate('/');
-                }).catch((error) => {
-                    console.log(error);
-                });
-            })
-            .catch((error) => {
+        try {
+            await deleteDoc(userRef);
+            try {
+                await user.delete();
+                toast.success('Account deleted');
+                setIsLoading(false);
+                navigate('/');
+            } catch (error) {
                 console.error('Error deleting user data:', error);
                 setIsLoading(false);
-                alert('Error deleting user data please try again later');
-            });
+                alert('Error deleting user, requires recent login');
+            }
+        } catch (error) {
+            console.log(error);
+            alert('Error deleting user data please try again later');
+            setIsLoading(false);
+        }
     };
 
     return (

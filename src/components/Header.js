@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import '../static/styles/styles.scss';
 
-function Header() {
+const Header = ({ toBeFocusedRef }) => {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const darkLightToggleElementRef = React.useRef(null);
 
@@ -17,6 +17,9 @@ function Header() {
             localStorage.setItem('theme', 'light');
         }
         setIsDarkMode(!isDarkMode);
+        if (toBeFocusedRef && toBeFocusedRef.current) {
+            toBeFocusedRef.current.focus();
+        }
     }
 
     useEffect(() => {

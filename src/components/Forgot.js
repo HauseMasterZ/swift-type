@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { collection } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +14,7 @@ function Forgot() {
     const [isLoading, setIsLoading] = useState(false);
     const [isSent, setIsSent] = useState(false);
     const [email, setEmail] = useState('');
-
+    const emailRef = useRef();
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsLoading(true);
@@ -50,14 +50,14 @@ function Forgot() {
 
     return (
         <div className={`container`}>
-            <Header />
+            <Header toBeFocusedRef={emailRef} />
             <HamburgerMenu home="Home" />
             {isLoading ? <LoadingSpinner /> : ''}
             {!isSent ? <div className="form-container">
                 <form onSubmit={handleSubmit}>
                     <h2>Forgot Password</h2>
                     <label htmlFor="username-email">Email:</label>
-                    <input type="text" id="username-email" name="username-email" onChange={(event) => setEmail(event.target.value)} required placeholder="Username or Email" />
+                    <input type="text" id="username-email" ref={emailRef} name="username-email" onChange={(event) => setEmail(event.target.value)} required placeholder="Username or Email" />
                     <button type="submit" className="button" onClick={handleSubmit}>
                         Submit
                     </button>

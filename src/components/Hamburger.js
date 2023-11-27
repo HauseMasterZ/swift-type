@@ -29,7 +29,7 @@ const HamburgerMenu = ({ user, handleLogoutClick, ...props }) => {
                 <div className="dropdown-menu show" ref={dropdownRef}>
                     {user && props.profileData ? (
                         <>
-                            <Link to={{ pathname: '/profile', state: { profileData: props.profileData } }} style={{ 'display': 'block' }}>
+                            <Link to="/profile" state={{ profileData: props.profileData }} style={{ 'display': 'block' }}>
                                 <img src={props.profileData.profilePhotoUrl} alt="profile-photo" className='dropdown-avatar' />
                                 {props.profileData.username}
                             </Link>

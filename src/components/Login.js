@@ -3,6 +3,8 @@ import { auth } from '../firebase';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../static/styles/styles.scss'
 import Header from './Header';
 import HamburgerMenu from './Hamburger';
@@ -11,7 +13,7 @@ function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const dropdownMenuRef = useRef(null);
+    const emailRef = useRef();
     const navigate = useNavigate();
 
     const handleUsernameChange = (event) => {
@@ -34,6 +36,7 @@ function Login() {
                 setIsLoading(false);
                 return;
             }
+            toast.success('Login successful');
             setIsLoading(false);
             navigate('/');
         } catch (error) {
@@ -47,7 +50,7 @@ function Login() {
         let unsubscribe = null;
         try {
             unsubscribe = auth.onAuthStateChanged((user) => {
-                if (user) {
+                if (user && user.emailVerified) {
                     navigate('/');
                     return;
                 } else {
@@ -64,7 +67,7 @@ function Login() {
 
     return (
         <div className={`container`}>
-            <Header />
+            <Header toBeFocusedRef={emailRef} />
             <HamburgerMenu home="Home" signup="Signup" />
             {isLoading ? <LoadingSpinner /> : ''}
             <div className="form-container">
@@ -77,6 +80,7 @@ function Login() {
                         name="username"
                         value={email}
                         placeholder='Email'
+                        ref={emailRef}
                         onChange={handleUsernameChange}
                         required
                     />
