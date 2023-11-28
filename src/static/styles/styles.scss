@@ -395,6 +395,7 @@ option[value="Poppins"] {
 #smoothCursor {
     cursor: pointer;
     user-select: none;
+    transition: background-color 1s ease;
     // border: 1px solid var(--text-color);
 }
 
