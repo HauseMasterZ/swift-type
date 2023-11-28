@@ -5,7 +5,9 @@ import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { onEnd } from '../static/scripts/flying-focus.js';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { ToastContainer } from 'react-toastify';
+import WebFont from 'webfontloader';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../static/styles/styles.scss'
 import Modal from './Modal.js';
 import Header from './Header';
@@ -573,11 +575,25 @@ function Home() {
 
    function handleLogoutClick() {
       auth.signOut().then(() => {
+         toast.success("You have successfully logged out.");
          setUser(null);
          navigate('/');
       }).catch((error) => {
          console.log(error);
+         toast.error("An error occurred while logging out.");
       });
+   }
+
+   function timer() {
+      let interval;
+      if (isTimerRunning) {
+         interval = setInterval(() => {
+            setSeconds((prevSeconds) => prevSeconds + 0.5);
+         }, 500);
+      }
+      return () => {
+         clearInterval(interval);
+      }
    }
 
    function highlightWord(reverse = false) {
@@ -707,18 +723,6 @@ function Home() {
          }
       }
    }, [quoteDivs]);
-
-   function timer() {
-      let interval;
-      if (isTimerRunning) {
-         interval = setInterval(() => {
-            setSeconds((prevSeconds) => prevSeconds + 0.5);
-         }, 500);
-      }
-      return () => {
-         clearInterval(interval);
-      }
-   }
 
    useEffect(() => {
       let stopTimer = timer();
@@ -869,7 +873,14 @@ function Home() {
       } catch (error) {
          console.error(error);
       }
-
+      WebFont.load({
+         google: {
+            families: ['Open Sans', 'Roboto', 'Oswald', 'Play', 'Ubuntu', 'Anton', 'Arimo', 'Assistant', 'Dancing Script', 'EB Garamond', 'Lato', 'Nunito', 'Montserrat', 'Pacifico', 'Poppins']
+         },
+         active: () => {
+            // setFontsLoaded(true);
+         }
+      });
       function handleResize() {
          updateCursorPosition();
       }
@@ -937,10 +948,10 @@ function Home() {
             </div>
             <div className="stats">
                <div className="stat">
-                  <div id="netWPMDisplay" ref={netWpmDisplayRef} >Net WPM: {netWpm}</div>
+                  <div id="grossWPMDisplay" ref={grossWpmDisplayRef} >Gross WPM: {grossWpm}</div>
                </div>
                <div className="stat">
-                  <div id="grossWPMDisplay" ref={grossWpmDisplayRef} >Gross WPM: {grossWpm}</div>
+                  <div id="netWPMDisplay" ref={netWpmDisplayRef} >Net WPM: {netWpm}</div>
                </div>
             </div>
             <div className="stats">
@@ -970,7 +981,7 @@ function Home() {
             </div>
             <div className="stats">
                <div className="stat">
-                  <div id="smoothCursor" onClick={handleSmoothCursorChange}>
+                  <div id="smoothCursor" className='block glow' onClick={handleSmoothCursorChange}>
                      Smooth Caret:{' '}
                      <span className={isSmoothCursorOn ? 'correct' : 'incorrect'} onClick={handleSmoothCursorChange}>
                         {isSmoothCursorOn ? 'ON' : 'OFF'}

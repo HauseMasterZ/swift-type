@@ -30,7 +30,7 @@ function Settings() {
             await deleteDoc(userRef);
             try {
                 await user.delete();
-                toast.success('Account deleted');
+                toast.warn('Account deleted');
                 setIsLoading(false);
                 navigate('/');
             } catch (error) {

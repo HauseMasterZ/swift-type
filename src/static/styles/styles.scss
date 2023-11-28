@@ -40,7 +40,10 @@ body.dark {
 }
 
 ::selection {
-    background-color: var(--body-color);
+    background-color: #ff6347;
+    /* Replace with your desired color */
+    color: white;
+    /* Optional: change the color of the text inside the selection */
 }
 
 ::-webkit-scrollbar {
@@ -128,7 +131,7 @@ h1 {
 }
 
 .container {
-    max-width: 650px;
+    max-width: max(650px, 38vw);
     margin: 0 auto;
     text-align: center;
     padding: 0;
@@ -285,6 +288,7 @@ h1 {
 
 #font-select option {
     appearance: none;
+    box-shadow: none;
     border: none;
     outline: none;
     background-color: var(--body-color);
@@ -351,9 +355,47 @@ option[value="Poppins"] {
     font-family: 'Poppins';
 }
 
+.block {
+    position: relative;
+    background: var(--body-color);
+}
+
+.glow::before,
+.glow::after {
+    content: '';
+    position: absolute;
+    left: -0.8px;
+    top: -0.5px;
+    background: linear-gradient(45deg, #e6fb04, #ff6600, #00ff66, #00ffff, #ff00ff, #6e0dd0, #ff3300, #099fff);
+    background-size: 400%;
+    width: calc(100% + 1.5px);
+    height: calc(100% + 1.5px);
+    z-index: -1;
+    animation: glowing 20s linear infinite;
+}
+
+@keyframes glowing {
+    0% {
+        background-position: 0 0;
+    }
+
+    50% {
+        background-position: 400% 0;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
+}
+
+.glow::after {
+    filter: blur(10px);
+}
+
 #smoothCursor {
     cursor: pointer;
     user-select: none;
+    // border: 1px solid var(--text-color);
 }
 
 .cursor {
@@ -494,7 +536,7 @@ option[value="Poppins"] {
 }
 
 .radio-container input[type="radio"] {
-    margin-right: 5px;
+    margin-right: 10px;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -509,15 +551,12 @@ option[value="Poppins"] {
 .radio-container input[type="radio"]::before {
     content: "";
     display: block;
-    width: 10px;
-    height: 10px;
-    margin: 5px;
+    width: 12px;
+    height: 12px;
+    margin-top: calc(50% - 6px);
+    margin-left: calc(50% - 6px);
     border-radius: 50%;
     transition: background-color 0.2s ease-in-out;
-    position: relative;
-    top: 50%;
-    left: 50%;
-    transform: translate(-100%, -100%);
 }
 
 .radio-container input[type="radio"]:checked::before {
