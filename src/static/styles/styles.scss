@@ -131,7 +131,7 @@ h1 {
 }
 
 .container {
-    max-width: max(650px, 38vw);
+    max-width: min(700px, 98vw);
     margin: 0 auto;
     text-align: center;
     padding: 0;
@@ -364,12 +364,12 @@ option[value="Poppins"] {
 .glow::after {
     content: '';
     position: absolute;
-    top: -0.5px;
-    left: -0.8px;
+    top: -1px;
+    left: -1px;
     background: linear-gradient(45deg, #e6fb04, #ff6600, #00ff66, #00ffff, #ff00ff, #6e0dd0, #ff3300, #099fff);
     background-size: 400%;
-    width: calc(100% + 1.5px);
-    height: calc(100% + 1.5px);
+    width: calc(100% + 2px);
+    height: calc(100% + 2px);
     z-index: -1;
     animation: glowing 20s linear infinite;
 }
@@ -380,7 +380,7 @@ option[value="Poppins"] {
     }
 
     50% {
-        background-position: 400% 0;
+        background-position: 500% 0;
     }
 
     100% {
@@ -389,7 +389,7 @@ option[value="Poppins"] {
 }
 
 .glow::after {
-    filter: blur(10px);
+    filter: blur(20px);
 }
 
 #smoothCursor {
