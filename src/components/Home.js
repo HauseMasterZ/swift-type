@@ -69,6 +69,7 @@ function Home() {
    const [letterElements, setLetterRefs] = useState([]);
    const [letterRects, setLetterRects] = useState([]);
    const [quote, setQuote] = useState(null);
+   const lastLetterRectRef = useRef(null);
    const modalInputRef = useRef(null);
    const quoteRef = useRef(null);
    const quotableApiUrl = `https://api.quotable.io/quotes/random/`;
@@ -165,7 +166,6 @@ function Home() {
       const letterElementLength = letterElement.length;
       if (event.data === ' ') {
          if (latestWord.length < letterElementLength || latestWord !== words[currentWordIndex].textContent) {
-            flashErrorDisplays();
             setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
             words[currentWordIndex].classList.add('underline-text');
          } else if (!isMobile) {
@@ -185,7 +185,6 @@ function Home() {
          if (isHighlightingEnabled) {
             highlightWord();
          }
-
          setLatestWord('');
          setTotalTyped((prevTotalTyped) => prevTotalTyped + 1);
          setCurrentWordIndex((prevCurrentWordIndex) => prevCurrentWordIndex + 1);
@@ -277,8 +276,6 @@ function Home() {
       setSelectedFont(event.target.value);
    };
 
-   const lastLetterRectRef = useRef(null);
-
    function updateWord(latestWord, i, backspaceFlag = false) {
       const letterElement = letterElements[currentWordIndex];
       const letterElementLength = letterElement.length;
@@ -286,7 +283,6 @@ function Home() {
          letterElement[letterElementLength - 1].classList.remove('correct');
          letterElement[letterElementLength - 1].classList.add('incorrect');
          setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
-         flashErrorDisplays();
       } else if (backspaceFlag) {
          if (i === letterElement.length - 1) {
             if (letterElement[i].textContent === latestWord[i]) {
@@ -313,7 +309,6 @@ function Home() {
          letterElement[i].classList.add('incorrect');
          if (!backspaceFlag) {
             setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
-            flashErrorDisplays();
          }
       }
 
@@ -734,11 +729,23 @@ function Home() {
 
    useEffect(() => {
       if (latestWord === '') return;
-      const accuracy = calculateAccuracy(totalTyped, totalErrors);
+      const letterElement = letterElements[currentWordIndex];
+      let accuracy = 0;
+      if (latestWord[latestWord.length - 1] !== letterElement[Math.min(latestWord.length - 1, letterElement.length - 1)].textContent) {
+         accuracy = calculateAccuracy(totalTyped, totalErrors + 1);
+      } else {
+         accuracy = calculateAccuracy(totalTyped, totalErrors);
+      }
       const netWpm = calculateNetWPM(new Date().getTime());
       if (accuracy) setAccuracy(accuracy);
       if (netWpm) setWpm(netWpm);
-   }, [totalTyped, totalErrors, latestWord]);
+   }, [totalTyped]);
+
+   useEffect(() => {
+      if (totalErrors === 0 || latestWord === '') return;
+      flashErrorDisplays();
+   }, [totalErrors])
+
 
    useEffect(() => {
       if (!lastLetterRect || !latestWord) return;
@@ -827,7 +834,6 @@ function Home() {
             latestWord.trim()
             if (latestWord.length < currentWord.length || latestWord !== currentWord) {
                setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
-               flashErrorDisplays();
                words[currentWordIndex].classList.add('underline-text');
             }
             refreshButtonRef.current.focus();
