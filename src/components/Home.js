@@ -742,7 +742,7 @@ function Home() {
    }, [totalTyped]);
 
    useEffect(() => {
-      if (totalErrors === 0 || latestWord === '') return;
+      if (totalErrors === 0) return;
       flashErrorDisplays();
    }, [totalErrors])
 
