@@ -20,7 +20,7 @@ To get started with contributing, you'll need to:
 1. Fork the repository to your GitHub account.
 2. Clone the forked repository to your local machine.
 3. Create a new branch for your work: `git checkout -b feature/your-feature-name`.
-5. Copy .env.example to new .env file for environment variables.
+4. Copy .env.example to new .env file for environment variables.
 
 
 Now, you are ready to start making changes.
