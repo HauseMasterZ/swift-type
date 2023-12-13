@@ -398,29 +398,29 @@ function Home() {
    };
 
    const calculateLocalWpm = (newWpm, totalRacesTaken, totalAvgWpm) => {
-      const totalWpmSoFar = totalAvgWpm * (totalRacesTaken - 1);
-      const newTotalWpm = totalWpmSoFar + newWpm;
-      const newAvgWpm = newTotalWpm / totalRacesTaken;
-      return newAvgWpm.toFixed(2);
-   };
+         const totalWpmSoFar = totalAvgWpm * (totalRacesTaken - 1);
+         const newTotalWpm = totalWpmSoFar + newWpm;
+         const newAvgWpm = newTotalWpm / totalRacesTaken;
+         return newAvgWpm.toFixed(2);
+      };
 
-   function createRipple(event) {
-      const button = event.currentTarget;
-      button.classList.remove("shrink-animation");
-      void button.offsetWidth;
-      button.classList.add("shrink-animation");
-      const ripple = document.createElement("span");
-      const rect = button.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height);
-      const x = event.clientX - rect.left - size / 2;
-      const y = event.clientY - rect.top - size / 2;
-      ripple.style.width = ripple.style.height = `${size}px`;
-      ripple.style.left = `${x}px`;
-      ripple.style.top = `${y}px`;
-      ripple.classList.add("ripple");
-      button.appendChild(ripple);
-      ripple.addEventListener("animationend", () => {
-         button.removeChild(ripple);
+      function createRipple(event) {
+         const button = event.currentTarget;
+         button.classList.remove("shrink-animation");
+         void button.offsetWidth;
+         button.classList.add("shrink-animation");
+         const ripple = document.createElement("span");
+         const rect = button.getBoundingClientRect();
+         const size = Math.max(rect.width, rect.height);
+         const x = event.clientX - rect.left - size / 2;
+         const y = event.clientY - rect.top - size / 2;
+         ripple.style.width = ripple.style.height = `${size}px`;
+         ripple.style.left = `${x}px`;
+         ripple.style.top = `${y}px`;
+         ripple.classList.add("ripple");
+         button.appendChild(ripple);
+         ripple.addEventListener("animationend", () => {
+            button.removeChild(ripple);
          ripple.remove();
       });
    }
