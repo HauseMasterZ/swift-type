@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import '../static/styles/styles.scss';
 
-const Header = ({ toBeFocusedRef }) => {
+const Header = ({ toBeFocusedRef, smoothCursorBlockRef }) => {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const darkLightToggleElementRef = React.useRef(null);
 
@@ -11,9 +11,11 @@ const Header = ({ toBeFocusedRef }) => {
         document.body.classList.toggle('dark');
         if (!isDarkMode) {
             document.body.style.backgroundColor = '#18191A';
+            smoothCursorBlockRef.current.style.backgroundColor = '#18191A';
             localStorage.setItem('theme', 'dark');
         } else {
             document.body.style.backgroundColor = '#E4E9F7';
+            smoothCursorBlockRef.current.style.backgroundColor = '#E4E9F7';
             localStorage.setItem('theme', 'light');
         }
         setIsDarkMode(!isDarkMode);

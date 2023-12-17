@@ -13,7 +13,7 @@ import Modal from './Modal.js';
 import Header from './Header';
 import HamburgerMenu from './Hamburger';
 import LoadingSpinner from './LoadingSpinner';
-function Home() {
+const Home = () => {
    const [startTime, setStartTime] = useState(0);
    const [levels, setLevels] = useState([]);
    const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -71,6 +71,7 @@ function Home() {
    const [quote, setQuote] = useState(null);
    const lastLetterRectRef = useRef(null);
    const modalInputRef = useRef(null);
+   const smoothCursorBlockRef = useRef(null);
    const quoteRef = useRef(null);
    const quotableApiUrl = `https://api.quotable.io/quotes/random/`;
    const punctuationPattern = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
@@ -146,7 +147,7 @@ function Home() {
       setQuoteLength(event.target.value);
    };
 
-   function flashErrorDisplays() {
+   const flashErrorDisplays = () => {
       errorsDisplayRef.current.classList.remove('flash-out-red');
       accuracyDisplayRef.current.classList.remove('flash-out-red');
       void accuracyDisplayRef.current.offsetWidth; // Trigger a reflow to restart the animation
@@ -155,7 +156,7 @@ function Home() {
       accuracyDisplayRef.current.classList.add('flash-out-red');
    }
 
-   function checkInput(event) {
+   const checkInput = (event) => {
       event = event.nativeEvent;
       if (!isTimerRunning) {
          setStartTime(new Date().getTime());
@@ -276,7 +277,7 @@ function Home() {
       setSelectedFont(event.target.value);
    };
 
-   function updateWord(latestWord, i, backspaceFlag = false) {
+   const updateWord = (latestWord, i, backspaceFlag = false) => {
       const letterElement = letterElements[currentWordIndex];
       const letterElementLength = letterElement.length;
       if (letterElement[i] === undefined && !backspaceFlag) {
@@ -358,6 +359,7 @@ function Home() {
       }
       setResultImgSrc(level.imgSrc);
       document.body.style.backgroundColor = level.backgroundColor;
+      smoothCursorBlockRef.current.style.backgroundColor = level.backgroundColor;
       resultImgParentRef.current.classList.remove('hidden');
       resultImgParentRef.current.classList.add('slide-in');
       setPrefix(level.title);
@@ -398,32 +400,40 @@ function Home() {
    };
 
    const calculateLocalWpm = (newWpm, totalRacesTaken, totalAvgWpm) => {
-         const totalWpmSoFar = totalAvgWpm * (totalRacesTaken - 1);
-         const newTotalWpm = totalWpmSoFar + newWpm;
-         const newAvgWpm = newTotalWpm / totalRacesTaken;
-         return newAvgWpm.toFixed(2);
-      };
+      const totalWpmSoFar = totalAvgWpm * (totalRacesTaken - 1);
+      const newTotalWpm = totalWpmSoFar + newWpm;
+      const newAvgWpm = newTotalWpm / totalRacesTaken;
+      return newAvgWpm.toFixed(2);
+   };
 
-      function createRipple(event) {
-         const button = event.currentTarget;
-         button.classList.remove("shrink-animation");
-         void button.offsetWidth;
-         button.classList.add("shrink-animation");
-         const ripple = document.createElement("span");
-         const rect = button.getBoundingClientRect();
-         const size = Math.max(rect.width, rect.height);
-         const x = event.clientX - rect.left - size / 2;
-         const y = event.clientY - rect.top - size / 2;
-         ripple.style.width = ripple.style.height = `${size}px`;
-         ripple.style.left = `${x}px`;
-         ripple.style.top = `${y}px`;
-         ripple.classList.add("ripple");
-         button.appendChild(ripple);
-         ripple.addEventListener("animationend", () => {
-            button.removeChild(ripple);
+   const createRipple = (event) => {
+      const button = event.currentTarget;
+      button.classList.remove("shrink-animation");
+      void button.offsetWidth;
+      button.classList.add("shrink-animation");
+      const ripple = document.createElement("span");
+      const rect = button.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = event.clientX - rect.left - size / 2;
+      const y = event.clientY - rect.top - size / 2;
+      ripple.style.width = ripple.style.height = `${size}px`;
+      ripple.style.left = `${x}px`;
+      ripple.style.top = `${y}px`;
+      ripple.classList.add("ripple");
+      button.appendChild(ripple);
+      ripple.addEventListener("animationend", () => {
+         button.removeChild(ripple);
          ripple.remove();
       });
    }
+
+   const changeColors = () => {
+      const newColor = document.body.classList.contains("dark") ? '#18191A' : '#E4E9F7';
+      document.body.style.backgroundColor = newColor;
+      // Assuming smoothCursorBlockRef is a ref to a DOM element
+      smoothCursorBlockRef.current.style.backgroundColor = newColor;
+      console.log('changed color')
+   };
 
    const handleRefreshButtonClick = useCallback((event) => {
       if (event !== undefined) {
@@ -440,6 +450,7 @@ function Home() {
       netWpmDisplayRef.current.classList.remove('highlight');
       grossWpmDisplayRef.current.classList.remove('highlight');
       categoryDisplayRef.current.classList.remove('highlight-category');
+      setIsInputDisabled(false);
       setLastWordIndex(null);
       setTotalTyped(0);
       setTotalErrors(0);
@@ -448,21 +459,15 @@ function Home() {
       setLetterRects([]);
       setCategory('');
       setDisplayRunning(false);
-      setIsInputDisabled(false);
       inputBoxRef.current.value = '';
       setWpm(0);
       setGrossWpm(0);
       setNetWpm(0);
       setAccuracy(0);
-      if (clearButton || customText === '') {
-         setClearButton(false);
-         setCustomText('');
-         fetchRandomQuote();
-      } else {
-         setIsQuoteRenderReady(true);
-      }
-      document.body.classList.contains("dark") ? document.body.style.backgroundColor = '#18191A' : document.body.style.backgroundColor = '#E4E9F7';
-
+      setClearButton(false);
+      setCustomText('');
+      fetchRandomQuote();
+      changeColors();
       for (let i = 0; i < words.length; i++) {
          words[i].classList.remove('underline-text');
          const letterElements = words[i].querySelectorAll('.letter');
@@ -474,7 +479,7 @@ function Home() {
       onEnd();
    }, [createRipple, clearButton, customText, fetchRandomQuote, setIsQuoteRenderReady, words, onEnd]);
 
-   function repeatTest() {
+   const repeatTest = () => {
       setIsInputDisabled(false);
       setSeconds(0);
       setCurrentWordIndex(0);
@@ -495,7 +500,7 @@ function Home() {
       setGrossWpm(0);
       setNetWpm(0);
       setAccuracy(0);
-      document.body.classList.contains("dark") ? document.body.style.backgroundColor = '#18191A' : document.body.style.backgroundColor = '#E4E9F7';
+      changeColors();
       setCursorStyle({ left: `${letterRects[0][0].left}px`, top: `${letterRects[0][0].top}px` });
       for (let i = 0; i < words.length; i++) {
          words[i].classList.remove('underline-text');
@@ -509,13 +514,13 @@ function Home() {
       onEnd();
    }
 
-   function calculateWPM(endTime) {
+   const calculateWPM = (endTime) => {
       const minutes = (endTime - startTime) / 60000;
       const wpm = Math.round((currentWordIndex + 1) / minutes);
       return wpm;
    }
 
-   function calculateGrossWPM(endTime) {
+   const calculateGrossWPM = (endTime) => {
       let netTyped = 0;
       letterElements.forEach((letters, index) => {
          let errorCharCnt = 0;
@@ -531,7 +536,7 @@ function Home() {
       return netWPM;
    }
 
-   function calculateNetWPM(endTime) {
+   const calculateNetWPM = (endTime) => {
       let errorWordCnt = 0;
       words.forEach((word, index) => {
          if (word.classList.contains("underline-text")) {
@@ -545,7 +550,7 @@ function Home() {
       return Math.max(netWPM, 0);
    }
 
-   function calculateAccuracy(totalTyped, totalErrors) {
+   const calculateAccuracy = (totalTyped, totalErrors) => {
       const accuracy = Math.round((totalTyped - totalErrors) / totalTyped * 100);
       return Math.max(accuracy, 0);
    }
@@ -568,7 +573,7 @@ function Home() {
       });
    };
 
-   function handleLogoutClick() {
+   const handleLogoutClick = () => {
       auth.signOut().then(() => {
          toast.success("You have successfully logged out.");
          setUser(null);
@@ -579,7 +584,7 @@ function Home() {
       });
    }
 
-   function timer() {
+   const timer = () => {
       let interval;
       if (isTimerRunning) {
          interval = setInterval(() => {
@@ -591,7 +596,7 @@ function Home() {
       }
    }
 
-   function highlightWord(reverse = false) {
+   const highlightWord = (reverse = false) => {
       if (reverse && currentWordIndex > 0) {
          words[currentWordIndex + 1].classList.remove('active-word');
          words[currentWordIndex + 2].classList.remove('subactive-word');
@@ -607,7 +612,7 @@ function Home() {
       }
    }
 
-   function handleKeyDown(event) {
+   const handleKeyDown = (event) => {
       setIsCapsLockOn(event.getModifierState && event.getModifierState("CapsLock"));
    }
 
@@ -618,13 +623,14 @@ function Home() {
    const handleApply = (inputValue) => {
       if (inputValue.trim() === '') return;
       setCustomText(inputValue);
+      setQuote(inputValue);
    };
 
    const openModal = () => {
       setIsModalOpen(true);
    };
 
-   function updateCursorPosition() {
+   const updateCursorPosition = () => {
       const newLetterRects = [];
       const quoteDiv = document.getElementById('quote');
       const wordElements = Array.from(quoteDiv.children);
@@ -667,22 +673,19 @@ function Home() {
 
    useEffect(() => {
       if (customText === '') return;
-      setQuote(customText);
-      handleRefreshButtonClick();
       setClearButton(true);
       setWordRefs([]);
       setLetterRefs([]);
       setLetterRects([]);
       setIsLoading(false);
-      inputBoxRef.current.focus();
       setIsCursorHidden(false);
+      repeatTest();
    }, [customText]);
 
    useEffect(() => {
       if (customText === '') return;
-      setIsQuoteRenderReady(false);
       renderQuote();
-   }, [customText, setIsQuoteRenderReady, renderQuote]);
+   }, [customText]);
 
    useEffect(() => {
       if (!isQuoteRenderReady) return;
@@ -762,11 +765,11 @@ function Home() {
       const startTime = Date.now();
       const easingFactor = 3; // Lower values correspond to slower animation
 
-      function easeOutExpo(t) {
+      const easeOutExpo = (t) => {
          return 1 - Math.pow(2, -easingFactor * t);
       }
 
-      function updateDisplay() {
+      const updateDisplay = () => {
          const currentTime = Date.now();
          const elapsedTime = currentTime - startTime;
          const progress = elapsedTime / duration;
@@ -887,7 +890,7 @@ function Home() {
             // setFontsLoaded(true);
          }
       });
-      function handleResize() {
+      const handleResize = () => {
          updateCursorPosition();
       }
       const buttons = document.querySelectorAll('button');
@@ -912,7 +915,7 @@ function Home() {
    return (
       <div className={`App`}>
          <div className="container">
-            <Header toBeFocusedRef={inputBoxRef} />
+            <Header toBeFocusedRef={inputBoxRef} smoothCursorBlockRef={smoothCursorBlockRef} />
             <ToastContainer
                position="bottom-right"
                autoClose={3000}
@@ -987,7 +990,7 @@ function Home() {
             </div>
             <div className="stats">
                <div className="stat">
-                  <div id="smoothCursor" className='block glow' onClick={handleSmoothCursorChange}>
+                  <div id="smoothCursor" className='block glow' ref={smoothCursorBlockRef} onClick={handleSmoothCursorChange}>
                      Smooth Caret:{' '}
                      <span className={isSmoothCursorOn ? 'correct' : 'incorrect'} onClick={handleSmoothCursorChange}>
                         {isSmoothCursorOn ? 'ON' : 'OFF'}
