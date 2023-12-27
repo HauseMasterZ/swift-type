@@ -30,12 +30,10 @@ const Header = ({ toBeFocusedRef, smoothCursorBlockRef }) => {
             setIsDarkMode(true);
             document.body.classList.add('dark');
             darkLightToggleElementRef.current.classList.add('active');
-            document.body.style.backgroundColor = '#18191A';
         } else {
             setIsDarkMode(false);
             document.body.classList.remove('dark');
             darkLightToggleElementRef.current.classList.remove('active');
-            document.body.style.backgroundColor = '#E4E9F7';
         }
     }, []);
 

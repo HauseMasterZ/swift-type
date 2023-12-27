@@ -430,9 +430,8 @@ const Home = () => {
    const changeColors = () => {
       const newColor = document.body.classList.contains("dark") ? '#18191A' : '#E4E9F7';
       document.body.style.backgroundColor = newColor;
-      // Assuming smoothCursorBlockRef is a ref to a DOM element
       smoothCursorBlockRef.current.style.backgroundColor = newColor;
-      console.log('changed color')
+      // document.body.classList.contains('dark') ? document.body.classList.add('dark') : document.body.classList.remove('dark'); use classes to change colors instead of inline styles
    };
 
    const handleRefreshButtonClick = useCallback((event) => {
@@ -582,6 +581,16 @@ const Home = () => {
          console.log(error);
          toast.error("An error occurred while logging out.");
       });
+   }
+
+   function debounce(func, delay) {
+      let debounceTimer;
+      return function () {
+         const context = this;
+         const args = arguments;
+         clearTimeout(debounceTimer);
+         debounceTimer = setTimeout(() => func.apply(context, args), delay);
+      }
    }
 
    const timer = () => {
@@ -890,11 +899,13 @@ const Home = () => {
             // setFontsLoaded(true);
          }
       });
-      const handleResize = () => {
+
+      let debouncehandleResize = debounce(function () {
          updateCursorPosition();
-      }
+      }, 250);
+
       const buttons = document.querySelectorAll('button');
-      window.addEventListener('resize', handleResize);
+      window.addEventListener('resize', debouncehandleResize);
       document.body.addEventListener('keydown', handleKeyDown);
       buttons.forEach((button) => {
          button.addEventListener('click', createRipple);
@@ -905,7 +916,7 @@ const Home = () => {
       return () => {
          buttons.forEach((button) => {
             button.removeEventListener('click', createRipple);
-            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('resize', debouncehandleResize);
             document.body.removeEventListener('keydown', handleKeyDown);
          });
          if (unsubscribe) unsubscribe();
