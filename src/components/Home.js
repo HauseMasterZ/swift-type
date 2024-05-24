@@ -600,6 +600,12 @@ const Home = () => {
     onEnd();
   };
 
+  useEffect(() => {
+    if (inputBoxRef.current) {
+      inputBoxRef.current.focus();
+    }
+  }, [inputBoxRef.current?.disabled]);
+
   const calculateWPM = (endTime) => {
     const minutes = (endTime - startTime) / 60000;
     const wpm = Math.round((currentWordIndex + 1) / minutes);
@@ -1104,7 +1110,7 @@ const Home = () => {
           disabled={isInputDisabled}
           onInput={checkInput}
           ref={inputBoxRef}
-          autoFocus
+          autoFocus={true}
         />
         <div>
           <button

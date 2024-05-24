@@ -12,6 +12,7 @@ import { onEnd } from "../static/scripts/flying-focus";
 import "../static/styles/styles.scss";
 import HamburgerMenu from "./Hamburger";
 import LoadingSpinner from "./LoadingSpinner";
+
 function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const usernameRef = useRef();

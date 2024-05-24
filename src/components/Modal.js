@@ -18,13 +18,12 @@ const Modal = ({ isOpen, onClose, onApply, modalInputRef }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="stats">
+    <div className="stats" onClick={handleCancel}>
       <div className="stat">
         <div id="customTextModal" className="modal">
-          <div className="modal-content">
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <label>
               <h2>Enter Custom Text</h2>
-              {/* <input type="text" id="customTextInput" ref={modalInputRef} placeholder="Enter Custom Text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} /> */}
               <input
                 type="text"
                 id="customTextInput"

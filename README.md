@@ -56,22 +56,19 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for mo
  - Word highlighting (on | off)
  - Smooth caret (on | off)
  - Control + Backspace delete
+ - Account support with tracking of scores
 
 ## Building and Testing
 To build and test the site locally, follow these steps:
 
 1. Clone the repository to your local machine.
-2. Navigate to the project directory in your terminal.
-3. (Optional) Run the command `git submodule update --init --recursive` to update the submodule.
-4. (Optional) Run the command `git pull` to pull the latest changes.
-5. Install the necessary dependencies by running `npm install`
-6. Create a new file in the root directory of the project called `.env.local`
-7. Add the necessary environment variables to the file in the format `VARIABLE_NAME=value`
-8. Save the file.
-9. To build the project, run the command `npm run build`.
-10. To start the development server, run the command `npm run server` or `npm start` to use Create React App Deployment.
-11. Open your web browser and navigate to `http://localhost:3000` to view the site.
-12. To run the tests, open a new terminal window and navigate to the project directory.
-13. Run the command `npm test` to run the test suite.
+2. Install the necessary dependencies by running `npm install`
+3. Create a new file in the root directory of the project called `.env.local`
+4. Add the necessary environment variables to the file in the format `VARIABLE_NAME=value`
+5. To build the project, run the command `npm run build`.
+6. To start the development server, run the command `npm run server` or `npm start` to use Create React App Deployment.
+7. Open your web browser and navigate to `http://localhost:3000` to view the site.
+8. To run the tests, open a new terminal window and navigate to the project directory.
+9. Run the command `npm test` to run the test suite.
 
 Make sure to add the `.envlocal` file to your `.gitignore` file to prevent it from being tracked by Git.
