@@ -162,17 +162,6 @@ h1 {
   /* Adjust this value to control the spacing between letters */
 }
 
-.highlight {
-  transform: translate3d(0, 0, 0);
-  font-weight: bold;
-  animation: font-size-highlight 1.5s ease 1s forwards;
-}
-
-.highlight-category {
-  transform: translate3d(0, 0, 0);
-  animation: font-size-category 1.5s ease 1s forwards;
-}
-
 @keyframes font-size-highlight {
   to {
     font-size: 36px;
@@ -640,6 +629,17 @@ option[value="Poppins"] {
   100% {
     color: var(--text-color);
   }
+}
+
+.highlight {
+  transform: translate3d(0, 0, 0);
+  font-weight: bold;
+  animation: font-size-highlight 1.5s ease 1s forwards;
+}
+
+.highlight-category {
+  transform: translate3d(0, 0, 0);
+  animation: font-size-category 1.5s ease 1s forwards;
 }
 
 .dropdown-avatar {

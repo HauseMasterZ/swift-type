@@ -423,7 +423,7 @@ const Home = () => {
     setStars(level.stars);
     setDisplayRunning(true);
     netWpmDisplayRef.current.classList.add("highlight");
-    grossWpmDisplayRef.current.classList.add("highlight");
+    accuracyDisplayRef.current.classList.add("highlight");
     categoryDisplayRef.current.classList.add("highlight-category");
     if (customText !== "" || !user || !db) return;
     const userRef = doc(
@@ -521,7 +521,7 @@ const Home = () => {
       resultImgParentRef.current.classList.add("hidden");
       resultImgParentRef.current.classList.remove("slide-in");
       netWpmDisplayRef.current.classList.remove("highlight");
-      grossWpmDisplayRef.current.classList.remove("highlight");
+      accuracyDisplayRef.current.classList.remove("highlight");
       categoryDisplayRef.current.classList.remove("highlight-category");
       setIsInputDisabled(false);
       setLastWordIndex(null);
@@ -572,7 +572,7 @@ const Home = () => {
     resultImgParentRef.current.classList.add("hidden");
     resultImgParentRef.current.classList.remove("slide-in");
     netWpmDisplayRef.current.classList.remove("highlight");
-    grossWpmDisplayRef.current.classList.remove("highlight");
+    accuracyDisplayRef.current.classList.remove("highlight");
     categoryDisplayRef.current.classList.remove("highlight-category");
     setTotalTyped(0);
     setTotalErrors(0);
@@ -1147,9 +1147,10 @@ const Home = () => {
               Current WPM: {wpm}
             </div>
           </div>
+
           <div className="stat">
-            <div ref={accuracyDisplayRef} id="accuracyDisplay">
-              Accuracy: {accuracy}%
+            <div id="grossWPMDisplay" ref={grossWpmDisplayRef}>
+              Gross WPM: {grossWpm}
             </div>
           </div>
           <div className="stat">
@@ -1160,13 +1161,13 @@ const Home = () => {
         </div>
         <div className="stats">
           <div className="stat">
-            <div id="grossWPMDisplay" ref={grossWpmDisplayRef}>
-              Gross WPM: {grossWpm}
+            <div id="netWPMDisplay" ref={netWpmDisplayRef}>
+              Net WPM: {netWpm}
             </div>
           </div>
           <div className="stat">
-            <div id="netWPMDisplay" ref={netWpmDisplayRef}>
-              Net WPM: {netWpm}
+            <div id="accuracyDisplay" ref={accuracyDisplayRef}>
+              Accuracy: {accuracy}%
             </div>
           </div>
         </div>
