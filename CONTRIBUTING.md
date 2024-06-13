@@ -20,6 +20,8 @@ To get started with contributing, you'll need to:
 1. Fork the repository to your GitHub account.
 2. Clone the forked repository to your local machine.
 3. Create a new branch for your work: `git checkout -b feature/your-feature-name`.
+4. Copy .env.example to new .env file for environment variables.
+
 
 Now, you are ready to start making changes.
 
@@ -45,6 +47,7 @@ Before submitting a pull request (PR), please ensure the following:
 2. You have written unit tests, where applicable, and they pass.
 3. The commit message is descriptive and follows the [commit message guidelines](https://www.conventionalcommits.org/).
 4. You have updated the project documentation, if necessary.
+
 
 ## Reporting Issues
 
