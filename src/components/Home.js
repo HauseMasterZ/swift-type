@@ -50,6 +50,7 @@ const Home = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const cursorRef = useRef(null);
   const [quoteDivs, setQuoteDivs] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
   const wpmDisplayRef = useRef(null);
   const refreshButtonRef = useRef(null);
   const [isHighlightingEnabled, setIsHighlightingEnabled] = useState(false);
@@ -75,30 +76,33 @@ const Home = () => {
   const quoteRef = useRef(null);
   const quotableApiUrl = `https://api.quotable.io/quotes/random/`;
   const punctuationPattern = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
+  let retries = 0;
 
   const fetchWithRetries = async (url) => {
     let data = null;
-    let retries = 0;
     while (!data && retries < 3) {
       try {
         const response = await axios.get(url, { timeout: 5000 });
         if (!response.status === 200) {
           throw new Error("Network response was not OK");
+        } else {
+          data = response.data;
         }
-        data = response.data;
       } catch (error) {
+        retries++;
         console.warn(
           `Failed to fetch quote ${error} (retry ${retries} of 3). Please wait...`
         );
 
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        retries++;
       }
     }
     return data;
   };
 
   const fetchRandomQuote = async () => {
+    if (isFetching) return;
+    setIsFetching(true);
     setIsLoading(true);
     setIsQuoteRenderReady(false);
     setIsCursorHidden(true);
@@ -118,9 +122,39 @@ const Home = () => {
       minLength > 0
         ? `${quotableApiUrl}?minLength=${minLength}&maxLength=${maxLength}`
         : quotableApiUrl;
+    retries = 0;
+    let data = null;
     const response = await fetchWithRetries(url);
-    if (!response) return;
-    const data = await response[0].content;
+    if (!response) {
+      // Fallback to using Monkeytype's english.json if the API call fails
+      try {
+        const fallbackUrl =
+          "https://raw.githubusercontent.com/monkeytypegame/monkeytype/master/frontend/static/quotes/english.json";
+        const fallbackResponse = await fetch(fallbackUrl);
+        const response = await fallbackResponse.json();
+        const quotes = response.quotes;
+        if (minLength > 0) {
+          const filteredQuotes = quotes.filter((quote) => {
+            return quote.length >= minLength && quote.length <= maxLength;
+          });
+          if (filteredQuotes.length === 0) {
+            throw new Error("No quotes found for the specified length");
+          }
+          const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
+          data = filteredQuotes[randomIndex].text;
+        } else {
+          const randomIndex = Math.floor(Math.random() * quotes.length);
+          data = quotes[randomIndex].text;
+        }
+      } catch (error) {
+        console.error("Failed to load fallback quotes", error);
+        setIsLoading(false);
+        setIsCursorHidden(false);
+        return;
+      }
+    } else {
+      data = await response[0].content;
+    }
     setIsLoading(false);
     setIsCursorHidden(false);
     setQuote(data);
@@ -128,6 +162,7 @@ const Home = () => {
       inputBoxRef.current.focus();
     }
     setIsQuoteRenderReady(true);
+    setIsFetching(false);
   };
 
   const renderQuote = () => {
@@ -160,6 +195,63 @@ const Home = () => {
     errorsDisplayRef.current.classList.add("flash-out-red");
     accuracyDisplayRef.current.classList.add("flash-out-red");
   };
+
+  // const checkInputMobile = (event) => {
+  //   event = event.nativeEvent;
+  //   if (!isTimerRunning) {
+  //     setStartTime(new Date().getTime());
+  //     setIsTimerRunning(true);
+  //     isSmoothCursorOn
+  //       ? (cursorRef.current.style.transition =
+  //           "left 0.1s linear, top 0.25s ease-out")
+  //       : (cursorRef.current.style.transition = "top 0.25s ease-out");
+  //   }
+
+  //   const currentInput = inputBoxRef.current.value;
+  //   const currentQuote = quoteDivs.map((div) => div.textContent).join(" ");
+  //   const inputBoxWords = currentInput.split(" ");
+  //   setCurrentWordIndex(inputBoxWords.length - 1);
+  //   let isCorrect = true;
+
+  //   // Check Word
+  //   for (let i = 0; i < inputBoxWords.length; i++) {
+  //     console.log(inputBoxWords.length);
+  //     if (inputBoxWords[i] !== words[i].textContent && i !== inputBoxWords.length - 1) {
+  //       words[inputBoxWords.length - 2].classList.add("underline-text");
+  //     }
+
+  //     for (let j = 0; j < inputBoxWords[i].length; j++) {
+  //       if (inputBoxWords[i][j] !== letterElements[i][j].textContent) {
+  //         isCorrect = false;
+  //         letterElements[i][j].classList.remove("correct");
+  //         letterElements[i][j].classList.add("incorrect");
+  //       } else {
+  //         letterElements[i][j].classList.remove("incorrect");
+  //         letterElements[i][j].classList.add("correct");
+  //       }
+  //     }
+  //   }
+
+  //   // // Check each character
+  //   // for (let i = 0; i < currentInput.length; i++) {
+  //   //   if (currentInput[i] !== currentQuote[i]) {
+  //   //     isCorrect = false;
+  //   //     break;
+  //   //   }
+  //   // }
+
+  //   // // If any character is incorrect, flash error displays
+  //   // if (!isCorrect) {
+  //   //   flashErrorDisplays();
+  //   //   return;
+  //   // }
+
+  //   // // If the input matches the quote exactly and it's the end of the quote
+  //   // if (currentInput === currentQuote) {
+  //   //   const endTime = new Date().getTime();
+  //   //   endTest(endTime); // Assuming endTest function handles the test completion logic
+  //   // }
+  // };
 
   const checkInput = (event) => {
     event = event.nativeEvent;
@@ -530,6 +622,7 @@ const Home = () => {
       setWordRefs([]);
       setLetterRefs([]);
       setLetterRects([]);
+      fetchRandomQuote();
       setCategory("");
       setDisplayRunning(false);
       inputBoxRef.current.value = "";
@@ -539,7 +632,6 @@ const Home = () => {
       setAccuracy(0);
       setClearButton(false);
       setCustomText("");
-      fetchRandomQuote();
       changeColors();
       for (let i = 0; i < words.length; i++) {
         words[i].classList.remove("underline-text");
@@ -1057,7 +1149,6 @@ const Home = () => {
     });
 
     setIsMobile(navigator.userAgent.toLowerCase().includes("mobile"));
-    fetchRandomQuote();
     return () => {
       buttons.forEach((button) => {
         button.removeEventListener("click", createRipple);
@@ -1108,6 +1199,7 @@ const Home = () => {
           type="text"
           id="inputBox"
           disabled={isInputDisabled}
+          // onInput={isMobile ? checkInputMobile : checkInput}
           onInput={checkInput}
           ref={inputBoxRef}
           autoFocus={true}
