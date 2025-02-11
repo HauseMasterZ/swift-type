@@ -26,6 +26,7 @@
     "resolve-url-loader": "^5.0.0",
     "sass": "^1.69.5",
     "svgo": "^3.0.2",
+    "swift-type-react": "file:",
     "tough-cookie": "^4.1.3",
     "uuid": "^9.0.1",
     "web-vitals": "^3.5.0",
