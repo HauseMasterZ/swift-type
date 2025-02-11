@@ -15,7 +15,7 @@
     "axios": "^1.7.4",
     "babel-preset-react-app": "^10.0.1",
     "css-select": "^5.1.0",
-    "firebase": "^10.5.2",
+    "firebase": "^10.14.1",
     "nth-check": "^2.1.1",
     "postcss": "^8.4.31",
     "react": "^18.2.0",
